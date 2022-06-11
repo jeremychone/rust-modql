@@ -4,4 +4,4 @@ version = 3
 
 [[package]]
 name = "modql"
-version = "0.0.2"
+version = "0.0.3-SNAPSHOT.1"
