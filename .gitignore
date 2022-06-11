@@ -1,0 +1,36 @@
+# By Default, Ignore any .*
+.*
+# Except .gitgnore
+!.gitignore
+
+
+# Allow vscode 
+!.vscode
+
+# Rust ignore
+target/
+
+# nodejs 
+!.mocharc.yaml
+
+# nodejs - Ignore node build files
+node_modules/
+npm-debug.log
+report.*.json
+
+
+# Ignore dist/ folders
+dist/
+
+# Safety net
+*.parquet
+*.map
+*.jpeg
+*.jpg
+*.png
+*.zip
+*.gz
+*.tar
+*.tgz
+*.mov
+*.mp4

@@ -1,0 +1,20 @@
+[package]
+name = "modql"
+version = "0.0.1"
+authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
+edition = "2021"
+license = "MIT OR Apache-2.0"
+description = "Rust implementation for Model Query Language support"
+categories = ["data-structures"]
+keywords = [
+	"query-language",
+	"model",
+	"data-model",
+	"graphql"
+]
+homepage = "https://github.com/modql/rust-modql"
+repository = "https://github.com/modql/rust-modql"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
