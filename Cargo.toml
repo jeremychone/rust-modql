@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.0.3-SNAPSHOT.1"
+version = "0.0.3"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -16,9 +16,16 @@ homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[workspace]
+members = [".", "modql-macros"]
+
 
 [dependencies]
+thiserror = "1"
+modql-macros = { version="0.0.3", path = "modql-macros" }
+serde_json = "1.0"
 
 
-[devDependencies]
+[dev-dependencies]
+anyhow = "1"
 

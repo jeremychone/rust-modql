@@ -1,16 +1,40 @@
-use crate::OpValue;
+use crate::OpVal;
 
-// region:    --- FilterNode
-pub struct FilterNode {
-	pub context_name: Option<String>, // would be for the project.title (project in this case)
-	pub name: String,
-	pub value: FilterNodeValue,
+/// filters: {
+///   "task": {
+///      "type": {"$eq", "bug"},
+///      "ctime": {"$gte", 2022-10-02}
+///   }
+/// }
+///
+///
+/// FilterNode {
+///   name: "task"
+///   node: FilterNode {
+///      name: "type",
+///      opval: OpValue::String(StringOpValue::Eq("bug")),
+///   }
+/// }
+
+pub trait IntoFilterNodes {
+	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;
 }
 
-pub enum FilterNodeValue {
-	/// e.g., [StartsWith("test-"), EndsWith("-suffix")]
-	Conds(Vec<OpValue>),
-	/// e.g., {"project": [{"$startsWith": "test-"}, ...]}
-	Nodes(Vec<FilterNode>),
+// region:    --- FilterNode
+#[derive(Debug)]
+pub struct FilterNode {
+	pub context_path: Option<String>, // would be for the project.title (project in this case)
+	pub name: String,
+	pub opvals: Vec<OpVal>,
+}
+
+impl FilterNode {
+	pub fn new(name: impl Into<String>, opval: impl Into<OpVal>) -> FilterNode {
+		FilterNode {
+			context_path: None,
+			name: name.into(),
+			opvals: vec![opval.into()],
+		}
+	}
 }
 // endregion: --- FilterNode

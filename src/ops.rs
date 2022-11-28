@@ -1,35 +1,136 @@
-pub enum OpValue {
-	String(StringOpValue),
-	Int(IntOpValue),
-	Float(FloatOpValue),
+// region:    --- OpVal and Froms
+#[derive(Debug)]
+pub enum OpVal {
+	String(StringOpVal),
+	Int(IntOpVal),
+	Float(FloatOpVal),
+	Bool(BoolOpVal),
 }
 
-pub enum StringOpValue {
+impl From<IntOpVal> for OpVal {
+	fn from(val: IntOpVal) -> Self {
+		OpVal::Int(val)
+	}
+}
+impl From<FloatOpVal> for OpVal {
+	fn from(val: FloatOpVal) -> Self {
+		OpVal::Float(val)
+	}
+}
+impl From<StringOpVal> for OpVal {
+	fn from(val: StringOpVal) -> Self {
+		OpVal::String(val)
+	}
+}
+impl From<BoolOpVal> for OpVal {
+	fn from(val: BoolOpVal) -> Self {
+		OpVal::Bool(val)
+	}
+}
+
+// endregion: --- OpVal and Froms
+
+// region:    --- OpVal From Eq simple types
+impl From<String> for OpVal {
+	fn from(val: String) -> Self {
+		StringOpVal::Eq(val).into()
+	}
+}
+
+impl From<&str> for OpVal {
+	fn from(val: &str) -> Self {
+		StringOpVal::Eq(val.to_string()).into()
+	}
+}
+
+impl From<i64> for OpVal {
+	fn from(val: i64) -> Self {
+		IntOpVal::Eq(val).into()
+	}
+}
+
+impl From<&i64> for OpVal {
+	fn from(val: &i64) -> Self {
+		IntOpVal::Eq(*val).into()
+	}
+}
+
+impl From<f64> for OpVal {
+	fn from(val: f64) -> Self {
+		FloatOpVal::Eq(val).into()
+	}
+}
+
+impl From<&f64> for OpVal {
+	fn from(val: &f64) -> Self {
+		FloatOpVal::Eq(*val).into()
+	}
+}
+
+impl From<bool> for OpVal {
+	fn from(val: bool) -> Self {
+		BoolOpVal::Eq(val).into()
+	}
+}
+
+impl From<&bool> for OpVal {
+	fn from(val: &bool) -> Self {
+		BoolOpVal::Eq(*val).into()
+	}
+}
+// endregion: --- OpVal From Eq simple types
+
+// region:    --- OpValTypes
+#[derive(Debug)]
+pub struct StringOpVals(pub Vec<StringOpVal>);
+
+#[derive(Debug)]
+pub enum StringOpVal {
 	Eq(String),
-	Not(String),
 	In(Vec<String>),
+	Not(String),
 	NotIn(Vec<String>),
+
 	Lt(String),
 	Lte(String),
 	Gt(String),
 	Gte(String),
+
 	Empty(bool),
 
 	Contains(String),
-	NotContains(String),
 	ContainsIn(Vec<String>),
+	NotContains(String),
 	NotContainsIn(Vec<String>),
+
 	StartsWith(String),
-	NotStartsWith(String),
 	StartsWithIn(Vec<String>),
+	NotStartsWith(String),
 	NotStartsWithIn(Vec<String>),
+
 	EndsWith(String),
-	NotEndsWith(String),
 	EndsWithIn(Vec<String>),
+	NotEndsWith(String),
 	NotEndsWithIn(Vec<String>),
 }
 
-pub enum IntOpValue {
+impl From<String> for StringOpVal {
+	fn from(val: String) -> Self {
+		StringOpVal::Eq(val)
+	}
+}
+
+impl From<&str> for StringOpVal {
+	fn from(val: &str) -> Self {
+		StringOpVal::Eq(val.to_string())
+	}
+}
+
+#[derive(Debug)]
+pub struct IntOpVals(pub Vec<IntOpVal>);
+
+#[derive(Debug)]
+pub enum IntOpVal {
 	Eq(i64),
 	Not(i64),
 	In(Vec<i64>),
@@ -41,7 +142,23 @@ pub enum IntOpValue {
 	Empty(bool),
 }
 
-pub enum FloatOpValue {
+impl From<i64> for IntOpVal {
+	fn from(val: i64) -> Self {
+		IntOpVal::Eq(val)
+	}
+}
+
+impl From<&i64> for IntOpVal {
+	fn from(val: &i64) -> Self {
+		IntOpVal::Eq(*val)
+	}
+}
+
+#[derive(Debug)]
+pub struct FloatOpVals(pub Vec<FloatOpVal>);
+
+#[derive(Debug)]
+pub enum FloatOpVal {
 	Eq(f64),
 	Not(f64),
 	In(Vec<f64>),
@@ -52,3 +169,68 @@ pub enum FloatOpValue {
 	Gte(f64),
 	Empty(bool),
 }
+
+impl From<f64> for FloatOpVal {
+	fn from(val: f64) -> Self {
+		FloatOpVal::Eq(val)
+	}
+}
+
+impl From<&f64> for FloatOpVal {
+	fn from(val: &f64) -> Self {
+		FloatOpVal::Eq(*val)
+	}
+}
+
+#[derive(Debug)]
+pub struct BoolOpVals(pub Vec<BoolOpVal>);
+
+#[derive(Debug)]
+pub enum BoolOpVal {
+	Eq(bool),
+	Not(bool),
+}
+
+impl From<bool> for BoolOpVal {
+	fn from(val: bool) -> Self {
+		BoolOpVal::Eq(val)
+	}
+}
+
+impl From<&bool> for BoolOpVal {
+	fn from(val: &bool) -> Self {
+		BoolOpVal::Eq(*val)
+	}
+}
+// endregion: --- OpValTypes
+
+// region:    --- From OpValType for OpVals
+// Convenient implementation when single constrains.
+
+// Common implementation
+/// Takes for each pair will do the from for
+macro_rules! from_for_opvals {
+	($($t:ident, $o:ident),*) => {
+		$(
+			impl From<$t> for $o {
+				fn from(val: $t) -> Self {
+					$o(vec![val])
+				}
+			}
+		)*
+	};
+}
+
+// For all opvals (must specified the pair as macro rules are hygienic)
+from_for_opvals!(
+	StringOpVal,
+	StringOpVals,
+	IntOpVal,
+	IntOpVals,
+	FloatOpVal,
+	FloatOpVals,
+	BoolOpVal,
+	BoolOpVals
+);
+
+// endregion: --- From OpValType for OpVals
