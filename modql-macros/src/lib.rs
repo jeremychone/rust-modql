@@ -18,8 +18,8 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 
 	//// Properties to be collected
 	let mut props: Vec<&Option<Ident>> = Vec::new(); // not needed for now.
-	let mut props_opt_idents: Vec<&Ident> = Vec::new();
-	let mut props_opt_contexts: Vec<proc_macro2::TokenStream> = Vec::new();
+	let mut prop_opval_idents: Vec<&Ident> = Vec::new();
+	let mut props_opval_contexts: Vec<proc_macro2::TokenStream> = Vec::new();
 
 	for field in fields.named.iter() {
 		// NOTE: By macro limitation, we can do only type name match and it would not support type alias
@@ -27,9 +27,10 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 		//       We can add other variants of Option if proven needed
 		let type_name = get_type_name(field);
 
-		if type_name.starts_with("Option ") {
+		// NOTE: For now only convert the properties of types with option and OpVal
+		if type_name.starts_with("Option ") && type_name.contains("OpVal") {
 			if let Some(ident) = field.ident.as_ref() {
-				props_opt_idents.push(ident);
+				prop_opval_idents.push(ident);
 				let block = if let Some(ctx) = extract_context_attr_value(field) {
 					quote! {
 						Some(#ctx.to_string())
@@ -40,7 +41,7 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 					}
 				};
 
-				props_opt_contexts.push(block);
+				props_opval_contexts.push(block);
 			}
 		} else {
 			props.push(&field.ident);
@@ -56,10 +57,10 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 
 	let ff_opt_pushes = quote! {
 		#(
-			if let Some(val) = self.#props_opt_idents {
+			if let Some(val) = self.#prop_opval_idents {
 				let node = modql::FilterNode {
-					context_path: #props_opt_contexts,
-					name: stringify!(#props_opt_idents).to_string(),
+					context_path: #props_opval_contexts,
+					name: stringify!(#prop_opval_idents).to_string(),
 					opvals: val.0.into_iter().map(|n| n.into()).collect(),
 				};
 				nodes.push(node);
@@ -87,10 +88,21 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 		}
 	};
 
+	//// Out code for from struct for OrGroups
+	let out_into_op_groups = quote! {
+		impl From<#struct_name> for modql::OrGroups {
+			fn from(val: #struct_name) -> Self {
+				let nodes: Vec<modql::FilterNode> = val.into();
+				nodes.into()
+			}
+		}
+	};
+
 	//// Final out code
 	let output = quote! {
 		#out_impl_into_filter_nodes
 		#out_into_filter_node
+		#out_into_op_groups
 	};
 
 	output.into()
@@ -115,7 +127,7 @@ pub fn derives_from_json(input: TokenStream) -> TokenStream {
 		//       We can add other variants of Option if proven needed
 		let type_name = get_type_name(field);
 
-		if type_name.starts_with("Option ") {
+		if type_name.starts_with("Option ") && type_name.contains("OpVal") {
 			if let Some(ident) = field.ident.as_ref() {
 				props_opt_idents.push(ident);
 				let block = if let Some(ctx) = extract_context_attr_value(field) {
