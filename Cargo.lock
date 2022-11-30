@@ -16,7 +16,7 @@ checksum = "4217ad341ebadf8d8e724e264f13e593e0648f5b3e94b3896a5df283be015ecc"
 
 [[package]]
 name = "modql"
-version = "0.0.3"
+version = "0.0.4-SNAPSHOT"
 dependencies = [
  "anyhow",
  "modql-macros",
