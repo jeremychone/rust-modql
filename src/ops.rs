@@ -93,24 +93,28 @@ pub enum StringOpVal {
 
 	Lt(String),
 	Lte(String),
+
 	Gt(String),
 	Gte(String),
 
 	Empty(bool),
 
 	Contains(String),
-	ContainsIn(Vec<String>),
 	NotContains(String),
+
+	ContainsIn(Vec<String>),
 	NotContainsIn(Vec<String>),
 
 	StartsWith(String),
-	StartsWithIn(Vec<String>),
 	NotStartsWith(String),
+
+	StartsWithIn(Vec<String>),
 	NotStartsWithIn(Vec<String>),
 
 	EndsWith(String),
-	EndsWithIn(Vec<String>),
 	NotEndsWith(String),
+
+	EndsWithIn(Vec<String>),
 	NotEndsWithIn(Vec<String>),
 }
 
@@ -205,16 +209,15 @@ impl From<&bool> for BoolOpVal {
 // endregion: --- OpValTypes
 
 // region:    --- From OpValType for OpVals
-// Convenient implementation when single constrains.
+// Convenient implementation when single constraints.
 
 // Common implementation
-/// Takes for each pair will do the from for
-macro_rules! from_for_opvals {
-	($($t:ident, $o:ident),*) => {
+macro_rules! impl_from_for_opvals {
+	($($ov:ident, $ovs:ident),*) => {
 		$(
-			impl From<$t> for $o {
-				fn from(val: $t) -> Self {
-					$o(vec![val])
+			impl From<$ov> for $ovs {
+				fn from(val: $ov) -> Self {
+					$ovs(vec![val])
 				}
 			}
 		)*
@@ -222,7 +225,7 @@ macro_rules! from_for_opvals {
 }
 
 // For all opvals (must specified the pair as macro rules are hygienic)
-from_for_opvals!(
+impl_from_for_opvals!(
 	StringOpVal,
 	StringOpVals,
 	IntOpVal,
