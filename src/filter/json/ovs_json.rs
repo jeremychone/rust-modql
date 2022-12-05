@@ -3,7 +3,7 @@ use serde_json::{Number, Value};
 use crate::{BoolOpVal, BoolOpVals, Error, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
 
 /// Trait to go from a `operator?: Value` to the appropriate OpValue.
-pub trait FromJsonOpValue {
+pub(super) trait FromJsonOpValue {
 	/// e.g., `"name": "Hello World"`
 	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
 	where

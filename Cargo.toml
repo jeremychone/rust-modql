@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -22,7 +22,7 @@ members = [".", "modql-macros"]
 
 [dependencies]
 thiserror = "1"
-modql-macros = { version="0.0.4", path = "modql-macros" }
+modql-macros = { version="0.0.5", path = "modql-macros" }
 serde_json = "1.0"
 serde = { version = "1", features = ["derive"] }
 

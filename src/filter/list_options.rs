@@ -1,4 +1,4 @@
-use crate::OrderBys;
+use super::order_by::OrderBys;
 
 #[derive(Default, Debug)]
 pub struct ListOptions {

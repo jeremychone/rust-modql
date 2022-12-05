@@ -1,14 +1,11 @@
 #![allow(unused)]
 mod error;
-mod filters;
+mod filter;
 mod includes;
-mod json;
-mod list_options;
-mod ops;
-mod order_by;
 
+// --- Re-exports
 pub use crate::error::Error;
-pub use crate::filters::*;
+pub use crate::filter::*;
 pub use crate::includes::*;
 pub use crate::list_options::*;
 pub use crate::ops::*;

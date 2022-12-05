@@ -37,7 +37,6 @@ fn test_des_string_map() -> anyhow::Result<()> {
 }"#;
 
 	let my_filter: MyFilter = serde_json::from_str(json)?;
-	println!("->> {my_filter:?}");
 
 	let mut nodes = my_filter.filter_nodes(None);
 
@@ -47,8 +46,6 @@ fn test_des_string_map() -> anyhow::Result<()> {
 	assert_eq!(format!("{:?}", node.opvals[0]), "String(Contains(\"World\"))");
 	assert_eq!(format!("{:?}", node.opvals[1]), "String(StartsWith(\"Hello\"))");
 	// assert_eq!(node.opvals[0])
-
-	println!("->> {first}");
 
 	Ok(())
 }

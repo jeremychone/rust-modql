@@ -1,7 +1,7 @@
-Coming soon
+**STATUS** Still experimental.
 
-**modql** will be the Rust implementation for **Model Query Language** support. 
+**ModQL** Rust implementation for **Model Query Language** support. 
 
-tl;dr - A language agnostic scheme to query full data model. 
+tl;dr - **ModQL** is a normalized declarative model agnostic language.  
 
 See [joql](http://joql.org) for the JSON Representation of **modql**

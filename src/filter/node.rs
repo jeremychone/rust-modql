@@ -1,4 +1,4 @@
-use crate::OpVal;
+use super::ops::OpVal;
 
 pub trait IntoFilterNodes {
 	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;
