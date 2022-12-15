@@ -1,4 +1,4 @@
-#![allow(unused)] // silence unused warnings while exploring (to comment out)
+//! Should compile. No test functions yet.
 
 use modql::{FilterNodes, IntOpVals, StringOpVals};
 

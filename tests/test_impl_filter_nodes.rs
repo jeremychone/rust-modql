@@ -1,12 +1,6 @@
-#![allow(unused)] // silence unused warnings while exploring (to comment out)
+//! Should compile. No test functions yet.
 
-use modql::{FilterNode, IncludeNode, IncludeValue, Includes, IntOpVal, IntoFilterNodes, StringOpVal, StringOpVals};
-
-pub struct Task {
-	project_id: i64,
-	title: String,
-	kind: String,
-}
+use modql::{FilterNode, IntOpVal, IntoFilterNodes, StringOpVal, StringOpVals};
 
 pub struct ProjectFilter {
 	id: Option<Vec<IntOpVal>>,
@@ -39,8 +33,26 @@ impl IntoFilterNodes for ProjectFilter {
 	}
 }
 
+#[allow(unused)]
 pub struct TaskFilter {
 	project: Option<ProjectFilter>,
 	title: Option<StringOpVals>,
 	kind: Option<StringOpVals>,
+}
+
+impl IntoFilterNodes for TaskFilter {
+	fn filter_nodes(self, context: Option<String>) -> Vec<FilterNode> {
+		let mut nodes = Vec::new();
+
+		if let Some(title) = self.title {
+			let node = FilterNode {
+				context_path: context,
+				name: "title".to_string(),
+				opvals: title.0.into_iter().map(|n| n.into()).collect(),
+			};
+			nodes.push(node)
+		}
+
+		nodes
+	}
 }

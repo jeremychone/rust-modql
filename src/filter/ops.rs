@@ -1,4 +1,14 @@
-// region:    --- OpVal and Froms
+//! Module for all the Operator Value types.
+//!
+//! - `OpVal` is the unit Operator Value enum, for a single operator and single value.
+//!    The Variant are represent the [Type]OvVal
+//!
+//! - `[Type]OpVal` (e.g., `StringOpVal`) is the Operator and Value for a specific main type (String, Int, Float, Bool for now)
+//!
+//! -
+//!
+
+// region:    --- OpVal and From<[Type]OpVal>
 #[derive(Debug)]
 pub enum OpVal {
 	String(StringOpVal),
@@ -28,9 +38,9 @@ impl From<BoolOpVal> for OpVal {
 	}
 }
 
-// endregion: --- OpVal and Froms
+// endregion: --- OpVal and From<[Type]OpVal>
 
-// region:    --- OpVal From Eq simple types
+// region:    --- From<scalar> to OpVal
 impl From<String> for OpVal {
 	fn from(val: String) -> Self {
 		StringOpVal::Eq(val).into()
@@ -78,9 +88,9 @@ impl From<&bool> for OpVal {
 		BoolOpVal::Eq(*val).into()
 	}
 }
-// endregion: --- OpVal From Eq simple types
+// endregion: --- From<scalar> to OpVal
 
-// region:    --- OpValTypes
+// region:    --- [Type]OpVal and [Type]OpVals
 #[derive(Debug)]
 pub struct StringOpVals(pub Vec<StringOpVal>);
 
@@ -206,9 +216,10 @@ impl From<&bool> for BoolOpVal {
 		BoolOpVal::Eq(*val)
 	}
 }
-// endregion: --- OpValTypes
+// endregion: --- [Type]OpVal and [Type]OpVals
 
-// region:    --- From OpValType for OpVals
+// region:    --- From [Type]OpVal to [Type]OpVals
+
 // Convenient implementation when single constraints.
 
 // Common implementation
@@ -236,4 +247,4 @@ impl_from_for_opvals!(
 	BoolOpVals
 );
 
-// endregion: --- From OpValType for OpVals
+// endregion: --- From [Type]OpVal to [Type]OpVals

@@ -1,5 +1,3 @@
-#![allow(unused)] // silence unused warnings while exploring (to comment out)
-
 use modql::{FilterNodes, IntOpVals, IntoFilterNodes, StringOpVals};
 use serde::Deserialize;
 use serde_json::Value;
@@ -42,7 +40,6 @@ fn test_des_string_map() -> anyhow::Result<()> {
 
 	assert_eq!(nodes.len(), 1, "number of filter node should be 1");
 	let node = nodes.pop().unwrap();
-	let first = format!("{:?}", node.opvals[0]);
 	assert_eq!(format!("{:?}", node.opvals[0]), "String(Contains(\"World\"))");
 	assert_eq!(format!("{:?}", node.opvals[1]), "String(StartsWith(\"Hello\"))");
 	// assert_eq!(node.opvals[0])
