@@ -2,13 +2,19 @@
 
 use serde_json::Value;
 
-#[derive(thiserror::Error, Debug)]
+#[derive(Debug)]
 pub enum Error {
 	// region:    --- Json Errors
-	#[error("Json Value is not of type '{0}'")]
 	JsonValNotOfType(&'static str),
 
-	#[error("Json OpVal not supported: {0}:{1:?}")]
 	JsonOpValNotSupported(String, Value),
 	// endregion: --- Json Errors
 }
+
+impl std::fmt::Display for Error {
+	fn fmt(&self, fmt: &mut std::fmt::Formatter) -> core::result::Result<(), std::fmt::Error> {
+		write!(fmt, "{self:?}")
+	}
+}
+
+impl std::error::Error for Error {}
