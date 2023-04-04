@@ -88,9 +88,9 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 		}
 	};
 
-	//// Out code for from struct for OrGroups
+	//// Out code for from struct for FilterGroups
 	let out_into_op_groups = quote! {
-		impl From<#struct_name> for modql::OrGroups {
+		impl From<#struct_name> for modql::FilterGroups {
 			fn from(val: #struct_name) -> Self {
 				let nodes: Vec<modql::FilterNode> = val.into();
 				nodes.into()

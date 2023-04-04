@@ -31,6 +31,7 @@ impl FromJsonOpValue for StringOpVal {
 	where
 		Self: Sized,
 	{
+		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
 			("$eq", Value::String(string_v)) => StringOpVal::Eq(string_v),
 			("$not", Value::String(string_v)) => StringOpVal::Not(string_v),
@@ -74,6 +75,7 @@ impl FromJsonOpValue for IntOpVal {
 	where
 		Self: Sized,
 	{
+		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
 			("$eq", Value::Number(num)) => IntOpVal::Eq(as_i64(num)?),
 			("$not", Value::Number(num)) => IntOpVal::Not(as_i64(num)?),
@@ -109,6 +111,7 @@ impl FromJsonOpValue for FloatOpVal {
 	where
 		Self: Sized,
 	{
+		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
 			("$eq", Value::Number(num)) => FloatOpVal::Eq(as_f64(num)?),
 			("$not", Value::Number(num)) => FloatOpVal::Not(as_f64(num)?),
