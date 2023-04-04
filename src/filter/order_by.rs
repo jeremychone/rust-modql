@@ -10,14 +10,14 @@ impl fmt::Display for OrderBy {
 	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
 		match self {
 			OrderBy::Asc(val) => {
-				fmt.write_str(val);
-				fmt.write_str(" ");
-				fmt.write_str("ASC");
+				fmt.write_str(val)?;
+				fmt.write_str(" ")?;
+				fmt.write_str("ASC")?;
 			}
 			OrderBy::Desc(val) => {
-				fmt.write_str(val);
-				fmt.write_str(" ");
-				fmt.write_str("DESC");
+				fmt.write_str(val)?;
+				fmt.write_str(" ")?;
+				fmt.write_str("DESC")?;
 			}
 		};
 

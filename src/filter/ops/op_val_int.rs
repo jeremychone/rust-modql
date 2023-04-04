@@ -1,4 +1,4 @@
-use crate::OpVal;
+use crate::filter::OpVal;
 
 #[derive(Debug)]
 pub struct IntOpVals(pub Vec<IntOpVal>);
@@ -58,7 +58,7 @@ impl IntOpVal {
 	pub fn is_match(&self, t_val: i64) -> bool {
 		use IntOpVal::*;
 
-		match (self) {
+		match self {
 			Eq(p_val) => &t_val == p_val,
 			Not(p_val) => &t_val != p_val,
 			In(p_vals) => p_vals.iter().any(|p_val| &t_val == p_val),
@@ -67,7 +67,7 @@ impl IntOpVal {
 			Lte(p_val) => &t_val <= p_val,
 			Gt(p_val) => &t_val > p_val,
 			Gte(p_val) => &t_val >= p_val,
-			Empty(p_val) => false, // always false per this function signature.
+			Empty(_) => false, // always false per this function signature.
 		}
 	}
 }

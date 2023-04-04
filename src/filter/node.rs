@@ -1,5 +1,5 @@
 use super::ops::OpVal;
-use crate::{BoolOpVal, FloatOpVal, IntOpVal, StringOpVal};
+use crate::filter::{BoolOpVal, FloatOpVal, IntOpVal, StringOpVal};
 
 pub trait IntoFilterNodes {
 	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;

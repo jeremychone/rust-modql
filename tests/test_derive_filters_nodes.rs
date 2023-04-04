@@ -1,6 +1,6 @@
 //! Should compile. No test functions yet.
 
-use modql::{FilterNodes, IntOpVals, StringOpVals};
+use modql::filter::{FilterNodes, IntOpVals, StringOpVals};
 
 #[derive(FilterNodes)]
 pub struct ProjectFilter {

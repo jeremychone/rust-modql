@@ -1,4 +1,4 @@
-use modql::{FilterNodes, IntOpVals, IntoFilterNodes, StringOpVals};
+use modql::filter::{FilterNodes, IntOpVals, IntoFilterNodes, StringOpVals};
 use serde::Deserialize;
 use serde_json::Value;
 

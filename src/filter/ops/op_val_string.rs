@@ -1,4 +1,4 @@
-use crate::OpVal;
+use crate::filter::OpVal;
 
 #[derive(Debug)]
 pub struct StringOpVals(pub Vec<StringOpVal>);
@@ -80,7 +80,7 @@ impl StringOpVal {
 	pub fn is_match(&self, t_val: &str) -> bool {
 		use StringOpVal::*;
 
-		match (self) {
+		match self {
 			Eq(p_val) => t_val == p_val,
 			Not(p_val) => t_val != p_val,
 			In(p_vals) => p_vals.iter().any(|p_val| t_val == p_val),

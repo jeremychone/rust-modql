@@ -1,7 +1,6 @@
 use super::ovs_json::FromJsonOpValue;
-use crate::{FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
-use serde::ser::SerializeMap;
-use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer, Serialize, Serializer};
+use crate::filter::{FloatOpVal, FloatOpVals, IntOpVal, IntOpVals};
+use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer};
 use serde_json::Value;
 use std::fmt;
 

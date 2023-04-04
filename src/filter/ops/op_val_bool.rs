@@ -1,4 +1,4 @@
-use crate::OpVal;
+use crate::filter::OpVal;
 
 #[derive(Debug)]
 pub struct BoolOpVals(pub Vec<BoolOpVal>);
@@ -52,10 +52,10 @@ impl BoolOpVal {
 	pub fn is_match(&self, t_val: bool) -> bool {
 		use BoolOpVal::*;
 
-		match (self) {
+		match self {
 			Eq(p_val) => &t_val == p_val,
 			Not(p_val) => &t_val != p_val,
-			Empty(p_val) => false, // always false per this function signature.
+			Empty(_) => false, // always false per this function signature.
 		}
 	}
 }

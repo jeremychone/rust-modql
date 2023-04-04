@@ -1,4 +1,4 @@
-use crate::{FilterGroups, FilterNode, OpVal};
+use crate::filter::{FilterGroups, FilterNode, OpVal};
 use serde_json::Value;
 
 mod ovs_de_bool;

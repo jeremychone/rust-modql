@@ -1,9 +1,9 @@
-#![allow(unused)]
+// #![allow(unused)]
 // extern crate proc_macro; // might not be needed.
 
 use proc_macro::TokenStream;
-use quote::{quote, ToTokens};
-use syn::{parse_macro_input, DeriveInput, Field, Ident};
+use quote::quote;
+use syn::{parse_macro_input, DeriveInput, Ident};
 use utils::{extract_context_attr_value, get_struct_fields, get_type_name};
 
 mod utils;
@@ -49,16 +49,16 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 	}
 
 	//// Generate each type of .pushes code block
-	let ff_pushes = quote! {
-		#(
-			ff.push((stringify!(#props), self.#props.clone()).into());
-		)*
-	};
+	// let ff_pushes = quote! {
+	// 	#(
+	// 		ff.push((stringify!(#props), self.#props.clone()).into());
+	// 	)*
+	// };
 
 	let ff_opt_pushes = quote! {
 		#(
 			if let Some(val) = self.#prop_opval_idents {
-				let node = modql::FilterNode {
+				let node = modql::filter::FilterNode {
 					context_path: #props_opval_contexts,
 					name: stringify!(#prop_opval_idents).to_string(),
 					opvals: val.0.into_iter().map(|n| n.into()).collect(),
@@ -70,8 +70,8 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 
 	//// Out code for the impl IntoFilterNodes
 	let out_impl_into_filter_nodes = quote! {
-		impl modql::IntoFilterNodes for #struct_name {
-			fn filter_nodes(self, context: Option<String>) -> Vec<modql::FilterNode> {
+		impl modql::filter::IntoFilterNodes for #struct_name {
+			fn filter_nodes(self, context: Option<String>) -> Vec<modql::filter::FilterNode> {
 				let mut nodes = Vec::new();
 				#ff_opt_pushes
 				nodes
@@ -81,18 +81,18 @@ pub fn derives_filter_nodes(input: TokenStream) -> TokenStream {
 
 	//// Out code for the from struct for Vec<FilterNode>
 	let out_into_filter_node = quote! {
-		impl From<#struct_name> for Vec<modql::FilterNode> {
+		impl From<#struct_name> for Vec<modql::filter::FilterNode> {
 			fn from(val: #struct_name) -> Self {
-				modql::IntoFilterNodes::filter_nodes(val, None)
+				modql::filter::IntoFilterNodes::filter_nodes(val, None)
 			}
 		}
 	};
 
 	//// Out code for from struct for FilterGroups
 	let out_into_op_groups = quote! {
-		impl From<#struct_name> for modql::FilterGroups {
+		impl From<#struct_name> for modql::filter::FilterGroups {
 			fn from(val: #struct_name) -> Self {
-				let nodes: Vec<modql::FilterNode> = val.into();
+				let nodes: Vec<modql::filter::FilterNode> = val.into();
 				nodes.into()
 			}
 		}

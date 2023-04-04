@@ -1,5 +1,5 @@
 use quote::ToTokens;
-use syn::{parse_macro_input, Data, DeriveInput, Field, FieldsNamed, Ident};
+use syn::{DeriveInput, Field, FieldsNamed};
 
 /// Returns the fields named of a struct
 pub(crate) fn get_struct_fields(ast: &DeriveInput) -> &FieldsNamed {

@@ -1,6 +1,6 @@
 //! Should compile. No test functions yet.
 
-use modql::{FilterNode, IntOpVal, IntoFilterNodes, StringOpVal, StringOpVals};
+use modql::filter::{FilterNode, IntOpVal, IntoFilterNodes, StringOpVal, StringOpVals};
 
 pub struct ProjectFilter {
 	id: Option<Vec<IntOpVal>>,

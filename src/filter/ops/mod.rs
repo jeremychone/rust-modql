@@ -1,4 +1,4 @@
-use crate::{BoolOpVal, BoolOpVals, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
+use crate::filter::{BoolOpVal, BoolOpVals, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
 
 pub mod op_val_bool;
 pub mod op_val_float;

@@ -1,23 +1,23 @@
+use crate::filter::{BoolOpVal, BoolOpVals, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
+use crate::{Error, Result};
 use serde_json::{Number, Value};
-
-use crate::{BoolOpVal, BoolOpVals, Error, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
 
 /// Trait to go from a `operator?: Value` to the appropriate OpValue.
 pub(super) trait FromJsonOpValue {
 	/// e.g., `"name": "Hello World"`
-	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
+	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized;
 
 	/// e.g., `{"$contains": "World", "$startsWith": "Hello"}
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self, Error>
+	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized;
 }
 
 // region:    --- StringOpVal
 impl FromJsonOpValue for StringOpVal {
-	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
+	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -27,7 +27,7 @@ impl FromJsonOpValue for StringOpVal {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self, Error>
+	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -61,7 +61,7 @@ impl FromJsonOpValue for StringOpVal {
 // region:    --- IntOpVal
 /// match a the op_value
 impl FromJsonOpValue for IntOpVal {
-	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
+	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -71,7 +71,7 @@ impl FromJsonOpValue for IntOpVal {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self, Error>
+	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -97,7 +97,7 @@ impl FromJsonOpValue for IntOpVal {
 // region:    --- FloatOpVal
 /// match a the op_value
 impl FromJsonOpValue for FloatOpVal {
-	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
+	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -107,7 +107,7 @@ impl FromJsonOpValue for FloatOpVal {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self, Error>
+	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -125,7 +125,7 @@ impl FromJsonOpValue for FloatOpVal {
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
 
-		todo!()
+		Ok(ov)
 	}
 }
 // endregion: --- FloatOpVal
@@ -133,7 +133,7 @@ impl FromJsonOpValue for FloatOpVal {
 // region:    --- BoolOpVal
 /// match a the op_value
 impl FromJsonOpValue for BoolOpVal {
-	fn from_json_scalar_value(value: Value) -> Result<Self, Error>
+	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -143,7 +143,7 @@ impl FromJsonOpValue for BoolOpVal {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self, Error>
+	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -153,7 +153,7 @@ impl FromJsonOpValue for BoolOpVal {
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
 
-		todo!()
+		Ok(ov)
 	}
 }
 // endregion: --- BoolOpVal
@@ -167,7 +167,7 @@ macro_rules! impl_try_from_value_for_opvals {
 impl TryFrom<Value> for $ovs {
 	type Error = Error;
 
-	fn try_from(value: Value) -> Result<Self, Error> {
+	fn try_from(value: Value) -> Result<Self> {
 		let mut ovs = Vec::new();
 
 		match value {
@@ -207,11 +207,11 @@ impl_try_from_value_for_opvals!(
 // endregion: --- TryFrom<Value> for OpVals
 
 // region:    --- Helpers
-fn as_i64(num: Number) -> Result<i64, Error> {
+fn as_i64(num: Number) -> Result<i64> {
 	num.as_i64().ok_or(Error::JsonValNotOfType("i64"))
 }
 
-fn as_f64(num: Number) -> Result<f64, Error> {
+fn as_f64(num: Number) -> Result<f64> {
 	num.as_f64().ok_or(Error::JsonValNotOfType("f64"))
 }
 // endregion: --- Helpers
