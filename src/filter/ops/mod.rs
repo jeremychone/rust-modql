@@ -18,7 +18,7 @@ pub enum OpVal {
 
 // endregion: --- OpVal
 
-// region:    --- From [Type]OpVal to [Type]OpVals
+// region:    --- From [Type]OpVal & Vec<[Type]OpVal> to [Type]OpVals
 
 // Convenient implementation when single constraints.
 // Common implementation
@@ -28,6 +28,12 @@ macro_rules! impl_from_for_opvals {
 			impl From<$ov> for $ovs {
 				fn from(val: $ov) -> Self {
 					$ovs(vec![val])
+				}
+			}
+
+			impl From<Vec<$ov>> for $ovs {
+				fn from(val: Vec<$ov>) -> Self {
+					$ovs(val)
 				}
 			}
 		)*
@@ -46,4 +52,4 @@ impl_from_for_opvals!(
 	OpValsBool
 );
 
-// endregion: --- From [Type]OpVal to [Type]OpVals
+// endregion: --- From [Type]OpVal & Vec<[Type]OpVal> to [Type]OpVals
