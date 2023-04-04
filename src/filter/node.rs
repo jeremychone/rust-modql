@@ -1,5 +1,5 @@
 use super::ops::OpVal;
-use crate::filter::{BoolOpVal, FloatOpVal, IntOpVal, StringOpVal};
+use crate::filter::{OpValBool, OpValFloat64, OpValInt64, OpValString};
 
 pub trait IntoFilterNodes {
 	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;
@@ -54,14 +54,14 @@ macro_rules! impl_from_tuple {
 		)+
 	};
 }
-impl_from_tuple!(StringOpVal, IntOpVal, FloatOpVal, BoolOpVal);
+impl_from_tuple!(OpValString, OpValInt64, OpValFloat64, OpValBool);
 
 impl From<(&str, i64)> for FilterNode {
 	fn from((name, ov): (&str, i64)) -> Self {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![IntOpVal::Eq(ov).into()],
+			opvals: vec![OpValInt64::Eq(ov).into()],
 		}
 	}
 }
@@ -71,7 +71,7 @@ impl From<(&str, f64)> for FilterNode {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![FloatOpVal::Eq(ov).into()],
+			opvals: vec![OpValFloat64::Eq(ov).into()],
 		}
 	}
 }
@@ -81,7 +81,7 @@ impl From<(&str, bool)> for FilterNode {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![BoolOpVal::Eq(ov).into()],
+			opvals: vec![OpValBool::Eq(ov).into()],
 		}
 	}
 }
@@ -91,7 +91,7 @@ impl From<(&str, &str)> for FilterNode {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![StringOpVal::Eq(ov.to_string()).into()],
+			opvals: vec![OpValString::Eq(ov.to_string()).into()],
 		}
 	}
 }
@@ -101,7 +101,7 @@ impl From<(&str, &String)> for FilterNode {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![StringOpVal::Eq(ov.to_string()).into()],
+			opvals: vec![OpValString::Eq(ov.to_string()).into()],
 		}
 	}
 }
@@ -111,7 +111,7 @@ impl From<(&str, String)> for FilterNode {
 		Self {
 			context_path: None,
 			name: name.to_string(),
-			opvals: vec![StringOpVal::Eq(ov).into()],
+			opvals: vec![OpValString::Eq(ov).into()],
 		}
 	}
 }

@@ -1,10 +1,10 @@
 //! Should compile. No test functions yet.
 
-use modql::filter::{FilterNode, IntOpVal, IntoFilterNodes, StringOpVal, StringOpVals};
+use modql::filter::{FilterNode, IntoFilterNodes, OpValInt64, OpValString, OpValsString};
 
 pub struct ProjectFilter {
-	id: Option<Vec<IntOpVal>>,
-	name: Option<Vec<StringOpVal>>,
+	id: Option<Vec<OpValInt64>>,
+	name: Option<Vec<OpValString>>,
 }
 
 impl IntoFilterNodes for ProjectFilter {
@@ -36,8 +36,8 @@ impl IntoFilterNodes for ProjectFilter {
 #[allow(unused)]
 pub struct TaskFilter {
 	project: Option<ProjectFilter>,
-	title: Option<StringOpVals>,
-	kind: Option<StringOpVals>,
+	title: Option<OpValsString>,
+	kind: Option<OpValsString>,
 }
 
 impl IntoFilterNodes for TaskFilter {

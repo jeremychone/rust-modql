@@ -1,4 +1,6 @@
-use crate::filter::{BoolOpVal, BoolOpVals, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
+use crate::filter::{
+	OpValBool, OpValFloat64, OpValInt64, OpValString, OpValsBool, OpValsFloat64, OpValsInt64, OpValsString,
+};
 
 pub mod op_val_bool;
 pub mod op_val_float;
@@ -8,10 +10,10 @@ pub mod op_val_string;
 // region:    --- OpVal
 #[derive(Debug, Clone)]
 pub enum OpVal {
-	String(StringOpVal),
-	Int(IntOpVal),
-	Float(FloatOpVal),
-	Bool(BoolOpVal),
+	String(OpValString),
+	Int64(OpValInt64),
+	Float64(OpValFloat64),
+	Bool(OpValBool),
 }
 
 // endregion: --- OpVal
@@ -34,14 +36,14 @@ macro_rules! impl_from_for_opvals {
 
 // For all opvals (must specified the pair as macro rules are hygienic)
 impl_from_for_opvals!(
-	StringOpVal,
-	StringOpVals,
-	IntOpVal,
-	IntOpVals,
-	FloatOpVal,
-	FloatOpVals,
-	BoolOpVal,
-	BoolOpVals
+	OpValString,
+	OpValsString,
+	OpValInt64,
+	OpValsInt64,
+	OpValFloat64,
+	OpValsFloat64,
+	OpValBool,
+	OpValsBool
 );
 
 // endregion: --- From [Type]OpVal to [Type]OpVals

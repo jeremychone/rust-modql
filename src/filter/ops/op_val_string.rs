@@ -1,10 +1,10 @@
 use crate::filter::OpVal;
 
 #[derive(Debug)]
-pub struct StringOpVals(pub Vec<StringOpVal>);
+pub struct OpValsString(pub Vec<OpValString>);
 
 #[derive(Debug, Clone)]
-pub enum StringOpVal {
+pub enum OpValString {
 	Eq(String),
 	Not(String),
 
@@ -39,22 +39,22 @@ pub enum StringOpVal {
 }
 
 // region:    --- Primitive to StringOpVal
-impl From<String> for StringOpVal {
+impl From<String> for OpValString {
 	fn from(val: String) -> Self {
-		StringOpVal::Eq(val)
+		OpValString::Eq(val)
 	}
 }
 
-impl From<&str> for StringOpVal {
+impl From<&str> for OpValString {
 	fn from(val: &str) -> Self {
-		StringOpVal::Eq(val.to_string())
+		OpValString::Eq(val.to_string())
 	}
 }
 // endregion: --- Primitive to StringOpVal
 
 // region:    --- StringOpVal to OpVal
-impl From<StringOpVal> for OpVal {
-	fn from(val: StringOpVal) -> Self {
+impl From<OpValString> for OpVal {
+	fn from(val: OpValString) -> Self {
 		OpVal::String(val)
 	}
 }
@@ -63,22 +63,22 @@ impl From<StringOpVal> for OpVal {
 // region:    --- Primitive to OpVal::String(StringOpVal::Eq)
 impl From<String> for OpVal {
 	fn from(val: String) -> Self {
-		StringOpVal::Eq(val).into()
+		OpValString::Eq(val).into()
 	}
 }
 
 impl From<&str> for OpVal {
 	fn from(val: &str) -> Self {
-		StringOpVal::Eq(val.to_string()).into()
+		OpValString::Eq(val.to_string()).into()
 	}
 }
 // endregion: --- Primitive to OpVal::String(StringOpVal::Eq)
 
 // region:    --- is_match
-impl StringOpVal {
+impl OpValString {
 	/// Matches a target value (`t_val`) with the StringOpVal pattern value (`p_val`)
 	pub fn is_match(&self, t_val: &str) -> bool {
-		use StringOpVal::*;
+		use OpValString::*;
 
 		match self {
 			Eq(p_val) => t_val == p_val,

@@ -1,4 +1,6 @@
-use crate::filter::{BoolOpVal, BoolOpVals, FloatOpVal, FloatOpVals, IntOpVal, IntOpVals, StringOpVal, StringOpVals};
+use crate::filter::{
+	OpValBool, OpValFloat64, OpValInt64, OpValString, OpValsBool, OpValsFloat64, OpValsInt64, OpValsString,
+};
 use crate::{Error, Result};
 use serde_json::{Number, Value};
 
@@ -16,13 +18,13 @@ pub(super) trait FromJsonOpValue {
 }
 
 // region:    --- StringOpVal
-impl FromJsonOpValue for StringOpVal {
+impl FromJsonOpValue for OpValString {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		match value {
-			Value::String(string_v) => Ok(StringOpVal::Eq(string_v)),
+			Value::String(string_v) => Ok(OpValString::Eq(string_v)),
 			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
 		}
 	}
@@ -33,23 +35,23 @@ impl FromJsonOpValue for StringOpVal {
 	{
 		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
-			("$eq", Value::String(string_v)) => StringOpVal::Eq(string_v),
-			("$not", Value::String(string_v)) => StringOpVal::Not(string_v),
+			("$eq", Value::String(string_v)) => OpValString::Eq(string_v),
+			("$not", Value::String(string_v)) => OpValString::Not(string_v),
 
-			("$contains", Value::String(string_v)) => StringOpVal::Contains(string_v),
-			("$notContains", Value::String(string_v)) => StringOpVal::NotContains(string_v),
+			("$contains", Value::String(string_v)) => OpValString::Contains(string_v),
+			("$notContains", Value::String(string_v)) => OpValString::NotContains(string_v),
 
-			("$startsWith", Value::String(string_v)) => StringOpVal::StartsWith(string_v),
-			("$notStartsWith", Value::String(string_v)) => StringOpVal::NotStartsWith(string_v),
+			("$startsWith", Value::String(string_v)) => OpValString::StartsWith(string_v),
+			("$notStartsWith", Value::String(string_v)) => OpValString::NotStartsWith(string_v),
 
-			("$endsWith", Value::String(string_v)) => StringOpVal::EndsWith(string_v),
-			("$notEndsWith", Value::String(string_v)) => StringOpVal::NotEndsWith(string_v),
+			("$endsWith", Value::String(string_v)) => OpValString::EndsWith(string_v),
+			("$notEndsWith", Value::String(string_v)) => OpValString::NotEndsWith(string_v),
 
-			("$lt", Value::String(string_v)) => StringOpVal::Lt(string_v),
-			("$lte", Value::String(string_v)) => StringOpVal::Lte(string_v),
+			("$lt", Value::String(string_v)) => OpValString::Lt(string_v),
+			("$lte", Value::String(string_v)) => OpValString::Lte(string_v),
 
-			("$gt", Value::String(string_v)) => StringOpVal::Gt(string_v),
-			("$gte", Value::String(string_v)) => StringOpVal::Gte(string_v),
+			("$gt", Value::String(string_v)) => OpValString::Gt(string_v),
+			("$gte", Value::String(string_v)) => OpValString::Gte(string_v),
 
 			(_, v) => return Err(Error::JsonOpValNotSupported(op.to_string(), v)),
 		};
@@ -60,13 +62,13 @@ impl FromJsonOpValue for StringOpVal {
 
 // region:    --- IntOpVal
 /// match a the op_value
-impl FromJsonOpValue for IntOpVal {
+impl FromJsonOpValue for OpValInt64 {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		match value {
-			Value::Number(num) => Ok(IntOpVal::Eq(as_i64(num)?)),
+			Value::Number(num) => Ok(OpValInt64::Eq(as_i64(num)?)),
 			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
 		}
 	}
@@ -77,14 +79,14 @@ impl FromJsonOpValue for IntOpVal {
 	{
 		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
-			("$eq", Value::Number(num)) => IntOpVal::Eq(as_i64(num)?),
-			("$not", Value::Number(num)) => IntOpVal::Not(as_i64(num)?),
+			("$eq", Value::Number(num)) => OpValInt64::Eq(as_i64(num)?),
+			("$not", Value::Number(num)) => OpValInt64::Not(as_i64(num)?),
 
-			("$lt", Value::Number(num)) => IntOpVal::Lt(as_i64(num)?),
-			("$lte", Value::Number(num)) => IntOpVal::Lte(as_i64(num)?),
+			("$lt", Value::Number(num)) => OpValInt64::Lt(as_i64(num)?),
+			("$lte", Value::Number(num)) => OpValInt64::Lte(as_i64(num)?),
 
-			("$gt", Value::Number(num)) => IntOpVal::Gt(as_i64(num)?),
-			("$gte", Value::Number(num)) => IntOpVal::Gte(as_i64(num)?),
+			("$gt", Value::Number(num)) => OpValInt64::Gt(as_i64(num)?),
+			("$gte", Value::Number(num)) => OpValInt64::Gte(as_i64(num)?),
 
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
@@ -96,13 +98,13 @@ impl FromJsonOpValue for IntOpVal {
 
 // region:    --- FloatOpVal
 /// match a the op_value
-impl FromJsonOpValue for FloatOpVal {
+impl FromJsonOpValue for OpValFloat64 {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		match value {
-			Value::Number(num) => Ok(FloatOpVal::Eq(as_f64(num)?)),
+			Value::Number(num) => Ok(OpValFloat64::Eq(as_f64(num)?)),
 			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
 		}
 	}
@@ -113,14 +115,14 @@ impl FromJsonOpValue for FloatOpVal {
 	{
 		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
-			("$eq", Value::Number(num)) => FloatOpVal::Eq(as_f64(num)?),
-			("$not", Value::Number(num)) => FloatOpVal::Not(as_f64(num)?),
+			("$eq", Value::Number(num)) => OpValFloat64::Eq(as_f64(num)?),
+			("$not", Value::Number(num)) => OpValFloat64::Not(as_f64(num)?),
 
-			("$lt", Value::Number(num)) => FloatOpVal::Lt(as_f64(num)?),
-			("$lte", Value::Number(num)) => FloatOpVal::Lte(as_f64(num)?),
+			("$lt", Value::Number(num)) => OpValFloat64::Lt(as_f64(num)?),
+			("$lte", Value::Number(num)) => OpValFloat64::Lte(as_f64(num)?),
 
-			("$gt", Value::Number(num)) => FloatOpVal::Gt(as_f64(num)?),
-			("$gte", Value::Number(num)) => FloatOpVal::Gte(as_f64(num)?),
+			("$gt", Value::Number(num)) => OpValFloat64::Gt(as_f64(num)?),
+			("$gte", Value::Number(num)) => OpValFloat64::Gte(as_f64(num)?),
 
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
@@ -132,13 +134,13 @@ impl FromJsonOpValue for FloatOpVal {
 
 // region:    --- BoolOpVal
 /// match a the op_value
-impl FromJsonOpValue for BoolOpVal {
+impl FromJsonOpValue for OpValBool {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		match value {
-			Value::Bool(v) => Ok(BoolOpVal::Eq(v)),
+			Value::Bool(v) => Ok(OpValBool::Eq(v)),
 			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
 		}
 	}
@@ -148,8 +150,8 @@ impl FromJsonOpValue for BoolOpVal {
 		Self: Sized,
 	{
 		let ov = match (op, value) {
-			("$eq", Value::Bool(v)) => BoolOpVal::Eq(v),
-			("$not", Value::Bool(v)) => BoolOpVal::Not(v),
+			("$eq", Value::Bool(v)) => OpValBool::Eq(v),
+			("$not", Value::Bool(v)) => OpValBool::Not(v),
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
 
@@ -191,14 +193,14 @@ impl TryFrom<Value> for $ovs {
 
 // For all opvals (must specified the pair as macro rules are hygienic)
 impl_try_from_value_for_opvals!(
-	StringOpVal,
-	StringOpVals,
-	IntOpVal,
-	IntOpVals,
-	FloatOpVal,
-	FloatOpVals,
-	BoolOpVal,
-	BoolOpVals
+	OpValString,
+	OpValsString,
+	OpValInt64,
+	OpValsInt64,
+	OpValFloat64,
+	OpValsFloat64,
+	OpValBool,
+	OpValsBool
 );
 
 // BoolOpVal,

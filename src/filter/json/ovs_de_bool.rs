@@ -1,10 +1,10 @@
 use super::ovs_json::FromJsonOpValue;
-use crate::filter::{BoolOpVal, BoolOpVals};
+use crate::filter::{OpValBool, OpValsBool};
 use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer};
 use serde_json::Value;
 use std::fmt;
 
-impl<'de> Deserialize<'de> for BoolOpVals {
+impl<'de> Deserialize<'de> for OpValsBool {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
 		D: Deserializer<'de>,
@@ -16,7 +16,7 @@ impl<'de> Deserialize<'de> for BoolOpVals {
 struct BoolOpValsVisitor;
 
 impl<'de> Visitor<'de> for BoolOpValsVisitor {
-	type Value = BoolOpVals; // for deserialize
+	type Value = OpValsBool; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
 		write!(formatter, "BoolOpValsVisitor visitor not implemented for this type.")
@@ -26,22 +26,22 @@ impl<'de> Visitor<'de> for BoolOpValsVisitor {
 	where
 		E: serde::de::Error,
 	{
-		Ok(BoolOpVal::Eq(v).into())
+		Ok(OpValBool::Eq(v).into())
 	}
 
 	fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
 	where
 		M: MapAccess<'de>,
 	{
-		let mut opvals: Vec<BoolOpVal> = Vec::new();
+		let mut opvals: Vec<OpValBool> = Vec::new();
 
 		while let Some(k) = map.next_key::<&str>()? {
 			// Note: Important to always
 			let value = map.next_value::<Value>()?;
-			let opval = BoolOpVal::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValBool::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
-		Ok(BoolOpVals(opvals))
+		Ok(OpValsBool(opvals))
 	}
 }

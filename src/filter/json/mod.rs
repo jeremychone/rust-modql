@@ -1,6 +1,7 @@
 use crate::filter::{FilterGroups, FilterNode, OpVal};
 use serde_json::Value;
 
+// -- Sub-Modules
 mod ovs_de_bool;
 mod ovs_de_number;
 mod ovs_de_string;
@@ -56,8 +57,8 @@ impl FilterNode {
 			// if we have a opval, then, need to match it with the val.
 			let pass = match opval {
 				OpVal::String(ov) => val.as_str().map(|v| ov.is_match(v)),
-				OpVal::Int(ov) => val.as_i64().map(|v| ov.is_match(v)),
-				OpVal::Float(ov) => val.as_f64().map(|v| ov.is_match(v)),
+				OpVal::Int64(ov) => val.as_i64().map(|v| ov.is_match(v)),
+				OpVal::Float64(ov) => val.as_f64().map(|v| ov.is_match(v)),
 				OpVal::Bool(ov) => val.as_bool().map(|v| ov.is_match(v)),
 			}
 			.unwrap_or(false);

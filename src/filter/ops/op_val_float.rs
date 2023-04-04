@@ -1,10 +1,10 @@
 use crate::filter::OpVal;
 
 #[derive(Debug)]
-pub struct FloatOpVals(pub Vec<FloatOpVal>);
+pub struct OpValsFloat64(pub Vec<OpValFloat64>);
 
 #[derive(Debug, Clone)]
-pub enum FloatOpVal {
+pub enum OpValFloat64 {
 	Eq(f64),
 	Not(f64),
 	In(Vec<f64>),
@@ -17,23 +17,23 @@ pub enum FloatOpVal {
 }
 
 // region:    --- Primitive to FloatOpVal
-impl From<f64> for FloatOpVal {
+impl From<f64> for OpValFloat64 {
 	fn from(val: f64) -> Self {
-		FloatOpVal::Eq(val)
+		OpValFloat64::Eq(val)
 	}
 }
 
-impl From<&f64> for FloatOpVal {
+impl From<&f64> for OpValFloat64 {
 	fn from(val: &f64) -> Self {
-		FloatOpVal::Eq(*val)
+		OpValFloat64::Eq(*val)
 	}
 }
 // endregion: --- Primitive to FloatOpVal
 
 // region:    --- FloatOpVal to OpVal
-impl From<FloatOpVal> for OpVal {
-	fn from(val: FloatOpVal) -> Self {
-		OpVal::Float(val)
+impl From<OpValFloat64> for OpVal {
+	fn from(val: OpValFloat64) -> Self {
+		OpVal::Float64(val)
 	}
 }
 // endregion: --- FloatOpVal to OpVal
@@ -41,22 +41,22 @@ impl From<FloatOpVal> for OpVal {
 // region:    --- Primitive to OpVal::Float(FloatOpVal::Eq)
 impl From<f64> for OpVal {
 	fn from(val: f64) -> Self {
-		FloatOpVal::Eq(val).into()
+		OpValFloat64::Eq(val).into()
 	}
 }
 
 impl From<&f64> for OpVal {
 	fn from(val: &f64) -> Self {
-		FloatOpVal::Eq(*val).into()
+		OpValFloat64::Eq(*val).into()
 	}
 }
 // endregion: --- Primitive to OpVal::Float(FloatOpVal::Eq)
 
 // region:    --- is_match
-impl FloatOpVal {
+impl OpValFloat64 {
 	/// Matches a target value (`t_val`) with the FloatOpVal pattern value (`p_val`)
 	pub fn is_match(&self, t_val: f64) -> bool {
-		use FloatOpVal::*;
+		use OpValFloat64::*;
 
 		match self {
 			Eq(p_val) => &t_val == p_val,

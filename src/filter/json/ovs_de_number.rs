@@ -1,11 +1,11 @@
 use super::ovs_json::FromJsonOpValue;
-use crate::filter::{FloatOpVal, FloatOpVals, IntOpVal, IntOpVals};
+use crate::filter::{OpValFloat64, OpValInt64, OpValsFloat64, OpValsInt64};
 use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer};
 use serde_json::Value;
 use std::fmt;
 
 // region:    --- IntOpVals
-impl<'de> Deserialize<'de> for IntOpVals {
+impl<'de> Deserialize<'de> for OpValsInt64 {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
 		D: Deserializer<'de>,
@@ -17,7 +17,7 @@ impl<'de> Deserialize<'de> for IntOpVals {
 struct IntOpValsVisitor;
 
 impl<'de> Visitor<'de> for IntOpValsVisitor {
-	type Value = IntOpVals; // for deserialize
+	type Value = OpValsInt64; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
 		write!(formatter, "IntOpValsVisitor visitor not implemented for this type.")
@@ -27,36 +27,36 @@ impl<'de> Visitor<'de> for IntOpValsVisitor {
 	where
 		E: serde::de::Error,
 	{
-		Ok(IntOpVal::Eq(v).into())
+		Ok(OpValInt64::Eq(v).into())
 	}
 
 	fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
 	where
 		E: serde::de::Error,
 	{
-		Ok(IntOpVal::Eq(v as i64).into())
+		Ok(OpValInt64::Eq(v as i64).into())
 	}
 
 	fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
 	where
 		M: MapAccess<'de>,
 	{
-		let mut opvals: Vec<IntOpVal> = Vec::new();
+		let mut opvals: Vec<OpValInt64> = Vec::new();
 
 		while let Some(k) = map.next_key::<&str>()? {
 			// Note: Important to always
 			let value = map.next_value::<Value>()?;
-			let opval = IntOpVal::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValInt64::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
-		Ok(IntOpVals(opvals))
+		Ok(OpValsInt64(opvals))
 	}
 }
 // endregion: --- IntOpVals
 
 // region:    --- FloatOpVals
-impl<'de> Deserialize<'de> for FloatOpVals {
+impl<'de> Deserialize<'de> for OpValsFloat64 {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
 		D: Deserializer<'de>,
@@ -68,7 +68,7 @@ impl<'de> Deserialize<'de> for FloatOpVals {
 struct FloatOpValsVisitor;
 
 impl<'de> Visitor<'de> for FloatOpValsVisitor {
-	type Value = FloatOpVals; // for deserialize
+	type Value = OpValsFloat64; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
 		write!(formatter, "FloatOpValsVisitor visitor not implemented for this type.")
@@ -78,30 +78,30 @@ impl<'de> Visitor<'de> for FloatOpValsVisitor {
 	where
 		E: serde::de::Error,
 	{
-		Ok(FloatOpVal::Eq(v).into())
+		Ok(OpValFloat64::Eq(v).into())
 	}
 
 	fn visit_u64<E>(self, v: u64) -> Result<Self::Value, E>
 	where
 		E: serde::de::Error,
 	{
-		Ok(FloatOpVal::Eq(v as f64).into())
+		Ok(OpValFloat64::Eq(v as f64).into())
 	}
 
 	fn visit_map<M>(self, mut map: M) -> Result<Self::Value, M::Error>
 	where
 		M: MapAccess<'de>,
 	{
-		let mut opvals: Vec<FloatOpVal> = Vec::new();
+		let mut opvals: Vec<OpValFloat64> = Vec::new();
 
 		while let Some(k) = map.next_key::<&str>()? {
 			// Note: Important to always
 			let value = map.next_value::<Value>()?;
-			let opval = FloatOpVal::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValFloat64::from_json_op_value(k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
-		Ok(FloatOpVals(opvals))
+		Ok(OpValsFloat64(opvals))
 	}
 }
 // endregion: --- FloatOpVals

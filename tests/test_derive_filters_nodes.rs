@@ -1,10 +1,10 @@
 //! Should compile. No test functions yet.
 
-use modql::filter::{FilterNodes, IntOpVals, StringOpVals};
+use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 
 #[derive(FilterNodes)]
 pub struct ProjectFilter {
 	#[context("foo")]
-	id: Option<IntOpVals>,
-	name: Option<StringOpVals>,
+	id: Option<OpValsInt64>,
+	name: Option<OpValsString>,
 }

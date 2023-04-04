@@ -1,10 +1,10 @@
 use crate::filter::OpVal;
 
 #[derive(Debug)]
-pub struct IntOpVals(pub Vec<IntOpVal>);
+pub struct OpValsInt64(pub Vec<OpValInt64>);
 
 #[derive(Debug, Clone)]
-pub enum IntOpVal {
+pub enum OpValInt64 {
 	Eq(i64),
 	Not(i64),
 	In(Vec<i64>),
@@ -17,23 +17,23 @@ pub enum IntOpVal {
 }
 
 // region:    --- Primitive to IntOpVal
-impl From<i64> for IntOpVal {
+impl From<i64> for OpValInt64 {
 	fn from(val: i64) -> Self {
-		IntOpVal::Eq(val)
+		OpValInt64::Eq(val)
 	}
 }
 
-impl From<&i64> for IntOpVal {
+impl From<&i64> for OpValInt64 {
 	fn from(val: &i64) -> Self {
-		IntOpVal::Eq(*val)
+		OpValInt64::Eq(*val)
 	}
 }
 // endregion: --- Primitive to IntOpVal
 
 // region:    --- IntOpVal to OpVal
-impl From<IntOpVal> for OpVal {
-	fn from(val: IntOpVal) -> Self {
-		OpVal::Int(val)
+impl From<OpValInt64> for OpVal {
+	fn from(val: OpValInt64) -> Self {
+		OpVal::Int64(val)
 	}
 }
 // endregion: --- IntOpVal to OpVal
@@ -41,22 +41,22 @@ impl From<IntOpVal> for OpVal {
 // region:    --- Primitive to OpVal::Int(IntOpVal::Eq)
 impl From<i64> for OpVal {
 	fn from(val: i64) -> Self {
-		IntOpVal::Eq(val).into()
+		OpValInt64::Eq(val).into()
 	}
 }
 
 impl From<&i64> for OpVal {
 	fn from(val: &i64) -> Self {
-		IntOpVal::Eq(*val).into()
+		OpValInt64::Eq(*val).into()
 	}
 }
 // endregion: --- Primitive to OpVal::Int(IntOpVal::Eq)
 
 // region:    --- is_match
-impl IntOpVal {
+impl OpValInt64 {
 	/// Matches a target value (`t_val`) with the IntOpVal pattern value (`p_val`)
 	pub fn is_match(&self, t_val: i64) -> bool {
-		use IntOpVal::*;
+		use OpValInt64::*;
 
 		match self {
 			Eq(p_val) => &t_val == p_val,

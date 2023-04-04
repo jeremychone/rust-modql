@@ -1,11 +1,11 @@
-use modql::filter::{FilterNodes, IntOpVals, IntoFilterNodes, StringOpVals};
+use modql::filter::{FilterNodes, IntoFilterNodes, OpValsInt64, OpValsString};
 use serde::Deserialize;
 use serde_json::Value;
 
 #[derive(Deserialize, Debug, FilterNodes)]
 struct MyFilter {
-	id: Option<IntOpVals>,
-	name: Option<StringOpVals>,
+	id: Option<OpValsInt64>,
+	name: Option<OpValsString>,
 }
 
 #[test]
