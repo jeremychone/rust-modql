@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.0.5"
+version = "0.0.6-SNAPSHOT"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
@@ -10,9 +10,9 @@ homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
 [dependencies]
-quote = "^1.0"
-syn = {version = "^1.0", features = ["full"]}
-proc-macro2 = "1.0"
+quote = "1"
+syn = {version = "2", features = ["full"]}
+proc-macro2 = "1"
 
 [lib]
 proc-macro = true
