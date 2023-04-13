@@ -1,24 +1,22 @@
-use crate::filter::{
-	OpValBool, OpValFloat64, OpValInt64, OpValString, OpValsBool, OpValsFloat64, OpValsInt64, OpValsString,
-};
+use crate::filter::*;
 use crate::{Error, Result};
 use serde_json::{Number, Value};
 
 /// Trait to go from a `operator?: Value` to the appropriate OpValue.
-pub(super) trait FromJsonOpValue {
+pub(super) trait FromJsonToOpVal {
 	/// e.g., `"name": "Hello World"`
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized;
 
 	/// e.g., `{"$contains": "World", "$startsWith": "Hello"}
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
+	fn from_json_opvals_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized;
 }
 
 // region:    --- StringOpVal
-impl FromJsonOpValue for OpValString {
+impl FromJsonToOpVal for OpValString {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
@@ -29,7 +27,7 @@ impl FromJsonOpValue for OpValString {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
+	fn from_json_opvals_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -60,33 +58,40 @@ impl FromJsonOpValue for OpValString {
 }
 // endregion: --- StringOpVal
 
-// region:    --- IntOpVal
+// region:    --- FromJsonToOpVal for Nums
+
+// - `ov` e.g., `OpValInt64`
+// - `asfn` e.g., `as_i64`
+macro_rules! from_json_to_opval_num{
+	($(($ov:ident, $asfn:expr)),+) => {
+		$(
+
 /// match a the op_value
-impl FromJsonOpValue for OpValInt64 {
+impl FromJsonToOpVal for $ov {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		match value {
-			Value::Number(num) => Ok(OpValInt64::Eq(as_i64(num)?)),
+			Value::Number(num) => Ok($ov::Eq($asfn(num)?)),
 			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
+	fn from_json_opvals_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
 		// FIXME: Needs to do the In/Array patterns.
 		let ov = match (op, value) {
-			("$eq", Value::Number(num)) => OpValInt64::Eq(as_i64(num)?),
-			("$not", Value::Number(num)) => OpValInt64::Not(as_i64(num)?),
+			("$eq", Value::Number(num)) => $ov::Eq($asfn(num)?),
+			("$not", Value::Number(num)) => $ov::Not($asfn(num)?),
 
-			("$lt", Value::Number(num)) => OpValInt64::Lt(as_i64(num)?),
-			("$lte", Value::Number(num)) => OpValInt64::Lte(as_i64(num)?),
+			("$lt", Value::Number(num)) => $ov::Lt($asfn(num)?),
+			("$lte", Value::Number(num)) => $ov::Lte($asfn(num)?),
 
-			("$gt", Value::Number(num)) => OpValInt64::Gt(as_i64(num)?),
-			("$gte", Value::Number(num)) => OpValInt64::Gte(as_i64(num)?),
+			("$gt", Value::Number(num)) => $ov::Gt($asfn(num)?),
+			("$gte", Value::Number(num)) => $ov::Gte($asfn(num)?),
 
 			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
 		};
@@ -94,47 +99,23 @@ impl FromJsonOpValue for OpValInt64 {
 		Ok(ov)
 	}
 }
-// endregion: --- IntOpVal
-
-// region:    --- FloatOpVal
-/// match a the op_value
-impl FromJsonOpValue for OpValFloat64 {
-	fn from_json_scalar_value(value: Value) -> Result<Self>
-	where
-		Self: Sized,
-	{
-		match value {
-			Value::Number(num) => Ok(OpValFloat64::Eq(as_f64(num)?)),
-			v => Err(Error::JsonOpValNotSupported("".to_string(), v)),
-		}
-	}
-
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
-	where
-		Self: Sized,
-	{
-		// FIXME: Needs to do the In/Array patterns.
-		let ov = match (op, value) {
-			("$eq", Value::Number(num)) => OpValFloat64::Eq(as_f64(num)?),
-			("$not", Value::Number(num)) => OpValFloat64::Not(as_f64(num)?),
-
-			("$lt", Value::Number(num)) => OpValFloat64::Lt(as_f64(num)?),
-			("$lte", Value::Number(num)) => OpValFloat64::Lte(as_f64(num)?),
-
-			("$gt", Value::Number(num)) => OpValFloat64::Gt(as_f64(num)?),
-			("$gte", Value::Number(num)) => OpValFloat64::Gte(as_f64(num)?),
-
-			(_, value) => return Err(Error::JsonOpValNotSupported(op.to_string(), value)),
-		};
-
-		Ok(ov)
-	}
+		)+
+	};
 }
-// endregion: --- FloatOpVal
+
+from_json_to_opval_num!(
+	(OpValUint64, as_u64),
+	(OpValUint32, as_u32),
+	(OpValInt64, as_i64),
+	(OpValInt32, as_i32),
+	(OpValFloat64, as_f64),
+	(OpValFloat32, as_f32)
+);
+// endregion: --- FromJsonToOpVal for Nums
 
 // region:    --- BoolOpVal
 /// match a the op_value
-impl FromJsonOpValue for OpValBool {
+impl FromJsonToOpVal for OpValBool {
 	fn from_json_scalar_value(value: Value) -> Result<Self>
 	where
 		Self: Sized,
@@ -145,7 +126,7 @@ impl FromJsonOpValue for OpValBool {
 		}
 	}
 
-	fn from_json_op_value(op: &str, value: Value) -> Result<Self>
+	fn from_json_opvals_value(op: &str, value: Value) -> Result<Self>
 	where
 		Self: Sized,
 	{
@@ -164,8 +145,9 @@ impl FromJsonOpValue for OpValBool {
 
 // Common implementation
 macro_rules! impl_try_from_value_for_opvals {
-	($($ov:ident, $ovs:ident),*) => {
+	($(($ov:ident, $ovs:ident)),*) => {
 		$(
+
 impl TryFrom<Value> for $ovs {
 	type Error = Error;
 
@@ -176,7 +158,7 @@ impl TryFrom<Value> for $ovs {
 			// e.g. {"$contains": "World", "$startsWith": "Hello"}
 			Value::Object(obj) => {
 				for (k, v) in obj.into_iter() {
-					let ov = $ov::from_json_op_value(&k, v)?;
+					let ov = $ov::from_json_opvals_value(&k, v)?;
 					ovs.push(ov);
 				}
 			}
@@ -187,33 +169,46 @@ impl TryFrom<Value> for $ovs {
 		Ok($ovs(ovs))
 	}
 }
+
 		)*
 	};
 }
 
 // For all opvals (must specified the pair as macro rules are hygienic)
 impl_try_from_value_for_opvals!(
-	OpValString,
-	OpValsString,
-	OpValInt64,
-	OpValsInt64,
-	OpValFloat64,
-	OpValsFloat64,
-	OpValBool,
-	OpValsBool
+	(OpValString, OpValsString),
+	(OpValUint64, OpValsUint64),
+	(OpValUint32, OpValsUint32),
+	(OpValInt64, OpValsInt64),
+	(OpValInt32, OpValsInt32),
+	(OpValFloat64, OpValsFloat64),
+	(OpValBool, OpValsBool)
 );
-
-// BoolOpVal,
-// BoolOpVals
 
 // endregion: --- TryFrom<Value> for OpVals
 
 // region:    --- Helpers
+fn as_u64(num: Number) -> Result<u64> {
+	num.as_u64().ok_or(Error::JsonValNotOfType("u64"))
+}
+
+fn as_u32(num: Number) -> Result<u32> {
+	num.as_u64().map(|n| n as u32).ok_or(Error::JsonValNotOfType("u32"))
+}
+
 fn as_i64(num: Number) -> Result<i64> {
 	num.as_i64().ok_or(Error::JsonValNotOfType("i64"))
 }
 
+fn as_i32(num: Number) -> Result<i32> {
+	num.as_i64().map(|n| n as i32).ok_or(Error::JsonValNotOfType("i32"))
+}
+
 fn as_f64(num: Number) -> Result<f64> {
 	num.as_f64().ok_or(Error::JsonValNotOfType("f64"))
+}
+
+fn as_f32(num: Number) -> Result<f32> {
+	num.as_f64().map(|n| n as f32).ok_or(Error::JsonValNotOfType("f32"))
 }
 // endregion: --- Helpers

@@ -5,7 +5,7 @@ use crate::filter::OpVal;
 /// - `nt` Number type, e.g., `u64`
 /// - `vr` Opval Variant e.g., `OpVal::Uint64`
 macro_rules! impl_op_val {
-	($($ovs:ident, $ov:ident,$nt:ty, $vr:expr),+) => {
+	($(($ovs:ident, $ov:ident,$nt:ty, $vr:expr)),+) => {
 		$(
 
 #[derive(Debug)]
@@ -87,34 +87,10 @@ impl $ov {
 }
 
 impl_op_val!(
-	// u64
-	OpValsUint64,
-	OpValUint64,
-	u64,
-	OpVal::Uint64,
-	// u32
-	OpValsUint32,
-	OpValUint32,
-	u32,
-	OpVal::Uint32,
-	// i64
-	OpValsInt64,
-	OpValInt64,
-	i64,
-	OpVal::Int64,
-	// i32
-	OpValsInt32,
-	OpValInt32,
-	i32,
-	OpVal::Int32,
-	// f64
-	OpValsFloat64,
-	OpValFloat64,
-	f64,
-	OpVal::Float64,
-	// f32
-	OpValsFloat32,
-	OpValFloat32,
-	f32,
-	OpVal::Float32
+	(OpValsUint64, OpValUint64, u64, OpVal::Uint64),
+	(OpValsUint32, OpValUint32, u32, OpVal::Uint32),
+	(OpValsInt64, OpValInt64, i64, OpVal::Int64),
+	(OpValsInt32, OpValInt32, i32, OpVal::Int32),
+	(OpValsFloat64, OpValFloat64, f64, OpVal::Float64),
+	(OpValsFloat32, OpValFloat32, f32, OpVal::Float32)
 );

@@ -57,10 +57,13 @@ impl FilterNode {
 			// if we have a opval, then, need to match it with the val.
 			let pass = match opval {
 				OpVal::String(ov) => val.as_str().map(|v| ov.is_match(v)),
+				OpVal::Uint64(ov) => val.as_u64().map(|v| ov.is_match(v)),
+				OpVal::Uint32(ov) => val.as_u64().map(|v| ov.is_match(v as u32)),
 				OpVal::Int64(ov) => val.as_i64().map(|v| ov.is_match(v)),
+				OpVal::Int32(ov) => val.as_i64().map(|v| ov.is_match(v as i32)),
 				OpVal::Float64(ov) => val.as_f64().map(|v| ov.is_match(v)),
+				OpVal::Float32(ov) => val.as_f64().map(|v| ov.is_match(v as f32)),
 				OpVal::Bool(ov) => val.as_bool().map(|v| ov.is_match(v)),
-				_ => panic!("oval NOT SUPPORTED TO IMPLEMENT"), // FIXME
 			}
 			.unwrap_or(false);
 

@@ -20,7 +20,7 @@ fn test_des_string_simple() -> anyhow::Result<()> {
 	let json: Value = serde_json::from_str(&json)?;
 	let my_filter: MyFilter = serde_json::from_value(json)?;
 
-	assert!(format!("{my_filter:?}").contains("id: None, name: Some(StringOpVals([Eq(\"Hello\")]))"));
+	assert!(format!("{my_filter:?}").contains("id: None, name: Some(OpValsString([Eq(\"Hello\")]))"));
 
 	Ok(())
 }
@@ -56,7 +56,11 @@ fn test_des_number_simple() -> anyhow::Result<()> {
 	"#;
 
 	let my_filter: MyFilter = serde_json::from_str(json)?;
-	assert!(format!("{my_filter:?}").contains("{ id: Some(IntOpVals([Eq(123)])), name: None }"));
+	let filter_str = format!("{my_filter:?}");
+	assert!(
+		filter_str.contains("{ id: Some(OpValsInt64([Eq(123)])), name: None }"),
+		"{filter_str}"
+	);
 
 	Ok(())
 }
@@ -70,7 +74,7 @@ fn test_des_number_map() -> anyhow::Result<()> {
 	"#;
 
 	let my_filter: MyFilter = serde_json::from_str(json)?;
-	assert!(format!("{my_filter:?}").contains("{ id: Some(IntOpVals([Gt(100)])), name: None }"));
+	assert!(format!("{my_filter:?}").contains("{ id: Some(OpValsInt64([Gt(100)])), name: None }"));
 
 	Ok(())
 }
