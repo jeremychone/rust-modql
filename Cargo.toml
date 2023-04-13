@@ -19,7 +19,6 @@ repository = "https://github.com/jeremychone/rust-modql"
 [workspace]
 members = [".", "modql-macros"]
 
-
 [dependencies]
 modql-macros = { version="0.1.0", path = "modql-macros" }
 serde = { version = "1", features = ["derive"] }

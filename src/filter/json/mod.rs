@@ -60,6 +60,7 @@ impl FilterNode {
 				OpVal::Int64(ov) => val.as_i64().map(|v| ov.is_match(v)),
 				OpVal::Float64(ov) => val.as_f64().map(|v| ov.is_match(v)),
 				OpVal::Bool(ov) => val.as_bool().map(|v| ov.is_match(v)),
+				_ => panic!("oval NOT SUPPORTED TO IMPLEMENT"), // FIXME
 			}
 			.unwrap_or(false);
 
