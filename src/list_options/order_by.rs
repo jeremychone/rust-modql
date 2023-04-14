@@ -1,13 +1,12 @@
-use core::fmt;
-
+// region:    --- OrderBy
 #[derive(Debug)]
 pub enum OrderBy {
 	Asc(String),
 	Desc(String),
 }
 
-impl fmt::Display for OrderBy {
-	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+impl core::fmt::Display for OrderBy {
+	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
 		match self {
 			OrderBy::Asc(val) => {
 				fmt.write_str(val)?;
@@ -37,16 +36,9 @@ impl<T: AsRef<str>> From<T> for OrderBy {
 	}
 }
 
-// impl From<&str> for OrderBy {
-// 	fn from(raw: &str) -> Self {
-// 		if let Some(stripped) = raw.strip_prefix('!') {
-// 			OrderBy::Desc(stripped.to_string())
-// 		} else {
-// 			OrderBy::Asc(raw.to_string())
-// 		}
-// 	}
-// }
+// endregion: --- OrderBy
 
+// region:    --- OrderBys
 #[derive(Debug)]
 pub struct OrderBys(Vec<OrderBy>);
 
@@ -78,9 +70,17 @@ impl From<String> for OrderBys {
 	}
 }
 
+impl From<OrderBy> for OrderBys {
+	fn from(val: OrderBy) -> Self {
+		OrderBys(vec![val])
+	}
+}
+
 impl<T: AsRef<str>> From<Vec<T>> for OrderBys {
 	fn from(val: Vec<T>) -> Self {
 		let d = val.into_iter().map(|o| OrderBy::from(o)).collect::<Vec<_>>();
 		OrderBys(d)
 	}
 }
+
+// endregion: --- OrderBys
