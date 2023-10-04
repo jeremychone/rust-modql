@@ -51,6 +51,26 @@ impl OrderBys {
 	}
 }
 
+// This will allow us to iterate over &OrderBys
+impl<'a> IntoIterator for &'a OrderBys {
+	type Item = &'a OrderBy;
+	type IntoIter = std::slice::Iter<'a, OrderBy>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.0.iter()
+	}
+}
+
+// This will allow us to iterate over OrderBys directly (consuming it)
+impl IntoIterator for OrderBys {
+	type Item = OrderBy;
+	type IntoIter = std::vec::IntoIter<OrderBy>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.0.into_iter()
+	}
+}
+
 // NOTE: If we want the Vec<T> and T, we have to make the individual from
 //       specific to the type. Otherwise, conflict.
 
