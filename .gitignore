@@ -9,6 +9,7 @@
 
 # Rust ignore
 target/
+Cargo.lock
 
 # nodejs 
 !.mocharc.yaml
