@@ -148,3 +148,35 @@ impl From<(&str, bool)> for FilterNode {
 }
 
 // endregion: --- From Tuples (bool val)
+
+// region:    --- with-sea-query
+#[cfg(feature = "with-sea-query")]
+mod with_sea_query {
+	use super::*;
+	use crate::sea_utils::StringIden;
+	use sea_query::{ColumnRef, ConditionExpression, IntoColumnRef};
+
+	impl FilterNode {
+		pub fn into_sea_expr(self) -> Vec<ConditionExpression> {
+			let col: ColumnRef = StringIden(self.name).into_column_ref();
+			let mut node_sea_exprs: Vec<ConditionExpression> = Vec::new();
+
+			for op_val in self.opvals.into_iter() {
+				let cond_expr = match op_val {
+					OpVal::String(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Uint64(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Uint32(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Int64(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Int32(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Float64(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Float32(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::Bool(ov) => ov.into_sea_cond_expr(&col),
+				};
+
+				node_sea_exprs.push(cond_expr);
+			}
+			node_sea_exprs
+		}
+	}
+}
+// endregion: --- with-sea-query

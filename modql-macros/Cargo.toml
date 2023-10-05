@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.1.0"
+version = "0.3.0-WIP"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
@@ -9,10 +9,15 @@ categories = ["data-structures"]
 homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
+[features]
+default = []
+with-sea-query = ["sea-query"]
+
 [dependencies]
 quote = "1"
 syn = {version = "2", features = ["full"]}
 proc-macro2 = "1"
+sea-query = { version = "0.30", optional = true }
 
 [lib]
 proc-macro = true

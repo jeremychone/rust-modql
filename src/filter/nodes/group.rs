@@ -11,6 +11,15 @@ impl FilterGroup {
 	}
 }
 
+impl IntoIterator for FilterGroup {
+	type Item = FilterNode;
+	type IntoIter = std::vec::IntoIter<Self::Item>;
+
+	fn into_iter(self) -> Self::IntoIter {
+		self.0.into_iter()
+	}
+}
+
 impl From<Vec<FilterNode>> for FilterGroup {
 	fn from(val: Vec<FilterNode>) -> Self {
 		FilterGroup(val)
@@ -27,7 +36,8 @@ impl From<FilterNode> for FilterGroup {
 
 // region:    --- FilterGroups
 
-/// A FilterGroups is a vector of FilterGroup, and each groups are intended to be inter
+/// A FilterGroups is a vector of FilterGroup, and each groups are intended to be OR between them,
+///  and inside the group, that will be the And
 #[derive(Debug)]
 pub struct FilterGroups(Vec<FilterGroup>);
 
@@ -41,6 +51,10 @@ impl FilterGroups {
 
 	pub fn groups(&self) -> &Vec<FilterGroup> {
 		&self.0
+	}
+
+	pub fn into_vec(self) -> Vec<FilterGroup> {
+		self.0
 	}
 }
 
@@ -84,3 +98,37 @@ impl From<FilterGroup> for Option<FilterGroups> {
 }
 
 // endregion: --- FilterGroups
+
+// region:    --- with-sea-query
+#[cfg(feature = "with-sea-query")]
+mod with_sea_query {
+	use super::*;
+	use sea_query::Condition;
+
+	impl FilterGroup {
+		// pub fn into_sea_expr_iter(self) -> impl Iterator<Item = SimpleExpr> {
+		// 	self.into_iter().flat_map(|node| node.into_sea_expr())
+		// }
+		pub fn into_sea_condition(self) -> Condition {
+			let exprs = self.into_iter().flat_map(|node| node.into_sea_expr());
+			let mut cond = Condition::all();
+			for expr in exprs {
+				cond = cond.add(expr);
+			}
+			cond
+		}
+	}
+
+	impl FilterGroups {
+		pub fn into_sea_condition(self) -> Condition {
+			let mut cond = Condition::any();
+
+			for group in self.0.into_iter() {
+				cond = cond.add(group.into_sea_condition());
+			}
+
+			cond
+		}
+	}
+}
+// endregion: --- with-sea-query

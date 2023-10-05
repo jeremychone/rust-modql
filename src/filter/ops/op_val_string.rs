@@ -38,7 +38,7 @@ pub enum OpValString {
 	NotEndsWithIn(Vec<String>),
 }
 
-// region:    --- Primitive to StringOpVal
+// region:    --- Simple value to Eq OpValString
 impl From<String> for OpValString {
 	fn from(val: String) -> Self {
 		OpValString::Eq(val)
@@ -50,7 +50,21 @@ impl From<&str> for OpValString {
 		OpValString::Eq(val.to_string())
 	}
 }
-// endregion: --- Primitive to StringOpVal
+// endregion: --- Simple value to Eq OpValString
+
+// region:    --- Simple value to Eq OpValStrings
+impl From<String> for OpValsString {
+	fn from(val: String) -> Self {
+		OpValString::from(val).into()
+	}
+}
+
+impl From<&str> for OpValsString {
+	fn from(val: &str) -> Self {
+		OpValString::from(val).into()
+	}
+}
+// endregion: --- Simple value to Eq OpValStrings
 
 // region:    --- StringOpVal to OpVal
 impl From<OpValString> for OpVal {
@@ -106,3 +120,48 @@ impl OpValString {
 	}
 }
 // endregion: --- is_match
+
+// region:    --- with-sea-query
+#[cfg(feature = "with-sea-query")]
+mod with_sea_query {
+	use super::*;
+	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
+
+	impl OpValString {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> ConditionExpression {
+			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+			};
+			match self {
+				OpValString::Eq(s) => binary_fn(BinOper::Equal, Value::from(s).into()),
+				OpValString::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
+				OpValString::In(s) => binary_fn(
+					BinOper::In,
+					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
+				),
+				OpValString::NotIn(s) => binary_fn(
+					BinOper::NotIn,
+					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
+				),
+				OpValString::Lt(s) => binary_fn(BinOper::SmallerThan, Value::from(s).into()),
+				OpValString::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, Value::from(s).into()),
+				OpValString::Gt(s) => binary_fn(BinOper::GreaterThan, Value::from(s).into()),
+				OpValString::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, Value::from(s).into()),
+				OpValString::Empty(_s) => todo!("OpValString::Empty not implemented yet"),
+				OpValString::Contains(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}%")).into()),
+				OpValString::NotContains(s) => binary_fn(BinOper::NotLike, Value::from(format!("%{s}%")).into()),
+				OpValString::ContainsIn(_s) => todo!("OpValString::ContainsIn not implemented yet"),
+				OpValString::NotContainsIn(_s) => todo!("OpValString::NotContainsIn not implemented yet"),
+				OpValString::StartsWith(s) => binary_fn(BinOper::Like, Value::from(format!("{s}%")).into()),
+				OpValString::NotStartsWith(s) => binary_fn(BinOper::NotLike, Value::from(format!("{s}%")).into()),
+				OpValString::StartsWithIn(_s) => todo!("OpValString::StartsWithIn not implemented yet"),
+				OpValString::NotStartsWithIn(_s) => todo!("OpValString::NotStartsWithIn not implemented yet"),
+				OpValString::EndsWith(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}")).into()),
+				OpValString::NotEndsWith(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}")).into()),
+				OpValString::EndsWithIn(_s) => todo!("OpValString::EndsWithIn not implemented yet"),
+				OpValString::NotEndsWithIn(_s) => todo!("OpValString::NotEndsWithIn not implemented yet"),
+			}
+		}
+	}
+}
+// endregion: --- with-sea-query

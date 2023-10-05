@@ -2,6 +2,7 @@ use crate::filter::{FilterGroups, FilterNode, OpVal};
 use serde_json::Value;
 
 // -- Sub-Modules
+mod order_bys_de;
 mod ovs_de_bool;
 mod ovs_de_number;
 mod ovs_de_string;
@@ -13,19 +14,19 @@ impl FilterGroups {
 		let mut groups = self.groups().iter();
 		loop {
 			let Some(group) = groups.next() else {
-					// We have finished all groups, so, nothing match, return false.
-					break false;
-				};
+				// We have finished all groups, so, nothing match, return false.
+				break false;
+			};
 
 			// -- Iterate the nodes of each group
 			// Nodes must all pass to have the group good.
 			let mut nodes = group.nodes().iter();
 			let pass_group = loop {
 				let Some(node) = nodes.next() else {
-								// We have finished all node, nothing broke false, so, we are good.
-								// return true.
-								break true;
-							};
+					// We have finished all node, nothing broke false, so, we are good.
+					// return true.
+					break true;
+				};
 
 				if !node.is_match_json(val_root) {
 					break false;

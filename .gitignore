@@ -4,8 +4,9 @@
 !.gitignore
 
 
-# Allow vscode 
-!.vscode
+# For now, disallow vscode 
+# !.vscode
+.vscode/
 
 # Rust ignore
 target/

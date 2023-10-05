@@ -1,5 +1,5 @@
 // region:    --- OrderBy
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum OrderBy {
 	Asc(String),
 	Desc(String),
@@ -39,7 +39,7 @@ impl<T: AsRef<str>> From<T> for OrderBy {
 // endregion: --- OrderBy
 
 // region:    --- OrderBys
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OrderBys(Vec<OrderBy>);
 
 impl OrderBys {
@@ -104,3 +104,29 @@ impl<T: AsRef<str>> From<Vec<T>> for OrderBys {
 }
 
 // endregion: --- OrderBys
+
+// region:    --- with-sea-query
+#[cfg(feature = "with-sea-query")]
+mod with_sea_query {
+	use super::*;
+	use crate::sea_utils::StringIden;
+	use sea_query::IntoColumnRef;
+
+	impl OrderBys {
+		pub fn into_sea_col_order_iter(self) -> impl Iterator<Item = (sea_query::ColumnRef, sea_query::Order)> {
+			self.0.into_iter().map(OrderBy::into_sea_col_order)
+		}
+	}
+
+	impl OrderBy {
+		pub fn into_sea_col_order(self) -> (sea_query::ColumnRef, sea_query::Order) {
+			let (col, order) = match self {
+				OrderBy::Asc(col) => (StringIden(col), sea_query::Order::Asc),
+				OrderBy::Desc(col) => (StringIden(col), sea_query::Order::Desc),
+			};
+
+			(col.into_column_ref(), order)
+		}
+	}
+}
+// endregion: --- with-sea-query
