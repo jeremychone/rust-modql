@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.3.0-alpha.1"
+version = "0.3.0-alpha.2"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
@@ -10,7 +10,6 @@ homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
 [features]
-default = []
 with-sea-query = ["sea-query"]
 
 [dependencies]

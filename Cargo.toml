@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.3.0-alpha.1"
+version = "0.3.0-alpha.2"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -21,12 +21,12 @@ repository = "https://github.com/jeremychone/rust-modql"
 members = [".", "modql-macros"]
 
 [features]
-default = []
-with-sea-query = ["sea-query"]
+default = ["modql-macros"]
+with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 
 
 [dependencies]
-modql-macros = { version="0.3.0-WIP", path = "modql-macros", features=["with-sea-query"]}
+modql-macros = { version="0.3.0-alpha.2", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 time = "0.3.20"
