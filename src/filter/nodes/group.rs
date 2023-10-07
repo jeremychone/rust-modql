@@ -105,12 +105,9 @@ mod with_sea_query {
 	use super::*;
 	use sea_query::Condition;
 
-	impl FilterGroup {
-		// pub fn into_sea_expr_iter(self) -> impl Iterator<Item = SimpleExpr> {
-		// 	self.into_iter().flat_map(|node| node.into_sea_expr())
-		// }
-		pub fn into_sea_condition(self) -> Condition {
-			let exprs = self.into_iter().flat_map(|node| node.into_sea_expr());
+	impl From<FilterGroup> for Condition {
+		fn from(fg: FilterGroup) -> Self {
+			let exprs = fg.into_iter().flat_map(|node| node.into_sea_expr());
 			let mut cond = Condition::all();
 			for expr in exprs {
 				cond = cond.add(expr);
@@ -124,7 +121,7 @@ mod with_sea_query {
 			let mut cond = Condition::any();
 
 			for group in self.0.into_iter() {
-				cond = cond.add(group.into_sea_condition());
+				cond = cond.add(Condition::from(group));
 			}
 
 			cond

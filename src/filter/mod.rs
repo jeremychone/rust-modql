@@ -11,8 +11,3 @@ pub use ops::op_val_bool::*;
 pub use ops::op_val_nums::*;
 pub use ops::op_val_string::*;
 pub use ops::*;
-
-#[cfg(feature = "with-sea-query")]
-pub mod sea_filter;
-#[cfg(feature = "with-sea-query")]
-pub use sea_filter::SeaFilter;
