@@ -1,5 +1,5 @@
 // #![allow(unused)]
-#![doc = include_str!("../README.md")]
+// #![doc = include_str!("../README.md")]
 
 // --- Sub-Modules
 mod error;

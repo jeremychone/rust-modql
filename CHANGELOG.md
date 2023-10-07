@@ -2,6 +2,10 @@
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
 
+## 2023-10-06 - `0.3.0-alpha.1`
+
+- `!` - Major update to API, with some breaking changes, and support for the `sea-query` and new `Fields` support.
+
 ## 2023-04-15 - `0.2.0`
 
 - `!` - Move `modql::filter::ListOptions` to `modql::filter::ListOptions`.

@@ -1,3 +1,5 @@
+#![cfg(feature = "with-sea-query")]
+
 use modql::field::Fields;
 #[derive(Debug, Default, Fields)]
 pub struct Todo {

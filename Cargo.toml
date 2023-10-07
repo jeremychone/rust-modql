@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.3.0-WIP"
+version = "0.3.0-alpha.1"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -8,6 +8,7 @@ description = "Rust implementation for Model Query Language support"
 categories = ["data-structures"]
 keywords = [
 	"query-language",
+	"sea-query",
 	"model",
 	"data-model",
 	"graphql"

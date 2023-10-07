@@ -1,21 +1,64 @@
-**STATUS** Still experimental. In version 0.y.z, breaking changes will occur in .y, and additions/fixes in .z. Once it reaches x.y.z, it will follow SemVer best practices.
+**STATUS** The current main branch aligns with the `v0.3.0-alpha` stream, featuring `with-sea-query` support and new `Fields` `#[derive(Fields)]` capabilities.
 
-> _tl;dr_ - **modql** is a normalized declarative model and store agnostic query language.  
+> _tl;dr_ - **modql** is a normalized, declarative model and store-agnostic query language.
 
 [changelog](CHANGELOG.md)
 
 ### Overview 
 
-One modql representation is [joql](http://joql.org), which is the JSON serialization of this model. 
+One representation of modql is [joql](http://joql.org), which is the JSON serialization of this model.
 
-`modql` has the [joql](http://joql.org) deserializer to build the filter, and provides the raw construct to make them directly from Rust types. 
+`modql` has a [joql](http://joql.org) deserializer to build filters and offers the raw constructs to create them directly from Rust types.
 
-In short, `modql` allows to express of a store model-specific filter and include rules which can be implemented for various store. For example, it can express: 
+In short, `modql` allows expression of store model-specific filters and include rules that can be implemented for various stores. For instance, it can express:
 
-- Filter & include all of the `Ticket` 
-	- with the `title` containing `"hello"` or `"welcome"` (<< Filters)
-	- with the `done` flag `true`
-	- and fetch only the property `id`, `title` and the `done` properties. (<< Includes, not implemented yet)
+- Filter & include all of the `Ticket`:
+	- with the `title` containing either `"hello"` or `"welcome"` (<< Filters)
+	- with the `done` flag set to `true`
+	- fetching only the properties: `id`, `title`, and `done`. (<< Includes, not yet implemented)
+
+### Overview
+
+- `modql::filter` - Provides a declarative structure that can be deserialized from JSON.
+- `modql::field` - Offers a way to extract a `sea-query` compatible data structure from standard structs.
+
+NOTE: For now, ensure you activate the `with-sea-query` feature.
+
+
+```rust
+#[derive(Debug, Clone, modql::field::Fields, FromRow, Serialize)]
+pub struct Task {
+	pub id: i64,
+	pub project_id: i64,
+	pub title: String,
+	pub done: bool,
+}
+
+#[derive(modql::filter::FilterNodes, Deserialize, Default)]
+pub struct TaskFilter {
+	project_id: Option<OpValsInt64>,
+	title: Option<OpValsString>,
+	done: Option<OpValsBool>,
+}
+
+// ...
+let filter_json = json! ({
+	"title": {"$contains": "title_contains_ok 02"},
+	"done": false
+});
+let filter: TaskFilters = serde_json::from_value(filter_json)?;
+```
+
+This will provide the following: 
+
+- `Task::field_column_refs()  -> Vec<ColumnRef>` to build `sea-query` select queries. 
+- `Task::field_idens() -> Vec<ColumnRef>`  to build `sea-query` select queries (for simpler case);
+- `task.all_fields().unzip() - (Vec<DynIden>, Vec<SimpleExpr>)` for `sea-query` insert.
+- `task.all_fields().zip() - impl Iterator<Item = (DynIden, SimpleExpr)>` for `sea-query` update.
+
+Will also provide: 
+
+- `task.not_none_fields()` for same as above, but only the fields for which their Option is not None. 
 
 ### Json example
 

@@ -101,19 +101,15 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 		}
 	};
 
-	let out_sea_filter = if cfg!(feature = "with-sea-query") {
-		quote! {
-
-			impl modql::filter::SeaFilter for #struct_name {
-				fn into_sea_condition(self) -> sea_query::Condition {
-					use modql::filter::SeaFilter;
-					use modql::filter::FilterGroup;
-					FilterGroup::from(self).into_sea_condition()
-				}
+	let out_sea_filter = quote! {
+		#[cfg(feature = "with-sea-query")]
+		impl modql::filter::SeaFilter for #struct_name {
+			fn into_sea_condition(self) -> sea_query::Condition {
+				use modql::filter::SeaFilter;
+				use modql::filter::FilterGroup;
+				FilterGroup::from(self).into_sea_condition()
 			}
 		}
-	} else {
-		quote! {}
 	};
 
 	//// Final out code
