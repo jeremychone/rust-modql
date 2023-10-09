@@ -1,6 +1,6 @@
 //! Should compile. No test functions yet.
 
-use modql::filter::{FilterNode, IntoFilterNodes, OpValInt64, OpValString, OpValsString};
+use modql::filter::{FilterNode, IntoFilterNodes, OpVal, OpValInt64, OpValString, OpValsString};
 
 pub struct ProjectFilter {
 	id: Option<Vec<OpValInt64>>,
@@ -12,20 +12,20 @@ impl IntoFilterNodes for ProjectFilter {
 		let mut nodes = Vec::new();
 
 		if let Some(id) = self.id {
-			let node = FilterNode {
-				context_path: context.clone(),
-				name: "id".to_string(),
-				opvals: id.into_iter().map(|n| n.into()).collect(),
-			};
+			let node = FilterNode::new_with_context(
+				context.clone(),
+				"id".to_string(),
+				id.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
+			);
 			nodes.push(node)
 		}
 
 		if let Some(name) = self.name {
-			let node = FilterNode {
-				context_path: context,
-				name: "name".to_string(),
-				opvals: name.into_iter().map(|n| n.into()).collect(),
-			};
+			let node = FilterNode::new_with_context(
+				context,
+				"name".to_string(),
+				name.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
+			);
 			nodes.push(node)
 		}
 
@@ -45,11 +45,11 @@ impl IntoFilterNodes for TaskFilter {
 		let mut nodes = Vec::new();
 
 		if let Some(title) = self.title {
-			let node = FilterNode {
-				context_path: context,
-				name: "title".to_string(),
-				opvals: title.0.into_iter().map(|n| n.into()).collect(),
-			};
+			let node = FilterNode::new_with_context(
+				context,
+				"title".to_string(),
+				title.0.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
+			);
 			nodes.push(node)
 		}
 

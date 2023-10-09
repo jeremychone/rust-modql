@@ -1,4 +1,4 @@
-use super::ovs_json::FromJsonToOpVal;
+use super::ovs_json::OpValueToOpValType;
 use crate::filter::{OpValString, OpValsString};
 use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer};
 use serde_json::Value;
@@ -48,7 +48,7 @@ impl<'de> Visitor<'de> for StringOpValsVisitor {
 		while let Some(k) = map.next_key::<String>()? {
 			// Note: Important to always call next_value
 			let value = map.next_value::<Value>()?;
-			let opval = OpValString::from_json_opvals_value(&k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValString::op_value_to_op_val_type(&k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 

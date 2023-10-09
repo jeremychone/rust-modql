@@ -7,7 +7,7 @@ pub struct OpValsBool(pub Vec<OpValBool>);
 pub enum OpValBool {
 	Eq(bool),
 	Not(bool),
-	Empty(bool),
+	Null(bool),
 }
 
 // region:    --- Simple Value to Eq BoolOpVal
@@ -60,37 +60,55 @@ impl From<&bool> for OpVal {
 }
 // endregion: --- Simple Value to Eq OpVal::Bool(BoolOpVal::Eq)
 
-// region:    --- is_match
-impl OpValBool {
-	/// Matches a target value (`t_val`) with the BoolOpVal pattern value (`p_val`)
-	pub fn is_match(&self, t_val: bool) -> bool {
-		use OpValBool::*;
+// region:    --- json
+mod json {
+	use super::*;
+	use crate::filter::json::OpValueToOpValType;
+	use crate::{Error, Result};
+	use serde_json::Value;
 
-		match self {
-			Eq(p_val) => &t_val == p_val,
-			Not(p_val) => &t_val != p_val,
-			Empty(_) => false, // always false per this function signature.
+	impl OpValueToOpValType for OpValBool {
+		fn op_value_to_op_val_type(op: &str, value: Value) -> Result<Self>
+		where
+			Self: Sized,
+		{
+			let ov = match (op, value) {
+				("$eq", Value::Bool(v)) => OpValBool::Eq(v),
+				("$not", Value::Bool(v)) => OpValBool::Not(v),
+				("$null", Value::Bool(v)) => OpValBool::Not(v),
+				(_, value) => {
+					return Err(Error::JsonOpValNotSupported {
+						operator: op.to_string(),
+						value,
+					})
+				}
+			};
+
+			Ok(ov)
 		}
 	}
 }
-// endregion: --- is_match
+// endregion: --- json
 
 // region:    --- with-sea-query
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
+	use crate::filter::{sea_is_col_value_null, SeaResult};
 	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
 
 	impl OpValBool {
-		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> ConditionExpression {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> SeaResult<ConditionExpression> {
 			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
-			match self {
+			let cond = match self {
 				OpValBool::Eq(s) => binary_fn(BinOper::Equal, Value::from(s).into()),
 				OpValBool::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
-				OpValBool::Empty(_) => todo!("into_sea_op_val for OpValBool::Empty"),
-			}
+				OpValBool::Null(null) => sea_is_col_value_null(col.clone(), null),
+			};
+
+			Ok(cond)
 		}
 	}
 }

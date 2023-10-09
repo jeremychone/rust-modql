@@ -9,11 +9,22 @@ pub enum Error {
 	// region:    --- Json Errors
 	JsonValNotOfType(&'static str),
 
-	JsonOpValNotSupported(String, Value),
+	JsonValArrayWrongType {
+		actual_value: Value,
+	},
+	JsonValArrayItemNotOfType {
+		expected_type: &'static str,
+		actual_value: Value,
+	},
+
+	JsonOpValNotSupported {
+		operator: String,
+		value: Value,
+	},
 	// endregion: --- Json Errors
 }
 
-// region:    --- Error Boiler
+// region:    --- Error Boilerpate
 impl std::fmt::Display for Error {
 	fn fmt(&self, fmt: &mut std::fmt::Formatter) -> core::result::Result<(), std::fmt::Error> {
 		write!(fmt, "{self:?}")
@@ -21,4 +32,4 @@ impl std::fmt::Display for Error {
 }
 
 impl std::error::Error for Error {}
-// endregion: --- Error Boiler
+// endregion: --- Error Boilerpate

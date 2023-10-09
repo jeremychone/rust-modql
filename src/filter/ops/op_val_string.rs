@@ -17,8 +17,6 @@ pub enum OpValString {
 	Gt(String),
 	Gte(String),
 
-	Empty(bool),
-
 	Contains(String),
 	NotContains(String),
 
@@ -36,6 +34,9 @@ pub enum OpValString {
 
 	EndsWithIn(Vec<String>),
 	NotEndsWithIn(Vec<String>),
+
+	Empty(bool),
+	Null(bool),
 }
 
 // region:    --- Simple value to Eq OpValString
@@ -88,79 +89,153 @@ impl From<&str> for OpVal {
 }
 // endregion: --- Primitive to OpVal::String(StringOpVal::Eq)
 
-// region:    --- is_match
-impl OpValString {
-	/// Matches a target value (`t_val`) with the StringOpVal pattern value (`p_val`)
-	pub fn is_match(&self, t_val: &str) -> bool {
-		use OpValString::*;
+mod json {
+	use crate::filter::json::OpValueToOpValType;
+	use crate::filter::OpValString;
+	use crate::{Error, Result};
+	use serde_json::Value;
 
-		match self {
-			Eq(p_val) => t_val == p_val,
-			Not(p_val) => t_val != p_val,
-			In(p_vals) => p_vals.iter().any(|p_val| t_val == p_val),
-			NotIn(p_vals) => !p_vals.iter().any(|p_val| t_val == p_val),
-			Lt(p_val) => t_val < p_val.as_str(),
-			Lte(p_val) => t_val <= p_val.as_str(),
-			Gt(p_val) => t_val > p_val.as_str(),
-			Gte(p_val) => t_val >= p_val.as_str(),
-			Empty(p_val) => p_val == &t_val.is_empty(),
-			Contains(p_val) => t_val.contains(p_val),
-			NotContains(p_val) => !t_val.contains(p_val),
-			ContainsIn(p_vals) => p_vals.iter().any(|p_val| t_val.contains(p_val)),
-			NotContainsIn(p_vals) => !p_vals.iter().any(|p_val| t_val.contains(p_val)),
-			StartsWith(p_val) => t_val.starts_with(p_val),
-			NotStartsWith(p_val) => !t_val.starts_with(p_val),
-			StartsWithIn(p_vals) => p_vals.iter().any(|p_val| t_val.starts_with(p_val)),
-			NotStartsWithIn(p_vals) => !p_vals.iter().any(|p_val| t_val.starts_with(p_val)),
-			EndsWith(p_val) => t_val.starts_with(p_val),
-			NotEndsWith(p_val) => !t_val.starts_with(p_val),
-			EndsWithIn(p_vals) => p_vals.iter().any(|p_val| t_val.ends_with(p_val)),
-			NotEndsWithIn(p_vals) => !p_vals.iter().any(|p_val| t_val.ends_with(p_val)),
+	impl OpValueToOpValType for OpValString {
+		fn op_value_to_op_val_type(op: &str, value: Value) -> Result<Self>
+		where
+			Self: Sized,
+		{
+			fn into_strings(value: Value) -> Result<Vec<String>> {
+				let mut values = Vec::new();
+
+				let Value::Array(array) = value else {
+					return Err(Error::JsonValArrayWrongType { actual_value: value });
+				};
+
+				for item in array.into_iter() {
+					if let Value::String(item) = item {
+						values.push(item);
+					} else {
+						return Err(Error::JsonValArrayItemNotOfType {
+							expected_type: "String",
+							actual_value: item,
+						});
+					}
+				}
+
+				Ok(values)
+			}
+
+			// FIXME: Needs to do the In/Array patterns.
+			let ov = match (op, value) {
+				("$eq", Value::String(string_v)) => OpValString::Eq(string_v),
+				("$in", value) => OpValString::NotIn(into_strings(value)?),
+
+				("$not", Value::String(string_v)) => OpValString::Not(string_v),
+				("$notIn", value) => OpValString::NotIn(into_strings(value)?),
+
+				("$lt", Value::String(string_v)) => OpValString::Lt(string_v),
+				("$lte", Value::String(string_v)) => OpValString::Lte(string_v),
+
+				("$gt", Value::String(string_v)) => OpValString::Gt(string_v),
+				("$gte", Value::String(string_v)) => OpValString::Gte(string_v),
+
+				("$contains", Value::String(string_v)) => OpValString::Contains(string_v),
+				("$containsIn", value) => OpValString::ContainsIn(into_strings(value)?),
+
+				("$notContains", Value::String(string_v)) => OpValString::NotContains(string_v),
+				("$notContainsIn", value) => OpValString::NotContainsIn(into_strings(value)?),
+
+				("$startsWith", Value::String(string_v)) => OpValString::StartsWith(string_v),
+				("$startsWithIn", value) => OpValString::StartsWithIn(into_strings(value)?),
+
+				("$notStartsWith", Value::String(string_v)) => OpValString::NotStartsWith(string_v),
+				("$notStartsWithIn", value) => OpValString::NotStartsWithIn(into_strings(value)?),
+
+				("$endsWith", Value::String(string_v)) => OpValString::EndsWith(string_v),
+				("$endsWithIn", value) => OpValString::EndsWithIn(into_strings(value)?),
+
+				("$notEndsWith", Value::String(string_v)) => OpValString::NotEndsWith(string_v),
+				("$notEndsWithIn", value) => OpValString::NotEndsWithIn(into_strings(value)?),
+
+				("$empty", Value::Bool(v)) => OpValString::Empty(v),
+				("$null", Value::Bool(v)) => OpValString::Null(v),
+
+				(_, v) => {
+					return Err(Error::JsonOpValNotSupported {
+						operator: op.to_string(),
+						value: v,
+					})
+				}
+			};
+			Ok(ov)
 		}
 	}
 }
-// endregion: --- is_match
 
 // region:    --- with-sea-query
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
+	use crate::filter::{sea_is_col_value_null, SeaResult};
+	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, SimpleExpr, Value};
 
 	impl OpValString {
-		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> ConditionExpression {
-			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> SeaResult<ConditionExpression> {
+			let binary_fn = |op: BinOper, v: String| {
+				let vxpr = SimpleExpr::Value(Value::from(v));
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
-			match self {
-				OpValString::Eq(s) => binary_fn(BinOper::Equal, Value::from(s).into()),
-				OpValString::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
-				OpValString::In(s) => binary_fn(
-					BinOper::In,
-					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
-				),
-				OpValString::NotIn(s) => binary_fn(
-					BinOper::NotIn,
-					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
-				),
-				OpValString::Lt(s) => binary_fn(BinOper::SmallerThan, Value::from(s).into()),
-				OpValString::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, Value::from(s).into()),
-				OpValString::Gt(s) => binary_fn(BinOper::GreaterThan, Value::from(s).into()),
-				OpValString::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, Value::from(s).into()),
-				OpValString::Empty(_s) => todo!("OpValString::Empty not implemented yet"),
-				OpValString::Contains(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}%")).into()),
-				OpValString::NotContains(s) => binary_fn(BinOper::NotLike, Value::from(format!("%{s}%")).into()),
-				OpValString::ContainsIn(_s) => todo!("OpValString::ContainsIn not implemented yet"),
-				OpValString::NotContainsIn(_s) => todo!("OpValString::NotContainsIn not implemented yet"),
-				OpValString::StartsWith(s) => binary_fn(BinOper::Like, Value::from(format!("{s}%")).into()),
-				OpValString::NotStartsWith(s) => binary_fn(BinOper::NotLike, Value::from(format!("{s}%")).into()),
-				OpValString::StartsWithIn(_s) => todo!("OpValString::StartsWithIn not implemented yet"),
-				OpValString::NotStartsWithIn(_s) => todo!("OpValString::NotStartsWithIn not implemented yet"),
-				OpValString::EndsWith(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}")).into()),
-				OpValString::NotEndsWith(s) => binary_fn(BinOper::Like, Value::from(format!("%{s}")).into()),
-				OpValString::EndsWithIn(_s) => todo!("OpValString::EndsWithIn not implemented yet"),
-				OpValString::NotEndsWithIn(_s) => todo!("OpValString::NotEndsWithIn not implemented yet"),
-			}
+			let binaries_fn = |op: BinOper, v: Vec<String>| {
+				let vxpr = SimpleExpr::Values(v.into_iter().map(Value::from).collect());
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+			};
+
+			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {
+				let mut cond = Condition::all();
+
+				for value in values {
+					let expr = binary_fn(op, format!("{val_prefix}{value}{val_suffix}"));
+					cond = cond.add(expr);
+				}
+
+				ConditionExpression::Condition(cond)
+			};
+
+			let cond = match self {
+				OpValString::Eq(s) => binary_fn(BinOper::Equal, s),
+				OpValString::Not(s) => binary_fn(BinOper::NotEqual, s),
+				OpValString::In(s) => binaries_fn(BinOper::In, s),
+				OpValString::NotIn(s) => binaries_fn(BinOper::NotIn, s),
+				OpValString::Lt(s) => binary_fn(BinOper::SmallerThan, s),
+				OpValString::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, s),
+				OpValString::Gt(s) => binary_fn(BinOper::GreaterThan, s),
+				OpValString::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, s),
+
+				OpValString::Contains(s) => binary_fn(BinOper::Like, format!("%{s}%")),
+				OpValString::ContainsIn(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),
+
+				OpValString::NotContains(s) => binary_fn(BinOper::NotLike, format!("%{s}%")),
+				OpValString::NotContainsIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", "%"),
+
+				OpValString::StartsWith(s) => binary_fn(BinOper::Like, format!("{s}%")),
+				OpValString::StartsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "", "%"),
+
+				OpValString::NotStartsWith(s) => binary_fn(BinOper::NotLike, format!("{s}%")),
+				OpValString::NotStartsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "", "%"),
+
+				OpValString::EndsWith(s) => binary_fn(BinOper::Like, format!("%{s}")),
+				OpValString::EndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
+
+				OpValString::NotEndsWith(s) => binary_fn(BinOper::Like, format!("%{s}")),
+				OpValString::NotEndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
+
+				OpValString::Null(null) => sea_is_col_value_null(col.clone(), null),
+				OpValString::Empty(empty) => {
+					let op = if empty { BinOper::Equal } else { BinOper::NotEqual };
+					Condition::any()
+						.add(sea_is_col_value_null(col.clone(), empty))
+						.add(binary_fn(op, "".to_string()))
+						.into()
+				}
+			};
+
+			Ok(cond)
 		}
 	}
 }

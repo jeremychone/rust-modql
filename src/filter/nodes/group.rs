@@ -103,28 +103,48 @@ impl From<FilterGroup> for Option<FilterGroups> {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use sea_query::Condition;
+	use crate::filter::{SeaError, SeaResult};
+	use sea_query::{Condition, ConditionExpression};
 
-	impl From<FilterGroup> for Condition {
-		fn from(fg: FilterGroup) -> Self {
-			let exprs = fg.into_iter().flat_map(|node| node.into_sea_expr());
+	impl TryFrom<FilterGroup> for Condition {
+		type Error = SeaError;
+		fn try_from(val: FilterGroup) -> SeaResult<Self> {
+			// Note: this will fail on first, error found
+			let exprs: SeaResult<Vec<Vec<ConditionExpression>>> =
+				val.into_iter().map(|node| node.into_sea_cond_expr_list()).collect();
+			// We flattlen the Vec<Vec<ConditionExpression>> to a Vec<ConditionExpression>
+			let exprs_flat = exprs?.into_iter().flatten();
+
 			let mut cond = Condition::all();
-			for expr in exprs {
-				cond = cond.add(expr);
+			for cond_item in exprs_flat {
+				cond = cond.add(cond_item);
 			}
-			cond
+			Ok(cond)
+		}
+	}
+
+	impl TryFrom<FilterGroups> for Condition {
+		type Error = SeaError;
+		fn try_from(val: FilterGroups) -> SeaResult<Condition> {
+			let mut cond = Condition::any();
+
+			for group in val.0.into_iter() {
+				cond = cond.add(Condition::try_from(group)?);
+			}
+
+			Ok(cond)
 		}
 	}
 
 	impl FilterGroups {
-		pub fn into_sea_condition(self) -> Condition {
+		pub fn into_sea_condition(self) -> SeaResult<Condition> {
 			let mut cond = Condition::any();
 
 			for group in self.0.into_iter() {
-				cond = cond.add(Condition::from(group));
+				cond = cond.add(Condition::try_from(group)?);
 			}
 
-			cond
+			Ok(cond)
 		}
 	}
 }

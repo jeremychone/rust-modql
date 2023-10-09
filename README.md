@@ -85,8 +85,6 @@ On the Rust side, this can be expressed like this:
 use modql::filter::{FilterGroups, FilterNode, OpValString};
 
 fn main() -> anyhow::Result<()> {
-	println!("->> hello! {}", 111);
-
 	let filter_nodes: Vec<FilterNode> = vec![
 		(
 			"title",

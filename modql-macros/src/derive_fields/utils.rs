@@ -1,11 +1,8 @@
-#![allow(unused)] // For early development.
+use crate::utils::{get_field_attribute, get_meta_value_string};
 use proc_macro2::Ident;
-use quote::{quote, ToTokens};
-use syn::parse::Parse;
+use quote::ToTokens;
 use syn::punctuated::Punctuated;
-use syn::{
-	parse_quote, Attribute, DeriveInput, Expr, Field, FieldsNamed, Lit, LitInt, LitStr, Meta, MetaNameValue, Token,
-};
+use syn::{Attribute, DeriveInput, Expr, Field, FieldsNamed, Lit, Meta, MetaNameValue, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
 pub struct Prop<'a> {
@@ -117,9 +114,6 @@ pub fn get_field_prop_attr(field: &Field) -> Result<FieldPropAttr, syn::Error> {
 	})
 }
 
-fn get_field_attribute<'a>(field: &'a Field, name: &str) -> Option<&'a Attribute> {
-	field.attrs.iter().find(|a| a.path().is_ident(name))
-}
 // endregion: --- Field Prop Attribute
 
 // region:    --- Struct Prop Attribute
@@ -158,14 +152,3 @@ fn get_dinput_attribute<'a>(dinput: &'a DeriveInput, name: &str) -> Option<&'a A
 	dinput.attrs.iter().find(|a| a.path().is_ident(name))
 }
 // endregion: --- Struct Prop Attribute
-
-// region:    --- Attribute Utils
-fn get_meta_value_string(nv: MetaNameValue) -> Option<String> {
-	if let Expr::Lit(exp_lit) = nv.value {
-		if let Lit::Str(lit_str) = exp_lit.lit {
-			return Some(lit_str.value());
-		}
-	}
-	None
-}
-// endregion: --- Attribute Utils

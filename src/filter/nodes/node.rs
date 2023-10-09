@@ -1,7 +1,5 @@
 use crate::filter::ops::OpVal;
-use crate::filter::{
-	OpValBool, OpValFloat32, OpValFloat64, OpValInt32, OpValInt64, OpValString, OpValUint32, OpValUint64,
-};
+use crate::filter::{OpValBool, OpValFloat64, OpValInt32, OpValInt64, OpValString};
 
 pub trait IntoFilterNodes {
 	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;
@@ -12,6 +10,8 @@ pub struct FilterNode {
 	pub context_path: Option<String>, // would be for the project.title (project in this case)
 	pub name: String,
 	pub opvals: Vec<OpVal>,
+	#[cfg(feature = "with-sea-query")]
+	pub for_sea_condition: Option<crate::filter::ForSeaCondition>,
 }
 
 impl FilterNode {
@@ -19,8 +19,22 @@ impl FilterNode {
 		FilterNode {
 			context_path: None,
 			name: name.into(),
-			// opvals: vec![opval.into()],
 			opvals: opvals.into(),
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
+		}
+	}
+	pub fn new_with_context(
+		context_path: Option<String>,
+		name: impl Into<String>,
+		opvals: impl Into<Vec<OpVal>>,
+	) -> FilterNode {
+		FilterNode {
+			context_path,
+			name: name.into(),
+			opvals: opvals.into(),
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -38,6 +52,8 @@ macro_rules! from_tuples_opval {
 						context_path: None,
 						name: name.to_string(),
 						opvals: vec![ov.into()],
+						#[cfg(feature = "with-sea-query")]
+						for_sea_condition: None,
 					}
 				}
 			}
@@ -50,6 +66,8 @@ macro_rules! from_tuples_opval {
 						context_path: None,
 						name: name.to_string(),
 						opvals: ovs.into_iter().map(|v| v.into()).collect(),
+						#[cfg(feature = "with-sea-query")]
+						for_sea_condition: None,
 					}
 				}
 			}
@@ -60,12 +78,12 @@ from_tuples_opval!(
 	// String
 	OpValString,
 	// Nums
-	OpValUint64,
-	OpValUint32,
+	// OpValUint64,
+	// OpValUint32,
 	OpValInt64,
-	OpValInt32,
+	// OpValInt32,
 	OpValFloat64,
-	OpValFloat32,
+	// OpValFloat32,
 	// Bool
 	OpValBool
 );
@@ -79,6 +97,8 @@ impl From<(&str, &str)> for FilterNode {
 			context_path: None,
 			name: name.to_string(),
 			opvals: vec![OpValString::Eq(ov.to_string()).into()],
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -89,6 +109,8 @@ impl From<(&str, &String)> for FilterNode {
 			context_path: None,
 			name: name.to_string(),
 			opvals: vec![OpValString::Eq(ov.to_string()).into()],
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -99,6 +121,8 @@ impl From<(&str, String)> for FilterNode {
 			context_path: None,
 			name: name.to_string(),
 			opvals: vec![OpValString::Eq(ov).into()],
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -118,6 +142,8 @@ impl From<(&str, $nt)> for FilterNode {
 			context_path: None,
 			name: name.to_string(),
 			opvals: vec![$ov::Eq(ov).into()],
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -126,12 +152,12 @@ impl From<(&str, $nt)> for FilterNode {
 }
 
 from_tuples_num!(
-	(u64, OpValUint64),
-	(u32, OpValUint32),
+	// (u64, OpValUint64),
+	// (u32, OpValUint32),
 	(i64, OpValInt64),
 	(i32, OpValInt32),
-	(f64, OpValFloat64),
-	(f32, OpValFloat32)
+	// (f32, OpValFloat32),
+	(f64, OpValFloat64)
 );
 
 // endregion: --- From Tuples (num val)
@@ -143,6 +169,8 @@ impl From<(&str, bool)> for FilterNode {
 			context_path: None,
 			name: name.to_string(),
 			opvals: vec![OpValBool::Eq(ov).into()],
+			#[cfg(feature = "with-sea-query")]
+			for_sea_condition: None,
 		}
 	}
 }
@@ -153,29 +181,44 @@ impl From<(&str, bool)> for FilterNode {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
+	use crate::filter::{ForSeaCondition, OpValValue, SeaError, SeaResult};
 	use crate::sea_utils::StringIden;
 	use sea_query::{ColumnRef, ConditionExpression, IntoColumnRef};
 
 	impl FilterNode {
-		pub fn into_sea_expr(self) -> Vec<ConditionExpression> {
+		pub fn into_sea_cond_expr_list(self) -> SeaResult<Vec<ConditionExpression>> {
 			let col: ColumnRef = StringIden(self.name).into_column_ref();
 			let mut node_sea_exprs: Vec<ConditionExpression> = Vec::new();
+			let for_sea_cond = self.for_sea_condition;
 
 			for op_val in self.opvals.into_iter() {
 				let cond_expr = match op_val {
-					OpVal::String(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Uint64(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Uint32(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Int64(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Int32(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Float64(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Float32(ov) => ov.into_sea_cond_expr(&col),
-					OpVal::Bool(ov) => ov.into_sea_cond_expr(&col),
+					OpVal::String(ov) => ov.into_sea_cond_expr(&col)?,
+					OpVal::Int64(ov) => ov.into_sea_cond_expr(&col)?,
+					OpVal::Int32(ov) => ov.into_sea_cond_expr(&col)?,
+					OpVal::Float64(ov) => ov.into_sea_cond_expr(&col)?,
+					OpVal::Bool(ov) => ov.into_sea_cond_expr(&col)?,
+					OpVal::Value(ov) => {
+						let Some(for_sea_cond) = for_sea_cond.as_ref() else {
+							return Err(SeaError::Custom(
+								"OpValsValue must have a #[modql(to_sea_value_fn=\"fn_name\"] or to_sea_condition_fn attribute"
+									.to_string(),
+							));
+						};
+
+						match for_sea_cond {
+							ForSeaCondition::ToSeaValue(to_sea_value) => {
+								OpValValue::into_sea_cond_expr_with_json_to_sea(ov, &col, to_sea_value)?
+							}
+							ForSeaCondition::ToSeaCondition(to_sea_condition) => to_sea_condition.call(&col, ov)?,
+						}
+					}
 				};
 
 				node_sea_exprs.push(cond_expr);
 			}
-			node_sea_exprs
+
+			Ok(node_sea_exprs)
 		}
 	}
 }
