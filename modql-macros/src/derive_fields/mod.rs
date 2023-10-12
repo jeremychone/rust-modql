@@ -52,7 +52,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let ff_all_pushes = quote! {
 		#(
 			ff.push(
-				modql::field::Field::new(modql::sea_utils::SIden(#props_all_names), self.#props_all_idents.into())
+				modql::field::Field::new(modql::SIden(#props_all_names), self.#props_all_idents.into())
 			);
 		)*
 	};
@@ -60,7 +60,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let ff_not_option_pushes = quote! {
 		#(
 			ff.push(
-				modql::field::Field::new(modql::sea_utils::SIden(#props_not_option_names), self.#props_not_option_idents.into())
+				modql::field::Field::new(modql::SIden(#props_not_option_names), self.#props_not_option_idents.into())
 			);
 		)*
 	};
@@ -69,7 +69,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 		#(
 			if let Some(val) = self.#props_option_idents {
 				ff.push(
-					modql::field::Field::new(modql::sea_utils::SIden(#props_option_names), val.into())
+					modql::field::Field::new(modql::SIden(#props_option_names), val.into())
 				);
 			}
 		)*
@@ -100,14 +100,14 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 
 			fn field_idens() -> Vec<sea_query::SeaRc<dyn sea_query::Iden>> {
 				vec![#(
-				sea_query::IntoIden::into_iden(modql::sea_utils::SIden(#props_all_names)),
+				sea_query::IntoIden::into_iden(modql::SIden(#props_all_names)),
 				)*]
 			}
 
 			fn field_column_refs() -> Vec<sea_query::ColumnRef> {
 				use sea_query::IntoIden;
 				use sea_query::ColumnRef;
-				use modql::sea_utils::SIden;
+				use modql::SIden;
 
 				let mut v = Vec::new();
 
