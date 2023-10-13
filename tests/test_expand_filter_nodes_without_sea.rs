@@ -1,8 +1,7 @@
 //! Should compile. No test functions yet.
 
 use anyhow::Result;
-use modql::filter::{FilterNodes, OpValsInt64, OpValsString, SeaError};
-use sea_query::Condition;
+use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 
 #[derive(FilterNodes, Default)]
 pub struct ProjectFilter {
@@ -11,6 +10,7 @@ pub struct ProjectFilter {
 	name: Option<OpValsString>,
 }
 
+#[cfg(feature = "with-sea-query")]
 #[test]
 fn test_expand_filter_nodes() -> Result<()> {
 	let filter = ProjectFilter {
@@ -19,7 +19,7 @@ fn test_expand_filter_nodes() -> Result<()> {
 		..Default::default()
 	};
 
-	let _cond: Result<Condition, SeaError> = filter.try_into();
+	let _cond: Result<sea_query::Condition, modql::filter::SeaError> = filter.try_into();
 
 	Ok(())
 }
