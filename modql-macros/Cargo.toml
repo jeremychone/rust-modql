@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.3.0-alpha.5"
+version = "0.3.0-alpha.6-WIP"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
