@@ -148,7 +148,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	let out_sea_filter = if cfg!(feature = "with-sea-query") {
 		quote! {
 			impl TryFrom<#struct_name> for sea_query::Condition {
-				type Error = modql::filter::SeaError;
+				type Error = modql::filter::IntoSeaError;
 
 				fn try_from(val: #struct_name) -> modql::filter::SeaResult<Self> {
 					modql::filter::FilterGroup::from(val).try_into()

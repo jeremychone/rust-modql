@@ -181,7 +181,7 @@ impl From<(&str, bool)> for FilterNode {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{ForSeaCondition, OpValValue, SeaError, SeaResult};
+	use crate::filter::{ForSeaCondition, IntoSeaError, OpValValue, SeaResult};
 	use crate::sea_utils::StringIden;
 	use sea_query::{ColumnRef, ConditionExpression, IntoColumnRef};
 
@@ -200,7 +200,7 @@ mod with_sea_query {
 					OpVal::Bool(ov) => ov.into_sea_cond_expr(&col)?,
 					OpVal::Value(ov) => {
 						let Some(for_sea_cond) = for_sea_cond.as_ref() else {
-							return Err(SeaError::Custom(
+							return Err(IntoSeaError::Custom(
 								"OpValsValue must have a #[modql(to_sea_value_fn=\"fn_name\"] or to_sea_condition_fn attribute"
 									.to_string(),
 							));

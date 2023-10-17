@@ -2,7 +2,7 @@
 
 mod error;
 
-pub use self::error::{SeaError, SeaResult};
+pub use self::error::{IntoSeaError, SeaResult};
 
 use crate::filter::OpValValue;
 use sea_query::{ColumnRef, ConditionExpression};

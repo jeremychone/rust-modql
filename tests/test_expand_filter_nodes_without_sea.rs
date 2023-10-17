@@ -19,7 +19,7 @@ fn test_expand_filter_nodes() -> Result<()> {
 		..Default::default()
 	};
 
-	let _cond: Result<sea_query::Condition, modql::filter::SeaError> = filter.try_into();
+	let _cond: Result<sea_query::Condition, modql::filter::IntoSeaError> = filter.try_into();
 
 	Ok(())
 }

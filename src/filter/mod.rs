@@ -1,10 +1,10 @@
 // -- Sub-Module
+#[cfg(feature = "with-sea-query")]
+mod into_sea;
 mod json;
 mod list_options;
 pub(crate) mod nodes;
 pub(crate) mod ops;
-#[cfg(feature = "with-sea-query")]
-mod to_sea;
 
 // -- Re-Exports
 pub use list_options::*;
@@ -18,4 +18,4 @@ pub use ops::op_val_value::*;
 pub use ops::*;
 
 #[cfg(feature = "with-sea-query")]
-pub use to_sea::*;
+pub use into_sea::*;

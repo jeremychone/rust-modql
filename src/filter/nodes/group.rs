@@ -103,11 +103,11 @@ impl From<FilterGroup> for Option<FilterGroups> {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{SeaError, SeaResult};
+	use crate::filter::{IntoSeaError, SeaResult};
 	use sea_query::{Condition, ConditionExpression};
 
 	impl TryFrom<FilterGroup> for Condition {
-		type Error = SeaError;
+		type Error = IntoSeaError;
 		fn try_from(val: FilterGroup) -> SeaResult<Self> {
 			// Note: this will fail on first, error found
 			let exprs: SeaResult<Vec<Vec<ConditionExpression>>> =
@@ -124,7 +124,7 @@ mod with_sea_query {
 	}
 
 	impl TryFrom<FilterGroups> for Condition {
-		type Error = SeaError;
+		type Error = IntoSeaError;
 		fn try_from(val: FilterGroups) -> SeaResult<Condition> {
 			let mut cond = Condition::any();
 

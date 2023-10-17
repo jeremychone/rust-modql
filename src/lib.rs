@@ -1,6 +1,4 @@
 // #![allow(unused)]
-// #![doc = include_str!("../README.md")]
-
 // --- Sub-Modules
 mod error;
 pub mod filter;
