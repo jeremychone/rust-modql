@@ -1,6 +1,5 @@
 //! Should compile. No test functions yet.
 
-use anyhow::Result;
 use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 
 #[derive(FilterNodes, Default)]
@@ -12,7 +11,7 @@ pub struct ProjectFilter {
 
 #[cfg(feature = "with-sea-query")]
 #[test]
-fn test_expand_filter_nodes() -> Result<()> {
+fn test_expand_filter_nodes() -> anyhow::Result<()> {
 	let filter = ProjectFilter {
 		id: Some(123.into()),
 

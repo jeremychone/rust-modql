@@ -119,8 +119,8 @@ The following tables show the list of possible operators for each type.
 | Operator | Meaning                                       | Example                                  |
 |----------|-----------------------------------------------|------------------------------------------|
 | `$eq`    | Exact match with one value                    | `{age: {"$eq": 24}}` same as `{age: 24}` |
-| `$not`   | Exclude any exact match                       | `{age: {"$not": 24}}`                    |
 | `$in`    | Exact match with within a list of values (or) | `{age: {"$in": [23, 24]}}`               |
+| `$not`   | Exclude any exact match                       | `{age: {"$not": 24}}`                    |
 | `$notIn` | Exclude any exact withing a list              | `{age: {"$notIn": [24]}}`                |
 | `$lt`    | Lesser Than                                   | `{age: {"$lt": 30}}`                     |
 | `$lte`   | Lesser Than or =                              | `{age: {"$lte": 30}}`                    |

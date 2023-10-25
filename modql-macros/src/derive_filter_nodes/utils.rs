@@ -1,9 +1,7 @@
 use crate::utils::{get_field_attribute, get_meta_value_string};
-use proc_macro2::Ident;
-use quote::ToTokens;
 use syn::punctuated::Punctuated;
 use syn::Field;
-use syn::{Attribute, DeriveInput, Expr, FieldsNamed, Lit, Meta, MetaNameValue, Token};
+use syn::{Meta, Token};
 
 pub struct MoqlFieldAttr {
 	pub context_path: Option<String>,

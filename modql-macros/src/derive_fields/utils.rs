@@ -2,7 +2,7 @@ use crate::utils::{get_field_attribute, get_meta_value_string};
 use proc_macro2::Ident;
 use quote::ToTokens;
 use syn::punctuated::Punctuated;
-use syn::{Attribute, DeriveInput, Expr, Field, FieldsNamed, Lit, Meta, MetaNameValue, Token};
+use syn::{Attribute, DeriveInput, Field, FieldsNamed, Meta, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
 pub struct Prop<'a> {
