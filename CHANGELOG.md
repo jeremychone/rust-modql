@@ -2,6 +2,10 @@
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
 
+## 2023-10-24 - `0.3.0`
+
+- `!` - First v0.3.x release, with major update to API, with some breaking changes, and support for the `sea-query` and new `Fields` support.
+
 ## 2023-10-06 - `0.3.0-alpha.1`
 
 - `!` - Major update to API, with some breaking changes, and support for the `sea-query` and new `Fields` support.
