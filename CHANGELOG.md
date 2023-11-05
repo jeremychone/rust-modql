@@ -2,6 +2,10 @@
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
 
+## 2023-11-05 - `0.3.1`
+
+- `+` implements from Vec<F> for FilterGroups
+
 ## 2023-10-24 - `0.3.0`
 
 - `!` - First v0.3.x release, with major update to API, with some breaking changes, and support for the `sea-query` and new `Fields` support.
