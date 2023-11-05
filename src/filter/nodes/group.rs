@@ -1,4 +1,4 @@
-use crate::filter::FilterNode;
+use crate::filter::{FilterNode, IntoFilterNodes};
 
 // region:    --- Filter Group
 /// A FilterGroup is a vector of FilterNode that are intended to be interpreted as AND.
@@ -94,6 +94,16 @@ impl From<FilterGroup> for FilterGroups {
 impl From<FilterGroup> for Option<FilterGroups> {
 	fn from(val: FilterGroup) -> Self {
 		Some(val.into())
+	}
+}
+
+impl<F> From<Vec<F>> for FilterGroups
+where
+	F: IntoFilterNodes,
+{
+	fn from(filters: Vec<F>) -> Self {
+		let filters: Vec<_> = filters.into_iter().map(|f| f.filter_nodes(None)).collect();
+		filters.into()
 	}
 }
 
