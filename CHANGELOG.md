@@ -2,6 +2,10 @@
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
 
+## 2023-11-06 - `0.3.2`
+
+- fix map opvals ( ..) support for numbers and bool
+
 ## 2023-11-05 - `0.3.1`
 
 - `+` implements from Vec<F> for FilterGroups
