@@ -4,7 +4,7 @@
 #![cfg(feature = "with-sea-query")]
 
 use anyhow::Result;
-use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsInt64, OpValsString};
+use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsBool, OpValsInt64, OpValsString};
 use modql_macros::FilterNodes;
 use sea_query::Condition;
 use serde::{Deserialize, Serialize};
@@ -15,6 +15,7 @@ use serde_with::{serde_as, OneOrMany};
 pub struct TaskFilter {
 	id: Option<OpValsInt64>,
 	title: Option<OpValsString>,
+	bool: Option<OpValsBool>,
 }
 
 #[serde_as]
@@ -26,13 +27,21 @@ struct TaskListParams {
 
 #[test]
 fn test_json_filters_main() -> Result<()> {
+	// let params = json!({
+	// 	"filters": [{
+	// 		"id": {"$gt": 123},
+	// 		"title": {"$contains": "World"}
+	// 	},
+	// 	{
+	// 		"title": {"$startsWith": "Hello"}
+	// 	}]
+	// });
+
 	let params = json!({
-		"filters": [{
-			"title": {"$contains": "World"}
-		},
-		{
-			"title": {"$startsWith": "Hello"}
-		}]
+		"filters": {
+			"title": {"$contains": "World"},
+			"id": {"$in": [123, 124]}
+		}
 	});
 
 	let params: TaskListParams = from_value(params)?;

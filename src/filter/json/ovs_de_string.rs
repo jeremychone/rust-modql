@@ -43,8 +43,7 @@ impl<'de> Visitor<'de> for StringOpValsVisitor {
 		let mut opvals: Vec<OpValString> = Vec::new();
 
 		// Note: If use next_key::<&str>, error "invalid type: string \"$contains\", expected a borrowed string"
-		//       when using in app code (works in unit test somehow). Must have a good reason, just not sure yet.
-		//       So, using <String> works.
+		//       so using String for now.
 		while let Some(k) = map.next_key::<String>()? {
 			// Note: Important to always call next_value
 			let value = map.next_value::<Value>()?;

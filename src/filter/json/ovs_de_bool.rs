@@ -35,10 +35,10 @@ impl<'de> Visitor<'de> for BoolOpValsVisitor {
 	{
 		let mut opvals: Vec<OpValBool> = Vec::new();
 
-		while let Some(k) = map.next_key::<&str>()? {
-			// Note: Important to always
+		while let Some(k) = map.next_key::<String>()? {
+			// Note: Important to always call next_value
 			let value = map.next_value::<Value>()?;
-			let opval = OpValBool::op_value_to_op_val_type(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValBool::op_value_to_op_val_type(&k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 

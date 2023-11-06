@@ -20,7 +20,7 @@ impl<'de> Visitor<'de> for Int64OpValsVisitor {
 	type Value = OpValsInt64; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "IntOpValsVisitor visitor not implemented for this type.")
+		write!(formatter, "OpValsInt64 visitor not implemented for this type.")
 	}
 
 	fn visit_i64<E>(self, v: i64) -> Result<Self::Value, E>
@@ -42,11 +42,9 @@ impl<'de> Visitor<'de> for Int64OpValsVisitor {
 		M: MapAccess<'de>,
 	{
 		let mut opvals: Vec<OpValInt64> = Vec::new();
-
-		while let Some(k) = map.next_key::<&str>()? {
-			// Note: Important to always
+		while let Some(k) = map.next_key::<String>()? {
 			let value = map.next_value::<Value>()?;
-			let opval = OpValInt64::op_value_to_op_val_type(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValInt64::op_value_to_op_val_type(&k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
@@ -71,7 +69,7 @@ impl<'de> Visitor<'de> for Int32OpValsVisitor {
 	type Value = OpValsInt32; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "IntOpValsVisitor visitor not implemented for this type.")
+		write!(formatter, "OpValsInt32 visitor not implemented for this type.")
 	}
 
 	fn visit_i32<E>(self, v: i32) -> Result<Self::Value, E>
@@ -87,10 +85,10 @@ impl<'de> Visitor<'de> for Int32OpValsVisitor {
 	{
 		let mut opvals: Vec<OpValInt32> = Vec::new();
 
-		while let Some(k) = map.next_key::<&str>()? {
+		while let Some(k) = map.next_key::<String>()? {
 			// Note: Important to always
 			let value = map.next_value::<Value>()?;
-			let opval = OpValInt32::op_value_to_op_val_type(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValInt32::op_value_to_op_val_type(&k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
@@ -99,7 +97,7 @@ impl<'de> Visitor<'de> for Int32OpValsVisitor {
 }
 // endregion: --- OpValsInt64
 
-// region:    --- FloatOpVals
+// region:    --- OpValsFloat64
 impl<'de> Deserialize<'de> for OpValsFloat64 {
 	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
 	where
@@ -115,7 +113,7 @@ impl<'de> Visitor<'de> for FloatOpValsVisitor {
 	type Value = OpValsFloat64; // for deserialize
 
 	fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-		write!(formatter, "FloatOpValsVisitor visitor not implemented for this type.")
+		write!(formatter, "OpValsFloat64 visitor not implemented for this type.")
 	}
 
 	fn visit_f64<E>(self, v: f64) -> Result<Self::Value, E>
@@ -138,14 +136,14 @@ impl<'de> Visitor<'de> for FloatOpValsVisitor {
 	{
 		let mut opvals: Vec<OpValFloat64> = Vec::new();
 
-		while let Some(k) = map.next_key::<&str>()? {
+		while let Some(k) = map.next_key::<String>()? {
 			// Note: Important to always
 			let value = map.next_value::<Value>()?;
-			let opval = OpValFloat64::op_value_to_op_val_type(k, value).map_err(serde::de::Error::custom)?;
+			let opval = OpValFloat64::op_value_to_op_val_type(&k, value).map_err(serde::de::Error::custom)?;
 			opvals.push(opval)
 		}
 
 		Ok(OpValsFloat64(opvals))
 	}
 }
-// endregion: --- FloatOpVals
+// endregion: --- OpValsFloat64
