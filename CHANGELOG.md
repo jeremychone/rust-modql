@@ -2,9 +2,14 @@
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
 
+## 2023-11-07 - `0.3.3`
+
+- `-` with-sea-query - Fix "in" operator issues
+- `-` fix OpValString containIn (was AND)
+
 ## 2023-11-06 - `0.3.2`
 
-- fix map opvals ( ..) support for numbers and bool
+- `-` fix map opvals ( ..) support for numbers and bool
 
 ## 2023-11-05 - `0.3.1`
 
