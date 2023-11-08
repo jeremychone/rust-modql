@@ -197,11 +197,11 @@ mod with_sea_query {
 				$ov::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
 				$ov::In(s) => binary_fn(
 					BinOper::In,
-					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
+					SimpleExpr::Tuple(s.into_iter().map(Value::from).map(SimpleExpr::from).collect()),
 				),
 				$ov::NotIn(s) => binary_fn(
 					BinOper::NotIn,
-					SimpleExpr::Values(s.into_iter().map(Value::from).collect()),
+					SimpleExpr::Tuple(s.into_iter().map(Value::from).map(SimpleExpr::from).collect()),
 				),
 				$ov::Lt(s) => binary_fn(BinOper::SmallerThan, Value::from(s).into()),
 				$ov::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, Value::from(s).into()),

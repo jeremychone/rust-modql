@@ -124,7 +124,7 @@ mod json {
 			// FIXME: Needs to do the In/Array patterns.
 			let ov = match (op, value) {
 				("$eq", Value::String(string_v)) => OpValString::Eq(string_v),
-				("$in", value) => OpValString::NotIn(into_strings(value)?),
+				("$in", value) => OpValString::In(into_strings(value)?),
 
 				("$not", Value::String(string_v)) => OpValString::Not(string_v),
 				("$notIn", value) => OpValString::NotIn(into_strings(value)?),
@@ -182,7 +182,8 @@ mod with_sea_query {
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
-				let vxpr = SimpleExpr::Values(v.into_iter().map(Value::from).collect());
+				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(Value::from).map(SimpleExpr::from).collect();
+				let vxpr = SimpleExpr::Tuple(vxpr_list);
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
 

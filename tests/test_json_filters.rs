@@ -5,8 +5,9 @@
 
 use anyhow::Result;
 use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsBool, OpValsInt64, OpValsString};
+use modql::SIden;
 use modql_macros::FilterNodes;
-use sea_query::Condition;
+use sea_query::{Condition, PostgresQueryBuilder, Query};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, json};
 use serde_with::{serde_as, OneOrMany};
@@ -39,8 +40,8 @@ fn test_json_filters_main() -> Result<()> {
 
 	let params = json!({
 		"filters": {
-			"title": {"$contains": "World"},
-			"id": {"$in": [123, 124]}
+			// "title": {"$contains": "World"},
+			"title": {"$in": ["123", "124"]}
 		}
 	});
 
@@ -52,6 +53,11 @@ fn test_json_filters_main() -> Result<()> {
 
 	let cond: Condition = fg.into_sea_condition()?;
 
+	let mut query = Query::select();
+	query.from(SIden("task"));
+	query.cond_where(cond);
+
+	let (sql, values) = query.build(PostgresQueryBuilder);
 	// Note: for now, just check that all compiles and no runtime errors.
 
 	Ok(())
