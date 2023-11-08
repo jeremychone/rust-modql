@@ -187,7 +187,7 @@ mod with_sea_query {
 			};
 
 			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {
-				let mut cond = Condition::all();
+				let mut cond = Condition::any();
 
 				for value in values {
 					let expr = binary_fn(op, format!("{val_prefix}{value}{val_suffix}"));
