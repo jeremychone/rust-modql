@@ -41,22 +41,6 @@ pub enum OpValString {
 
 	Empty(bool),
 	Null(bool),
-
-	// -- Deprecated
-	#[deprecated(note = "use ContainsAny")]
-	ContainsIn(Vec<String>),
-	#[deprecated(note = "use NotContainsAny")]
-	NotContainsIn(Vec<String>),
-
-	#[deprecated(note = "use StartsWithAny")]
-	StartsWithIn(Vec<String>),
-	#[deprecated(note = "use NotStartsWithAny")]
-	NotStartsWithIn(Vec<String>),
-
-	#[deprecated(note = "use EndsWithIn")]
-	EndsWithIn(Vec<String>),
-	#[deprecated(note = "use NotEndsWithIn")]
-	NotEndsWithIn(Vec<String>),
 }
 
 // region:    --- Simple value to Eq OpValString
@@ -178,14 +162,6 @@ mod json {
 				("$empty", Value::Bool(v)) => OpValString::Empty(v),
 				("$null", Value::Bool(v)) => OpValString::Null(v),
 
-				// -- Deprecated
-				("$containsIn", value) => OpValString::ContainsIn(into_strings(value)?),
-				("$notContainsIn", value) => OpValString::NotContainsIn(into_strings(value)?),
-				("$startsWithIn", value) => OpValString::StartsWithIn(into_strings(value)?),
-				("$notStartsWithIn", value) => OpValString::NotStartsWithIn(into_strings(value)?),
-				("$endsWithIn", value) => OpValString::EndsWithIn(into_strings(value)?),
-				("$notEndsWithIn", value) => OpValString::NotEndsWithIn(into_strings(value)?),
-
 				(_, v) => {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
@@ -276,14 +252,6 @@ mod with_sea_query {
 						.add(binary_fn(op, "".to_string()))
 						.into()
 				}
-
-				// -- Deprecated
-				OpValString::ContainsIn(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),
-				OpValString::NotContainsIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", "%"),
-				OpValString::StartsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "", "%"),
-				OpValString::NotStartsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "", "%"),
-				OpValString::EndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
-				OpValString::NotEndsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", ""),
 			};
 
 			Ok(cond)
