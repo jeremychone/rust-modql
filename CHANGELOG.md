@@ -1,6 +1,10 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2023-11-09 - `0.3.4`
+
+- `+` Added `OpValString::ContainsAll`
+- `!` For the OpValString, replace the `In` suffixes for `ContainsIn`, `StartsWithIn` with `Any` (e.g., `ContainsAny`)
 
 ## 2023-11-07 - `0.3.3`
 
