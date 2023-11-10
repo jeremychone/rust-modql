@@ -90,29 +90,29 @@ The following tables show the list of possible operators for each type.
 
 ### `OpValString` Operators
 
-| Operator           | Meaning                                                 | Example                                                  |
-|--------------------|---------------------------------------------------------|----------------------------------------------------------|
-| `$eq`              | Exact match with one value                              | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
-| `$in`              | Exact match with within a list of values (or)           | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
-| `$not`             | Exclude any exact match                                 | `{name: {"$not": "Jon Doe"}}`                            |
-| `$notIn`           | Exclude any exact withing a list                        | `{name: {"$notIn": ["Jon Doe"]}}`                        |
-| `$contains`        | For string, does a contains                             | `{name: {"$contains": "Doe"}}`                           |
-| `$containsIn`      | For string, match if contained in any of items          | `{name: {"$containsIn": ["Doe", "Ali"]}}`                |
-| `$notContains`     | Does not contain                                        | `{name: {"$notContains": "Doe"}}`                        |
-| `$notContainsIn`   | Does not call any of (none is contained)                | `{name: {"$notContainsIn": ["Doe", "Ali"]}}`             |
-| `$startsWith`      | For string, does a startsWith                           | `{name: {"$startsWith": "Jon"}}`                         |
-| `$startsWithIn`    | For string, match if startsWith in any of items         | `{name: {"$startsWithIn": ["Jon", "Al"]}}`               |
-| `$notStartsWith`   | Does not start with                                     | `{name: {"$notStartsWith": "Jon"}}`                      |
-| `$notStartsWithIn` | Does not start with any of the items                    | `{name: {"$notStartsWithIn": ["Jon", "Al"]}}`            |
-| `$endsWith`        | For string, does and end with                           | `{name: {"$endsWithIn": "Doe"}}`                         |
-| `$endsWithIn`      | For string, does a contains  (or)                       | `{name: {"$endsWithIn": ["Doe", "ice"]}}`                |
-| `$notEndsWith`     | Does not end with                                       | `{name: {"$notEndsWithIn": "Doe"}}`                      |
-| `$notEndsWithIn`   | Does not end with any of the items                      | `{name: {"$notEndsWithIn": ["Doe", "ice"]}}`             |
-| `$lt`              | Lesser Than                                             | `{age: {"$lt": "Z"}}`                                    |
-| `$lte`             | Lesser Than or =                                        | `{age: {"$lte": "Z"}}`                                   |
-| `$gt`              | Greater Than                                            | `{age: {"$gt": "A"}}`                                    |
-| `$gte`             | Greater Than or =                                       | `{age: {"$gte": "A"}}`                                   |
-| `$null`            | If the value is null                                    | `{name: {"$null": true}}`                                |
+| Operator            | Meaning                                         | Example                                                  |
+|---------------------|-------------------------------------------------|----------------------------------------------------------|
+| `$eq`               | Exact match with one value                      | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
+| `$in`               | Exact match with within a list of values (or)   | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
+| `$not`              | Exclude any exact match                         | `{name: {"$not": "Jon Doe"}}`                            |
+| `$notIn`            | Exclude any exact withing a list                | `{name: {"$notIn": ["Jon Doe"]}}`                        |
+| `$contains`         | For string, does a contains                     | `{name: {"$contains": "Doe"}}`                           |
+| `$containsAny`      | For string, match if contained in any of items  | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
+| `$notContains`      | Does not contain                                | `{name: {"$notContains": "Doe"}}`                        |
+| `$notContainsAny`   | Does not call any of (none is contained)        | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
+| `$startsWith`       | For string, does a startsWith                   | `{name: {"$startsWith": "Jon"}}`                         |
+| `$startsWithAny`    | For string, match if startsWith in any of items | `{name: {"$startsWithAny": ["Jon", "Al"]}}`              |
+| `$notStartsWith`    | Does not start with                             | `{name: {"$notStartsWith": "Jon"}}`                      |
+| `$notStartsWithAny` | Does not start with any of the items            | `{name: {"$notStartsWithAny": ["Jon", "Al"]}}`           |
+| `$endsWith`         | For string, does and end with                   | `{name: {"$endsWithAny": "Doe"}}`                        |
+| `$endsWithAny`      | For string, does a contains  (or)               | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
+| `$notEndsWith`      | Does not end with                               | `{name: {"$notEndsWithAny": "Doe"}}`                     |
+| `$notEndsWithAny`   | Does not end with any of the items              | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
+| `$lt`               | Lesser Than                                     | `{age: {"$lt": "Z"}}`                                    |
+| `$lte`              | Lesser Than or =                                | `{age: {"$lte": "Z"}}`                                   |
+| `$gt`               | Greater Than                                    | `{age: {"$gt": "A"}}`                                    |
+| `$gte`              | Greater Than or =                               | `{age: {"$gte": "A"}}`                                   |
+| `$null`             | If the value is null                            | `{name: {"$null": true}}`                                |
 
 ### `OpValInt32, OpValInt64, OpValFloat64`  Operators
 
@@ -165,7 +165,7 @@ fn main() -> anyhow::Result<()> {
     let filter_nodes: Vec<FilterNode> = vec![
         (
             "title",
-            OpValtring::ContainsIn(vec!["Hello".to_string(), "welcome".to_string()]),
+            OpValtring::ContainsAny(vec!["Hello".to_string(), "welcome".to_string()]),
         )
             .into(),
         ("done", true).into(),

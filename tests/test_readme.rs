@@ -7,7 +7,7 @@ fn test_readme_01() -> anyhow::Result<()> {
 	let filter_nodes: Vec<FilterNode> = vec![
 		(
 			"title",
-			OpValString::ContainsIn(vec!["Hello".to_string(), "welcome".to_string()]),
+			OpValString::ContainsAny(vec!["Hello".to_string(), "welcome".to_string()]),
 		)
 			.into(),
 		("done", true).into(),

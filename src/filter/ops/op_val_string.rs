@@ -1,3 +1,5 @@
+#![allow(deprecated)] // for now
+
 use crate::filter::OpVal;
 
 #[derive(Debug)]
@@ -20,23 +22,41 @@ pub enum OpValString {
 	Contains(String),
 	NotContains(String),
 
-	ContainsIn(Vec<String>),
-	NotContainsIn(Vec<String>),
+	ContainsAny(Vec<String>),
+	NotContainsAny(Vec<String>),
+
+	ContainsAll(Vec<String>),
 
 	StartsWith(String),
 	NotStartsWith(String),
 
-	StartsWithIn(Vec<String>),
-	NotStartsWithIn(Vec<String>),
+	StartsWithAny(Vec<String>),
+	NotStartsWithAny(Vec<String>),
 
 	EndsWith(String),
 	NotEndsWith(String),
 
-	EndsWithIn(Vec<String>),
-	NotEndsWithIn(Vec<String>),
+	EndsWithAny(Vec<String>),
+	NotEndsWithAny(Vec<String>),
 
 	Empty(bool),
 	Null(bool),
+
+	// -- Deprecated
+	#[deprecated(note = "use ContainsAny")]
+	ContainsIn(Vec<String>),
+	#[deprecated(note = "use NotContainsAny")]
+	NotContainsIn(Vec<String>),
+
+	#[deprecated(note = "use StartsWithAny")]
+	StartsWithIn(Vec<String>),
+	#[deprecated(note = "use NotStartsWithAny")]
+	NotStartsWithIn(Vec<String>),
+
+	#[deprecated(note = "use EndsWithIn")]
+	EndsWithIn(Vec<String>),
+	#[deprecated(note = "use NotEndsWithIn")]
+	NotEndsWithIn(Vec<String>),
 }
 
 // region:    --- Simple value to Eq OpValString
@@ -136,25 +156,35 @@ mod json {
 				("$gte", Value::String(string_v)) => OpValString::Gte(string_v),
 
 				("$contains", Value::String(string_v)) => OpValString::Contains(string_v),
-				("$containsIn", value) => OpValString::ContainsIn(into_strings(value)?),
+				("$containsAny", value) => OpValString::ContainsAny(into_strings(value)?),
+
+				("$containsAll", value) => OpValString::ContainsAll(into_strings(value)?),
 
 				("$notContains", Value::String(string_v)) => OpValString::NotContains(string_v),
-				("$notContainsIn", value) => OpValString::NotContainsIn(into_strings(value)?),
+				("$notContainsAny", value) => OpValString::NotContainsAny(into_strings(value)?),
 
 				("$startsWith", Value::String(string_v)) => OpValString::StartsWith(string_v),
-				("$startsWithIn", value) => OpValString::StartsWithIn(into_strings(value)?),
+				("$startsWithAny", value) => OpValString::StartsWithAny(into_strings(value)?),
 
 				("$notStartsWith", Value::String(string_v)) => OpValString::NotStartsWith(string_v),
-				("$notStartsWithIn", value) => OpValString::NotStartsWithIn(into_strings(value)?),
+				("$notStartsWithAny", value) => OpValString::NotStartsWithAny(into_strings(value)?),
 
 				("$endsWith", Value::String(string_v)) => OpValString::EndsWith(string_v),
-				("$endsWithIn", value) => OpValString::EndsWithIn(into_strings(value)?),
+				("$endsWithAny", value) => OpValString::EndsWithAny(into_strings(value)?),
 
 				("$notEndsWith", Value::String(string_v)) => OpValString::NotEndsWith(string_v),
-				("$notEndsWithIn", value) => OpValString::NotEndsWithIn(into_strings(value)?),
+				("$notEndsWithAny", value) => OpValString::NotEndsWithAny(into_strings(value)?),
 
 				("$empty", Value::Bool(v)) => OpValString::Empty(v),
 				("$null", Value::Bool(v)) => OpValString::Null(v),
+
+				// -- Deprecated
+				("$containsIn", value) => OpValString::ContainsIn(into_strings(value)?),
+				("$notContainsIn", value) => OpValString::NotContainsIn(into_strings(value)?),
+				("$startsWithIn", value) => OpValString::StartsWithIn(into_strings(value)?),
+				("$notStartsWithIn", value) => OpValString::NotStartsWithIn(into_strings(value)?),
+				("$endsWithIn", value) => OpValString::EndsWithIn(into_strings(value)?),
+				("$notEndsWithIn", value) => OpValString::NotEndsWithIn(into_strings(value)?),
 
 				(_, v) => {
 					return Err(Error::JsonOpValNotSupported {
@@ -209,22 +239,34 @@ mod with_sea_query {
 				OpValString::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, s),
 
 				OpValString::Contains(s) => binary_fn(BinOper::Like, format!("%{s}%")),
-				OpValString::ContainsIn(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),
 
 				OpValString::NotContains(s) => binary_fn(BinOper::NotLike, format!("%{s}%")),
-				OpValString::NotContainsIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", "%"),
+
+				OpValString::ContainsAll(values) => {
+					let mut cond = Condition::all();
+
+					for value in values {
+						let expr = binary_fn(BinOper::Like, format!("%{value}%"));
+						cond = cond.add(expr);
+					}
+
+					ConditionExpression::Condition(cond)
+				}
+
+				OpValString::ContainsAny(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),
+				OpValString::NotContainsAny(values) => cond_any_of_fn(BinOper::NotLike, values, "%", "%"),
 
 				OpValString::StartsWith(s) => binary_fn(BinOper::Like, format!("{s}%")),
-				OpValString::StartsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "", "%"),
+				OpValString::StartsWithAny(values) => cond_any_of_fn(BinOper::Like, values, "", "%"),
 
 				OpValString::NotStartsWith(s) => binary_fn(BinOper::NotLike, format!("{s}%")),
-				OpValString::NotStartsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "", "%"),
+				OpValString::NotStartsWithAny(values) => cond_any_of_fn(BinOper::NotLike, values, "", "%"),
 
 				OpValString::EndsWith(s) => binary_fn(BinOper::Like, format!("%{s}")),
-				OpValString::EndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
+				OpValString::EndsWithAny(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
 
 				OpValString::NotEndsWith(s) => binary_fn(BinOper::Like, format!("%{s}")),
-				OpValString::NotEndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
+				OpValString::NotEndsWithAny(values) => cond_any_of_fn(BinOper::NotLike, values, "%", ""),
 
 				OpValString::Null(null) => sea_is_col_value_null(col.clone(), null),
 				OpValString::Empty(empty) => {
@@ -234,6 +276,14 @@ mod with_sea_query {
 						.add(binary_fn(op, "".to_string()))
 						.into()
 				}
+
+				// -- Deprecated
+				OpValString::ContainsIn(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),
+				OpValString::NotContainsIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", "%"),
+				OpValString::StartsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "", "%"),
+				OpValString::NotStartsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "", "%"),
+				OpValString::EndsWithIn(values) => cond_any_of_fn(BinOper::Like, values, "%", ""),
+				OpValString::NotEndsWithIn(values) => cond_any_of_fn(BinOper::NotLike, values, "%", ""),
 			};
 
 			Ok(cond)
