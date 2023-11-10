@@ -98,6 +98,7 @@ The following tables show the list of possible operators for each type.
 | `$notIn`            | Exclude any exact withing a list                | `{name: {"$notIn": ["Jon Doe"]}}`                        |
 | `$contains`         | For string, does a contains                     | `{name: {"$contains": "Doe"}}`                           |
 | `$containsAny`      | For string, match if contained in any of items  | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
+| `$containsAll`      | For string, match if all items are in the src   | `{name: {"$containsAll": ["Hello", "World"]}}`           |
 | `$notContains`      | Does not contain                                | `{name: {"$notContains": "Doe"}}`                        |
 | `$notContainsAny`   | Does not call any of (none is contained)        | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
 | `$startsWith`       | For string, does a startsWith                   | `{name: {"$startsWith": "Jon"}}`                         |
@@ -108,10 +109,10 @@ The following tables show the list of possible operators for each type.
 | `$endsWithAny`      | For string, does a contains  (or)               | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
 | `$notEndsWith`      | Does not end with                               | `{name: {"$notEndsWithAny": "Doe"}}`                     |
 | `$notEndsWithAny`   | Does not end with any of the items              | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
-| `$lt`               | Lesser Than                                     | `{age: {"$lt": "Z"}}`                                    |
-| `$lte`              | Lesser Than or =                                | `{age: {"$lte": "Z"}}`                                   |
-| `$gt`               | Greater Than                                    | `{age: {"$gt": "A"}}`                                    |
-| `$gte`              | Greater Than or =                               | `{age: {"$gte": "A"}}`                                   |
+| `$lt`               | Lesser Than                                     | `{name: {"$lt": "C"}}`                                   |
+| `$lte`              | Lesser Than or =                                | `{name: {"$lte": "C"}}`                                  |
+| `$gt`               | Greater Than                                    | `{name: {"$gt": "J"}}`                                   |
+| `$gte`              | Greater Than or =                               | `{name: {"$gte": "J"}}`                                  |
 | `$null`             | If the value is null                            | `{name: {"$null": true}}`                                |
 
 ### `OpValInt32, OpValInt64, OpValFloat64`  Operators
