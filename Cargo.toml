@@ -24,13 +24,10 @@ members = [".", "modql-macros"]
 default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 
-
 [dependencies]
 modql-macros = { version="0.3", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-time = "0.3"
-uuid = "1.6"
 sea-query = { version = "0.30", optional = true }
 
 [dev-dependencies]
