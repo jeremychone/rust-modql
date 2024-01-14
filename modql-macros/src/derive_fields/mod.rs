@@ -1,28 +1,21 @@
 mod utils;
 
+use crate::utils::{db_field, get_struct_fields};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Ident};
-use utils::get_fields_prop;
+use utils::get_fields_sqlb_prop;
 
 pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
-	let sqb_attr = get_fields_prop(&ast).unwrap();
-	let struct_name = ast.ident;
+	let fields = get_struct_fields(&ast);
 
-	// -- get the fields
-	let fields = if let syn::Data::Struct(syn::DataStruct {
-		fields: syn::Fields::Named(ref fields),
-		..
-	}) = ast.data
-	{
-		fields
-	} else {
-		panic!("Only support Struct")
-	};
+	let sqb_attr = get_fields_sqlb_prop(&ast).unwrap();
+
+	let struct_name = &ast.ident;
 
 	// -- Collect Elements
-	let props = utils::get_field_props(fields);
+	let props = db_field::get_field_db_props(fields);
 
 	let props_all_idents: Vec<&Option<Ident>> = props.iter().map(|p| p.ident).collect();
 	let props_all_names: Vec<&String> = props.iter().map(|p| &p.name).collect();

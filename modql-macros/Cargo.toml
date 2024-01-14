@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.3.0"
+version = "0.3.1"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
@@ -11,12 +11,17 @@ repository = "https://github.com/modql/rust-modql"
 
 [features]
 with-sea-query = ["sea-query"]
+with-rusqlite = ["rusqlite"]
 
 [dependencies]
 quote = "1"
 syn = {version = "2", features = ["full"]}
 proc-macro2 = "1"
+
+
+# -- For features
 sea-query = { version = "0.30", optional = true }
+rusqlite = { version = "0.30", optional = true }
 
 [lib]
 proc-macro = true

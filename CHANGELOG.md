@@ -1,6 +1,11 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2024-01-13 - `0.3.5`
+
+- `+` first pass at the `sqlite::FromRow` trait/macro for `rusqlite`
+- `.` minor dependencies cleanup
+
 ## 2023-11-09 - `0.3.4`
 
 - `+` Added `OpValString::ContainsAll`

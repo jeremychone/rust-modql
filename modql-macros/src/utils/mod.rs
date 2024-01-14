@@ -1,8 +1,13 @@
-#![allow(unused)] // For early development.
+// region:    --- Modules
+#[cfg(any(feature = "with-sea-query", feature = "with-rusqlite"))]
+pub mod db_field;
+
 use quote::ToTokens;
 use syn::{Attribute, DeriveInput, Expr, Field, FieldsNamed, Lit, MetaNameValue};
 
-/// Returns the fields named of a struct
+// endregion: --- Modules
+
+/// Returns the syn:: fields named of a struct
 pub(crate) fn get_struct_fields(ast: &DeriveInput) -> &FieldsNamed {
 	let syn::Data::Struct(syn::DataStruct {
 		fields: syn::Fields::Named(ref fields),
