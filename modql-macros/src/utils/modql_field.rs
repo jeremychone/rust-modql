@@ -5,24 +5,25 @@ use syn::punctuated::Punctuated;
 use syn::{Field, FieldsNamed, Meta, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
-pub struct DbProp<'a> {
+pub struct ModqlFieldProp<'a> {
+	pub name: String,
 	pub table: Option<String>,
 	pub column: Option<String>,
-	pub name: String,
+	pub cast_as: Option<String>,
 	pub is_option: bool,
 	pub ident: &'a Option<Ident>,
 }
 
-pub fn get_field_db_props(fields: &FieldsNamed) -> Vec<DbProp> {
+pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 	let mut props = Vec::new();
 
 	for field in fields.named.iter() {
 		// -- Get the FieldAttr
-		let field_attr = get_field_prop_attr(field);
+		let mfield_attr = get_mfield_prop_attr(field);
 
 		// TODO: Need to check better handling.
-		let field_attr = field_attr.unwrap();
-		if field_attr.skip {
+		let mfield_attr = mfield_attr.unwrap();
+		if mfield_attr.skip {
 			continue;
 		}
 
@@ -37,20 +38,24 @@ pub fn get_field_db_props(fields: &FieldsNamed) -> Vec<DbProp> {
 		let is_option = type_name.contains("Option ");
 
 		// -- name
-		let name = if let Some(name) = field_attr.name {
+		let name = if let Some(name) = mfield_attr.name {
 			name
 		} else {
 			ident.as_ref().map(|i| i.to_string()).unwrap()
 			// quote! {stringify!(#ident)}
 		};
 
+		// -- cast_as
+		let cast_as = mfield_attr.cast_as;
+
 		// -- Add to array.
-		props.push(DbProp {
-			table: field_attr.table,
-			column: field_attr.column,
+		props.push(ModqlFieldProp {
+			table: mfield_attr.table,
+			column: mfield_attr.column,
 			name,
 			is_option,
 			ident,
+			cast_as,
 		})
 	}
 
@@ -60,22 +65,24 @@ pub fn get_field_db_props(fields: &FieldsNamed) -> Vec<DbProp> {
 // endregion: --- Field Prop (i.e., sqlb Field)
 
 // region:    --- Field Prop Attribute
-pub struct FieldPropAttr {
+pub struct ModqlFieldPropAttr {
 	pub table: Option<String>,
 	pub column: Option<String>,
 	pub skip: bool,
 	pub name: Option<String>,
+	pub cast_as: Option<String>,
 }
 
 // #[field(skip, name = "new_name")]
 // #[field(name = "new_name")]
-pub fn get_field_prop_attr(field: &Field) -> Result<FieldPropAttr, syn::Error> {
+pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error> {
 	let attribute = get_field_attribute(field, "field");
 
 	let mut skip = false;
 	let mut name: Option<String> = None;
 	let mut table: Option<String> = None;
 	let mut column: Option<String> = None;
+	let mut cast_as: Option<String> = None;
 
 	if let Some(attribute) = attribute {
 		let nested = attribute.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?;
@@ -95,6 +102,8 @@ pub fn get_field_prop_attr(field: &Field) -> Result<FieldPropAttr, syn::Error> {
 						table = get_meta_value_string(nv);
 					} else if nv.path.is_ident("column") {
 						column = get_meta_value_string(nv);
+					} else if nv.path.is_ident("cast_as") {
+						cast_as = get_meta_value_string(nv);
 					}
 				}
 
@@ -106,11 +115,12 @@ pub fn get_field_prop_attr(field: &Field) -> Result<FieldPropAttr, syn::Error> {
 		}
 	}
 
-	Ok(FieldPropAttr {
+	Ok(ModqlFieldPropAttr {
 		skip,
 		table,
 		column,
 		name,
+		cast_as,
 	})
 }
 

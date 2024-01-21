@@ -2,8 +2,10 @@
 
 use serde_json::Value;
 
+/// modql Result
 pub type Result<T> = core::result::Result<T, Error>;
 
+/// modql Error
 #[derive(Debug)]
 pub enum Error {
 	// region:    --- Json Errors

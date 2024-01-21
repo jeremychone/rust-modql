@@ -1,3 +1,5 @@
+//! Requires feature `with-sea-query` and provides convenient sea-query serialization for field names and values.
+
 mod error;
 #[allow(clippy::module_inception)] // internal module, ok
 mod field;

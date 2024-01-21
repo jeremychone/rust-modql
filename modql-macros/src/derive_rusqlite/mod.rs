@@ -1,4 +1,4 @@
-use crate::utils::{db_field, get_struct_fields};
+use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
@@ -9,7 +9,7 @@ pub(crate) fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 
 	let struct_name = &ast.ident;
 
-	let props = db_field::get_field_db_props(fields);
+	let props = modql_field::get_modql_field_props(fields);
 
 	let getters = props.iter().map(|p| {
 		let name = &p.name;

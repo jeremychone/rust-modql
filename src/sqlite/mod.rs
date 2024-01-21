@@ -1,3 +1,7 @@
+//! Requires the `with-rusqlite` and `with-sea-query` features
+//! and provides a very basic `sqlite::FromRow` based on the `Fields` derivation.
+//!
+
 // region:    --- Section
 
 pub use modql_macros::FromSqliteRow as FromRow;

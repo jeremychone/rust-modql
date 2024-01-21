@@ -9,6 +9,9 @@ categories = ["data-structures"]
 homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
+[lints]
+workspace = true
+
 [features]
 with-sea-query = ["sea-query"]
 with-rusqlite = ["rusqlite"]
@@ -17,7 +20,6 @@ with-rusqlite = ["rusqlite"]
 quote = "1"
 syn = {version = "2", features = ["full"]}
 proc-macro2 = "1"
-
 
 # -- For features
 sea-query = { version = "0.30", optional = true }

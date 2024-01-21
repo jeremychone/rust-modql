@@ -39,12 +39,12 @@ impl FilterNode {
 	}
 }
 
-// region:    --- From Tuples (OpVal[Type])
+// region:    --- From Tuples (OpValType)
 // Implements the From trait from tuples to FilterNode
 macro_rules! from_tuples_opval {
 	($($OV:ident),+) => {
 		$(
-			/// From trait from (prop_name, [Type]OpValue) for FilterNode
+			/// From trait from (prop_name, OpVal) for FilterNode
 			/// (e.g., `let node: FilterNode = ("id", IntOpVal::Gt(1)).into()`)
 			impl From<(&str, $OV)> for FilterNode {
 				fn from((name, ov): (&str, $OV)) -> Self {
@@ -58,8 +58,8 @@ macro_rules! from_tuples_opval {
 				}
 			}
 
-			/// From trait from (prop_name, Vec<[Type]OpValue>)  for FilterNode
-			/// (e.g., `let node: FilterNode = (prop_name, Vec<[Type]OpValue>).into()`)
+			/// From `trait from (prop_name, Vec<OpValType>)`  for FilterNode
+			/// (e.g., `let node: FilterNode = (prop_name, Vec<OpValType>).into()`)
 			impl From<(&str, Vec<$OV>)> for FilterNode {
 				fn from((name, ovs): (&str, Vec<$OV>)) -> Self {
 					Self {
@@ -87,7 +87,7 @@ from_tuples_opval!(
 	// Bool
 	OpValBool
 );
-// endregion: --- From Tuples (OpVal[Type])
+// endregion: --- From Tuples (OpValType)
 
 // region:    --- Froms Tuples (String val)
 

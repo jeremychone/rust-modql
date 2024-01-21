@@ -1,3 +1,6 @@
+//! modql::filter enables an expressive filtering language as described in [https://joql.org](https://joql.org).
+//! It's serialization-agnostic but also provides JSON deserialization for convenience.
+
 // -- Sub-Module
 #[cfg(feature = "with-sea-query")]
 mod into_sea;

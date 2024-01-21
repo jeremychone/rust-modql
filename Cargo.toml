@@ -16,6 +16,11 @@ keywords = [
 homepage = "https://github.com/jeremychone/rust-modql"
 repository = "https://github.com/jeremychone/rust-modql"
 
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+# unused = "allow" # For experimental dev.
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace]
 members = [".", "modql-macros"]
@@ -26,7 +31,7 @@ with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="0.3", path = "modql-macros", optional=true}
+modql-macros = { version="0.3.2", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 

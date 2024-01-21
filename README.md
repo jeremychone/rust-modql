@@ -188,3 +188,7 @@ The Filter structure is as follows:
 - Each `FilterGroup` contains a vector of `FilterNode` elements, which are intended to be executed with an `AND` operation.
 - `FilterNode` contains a `context_path` (not used yet), `name` which represents the property name from where the value originates, and a `Vec<OpVal>`, representing the Operator Value.
 - `OpVal` is an enum for type-specific `OpVal[Type]` entities, such as `OpValString` that holds the specific operation for that type along with the associated pattern value.
+
+<br />
+
+[GitHub Repo]()

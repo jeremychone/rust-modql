@@ -3,13 +3,13 @@ use syn::punctuated::Punctuated;
 use syn::{Attribute, DeriveInput, Meta, Token};
 
 // region:    --- SQLB TO BE DEPRECATED: Struct Prop Attribute
-pub struct SqlbProp {
+pub struct StructModqlFieldProp {
 	pub table: Option<String>,
 }
 
-pub fn get_fields_sqlb_prop(dinput: &DeriveInput) -> Result<SqlbProp, syn::Error> {
+pub fn get_struct_modql_prop(dinput: &DeriveInput) -> Result<StructModqlFieldProp, syn::Error> {
 	// FIXME: We should remove this, 'sqlb' should not be a thing anymore.
-	let sqlb_attr = get_dinput_attribute(dinput, "sqlb");
+	let sqlb_attr = get_dinput_attribute(dinput, "modql");
 	let mut table = None;
 
 	if let Some(attribute) = sqlb_attr {
@@ -32,7 +32,7 @@ pub fn get_fields_sqlb_prop(dinput: &DeriveInput) -> Result<SqlbProp, syn::Error
 		}
 	}
 
-	Ok(SqlbProp { table })
+	Ok(StructModqlFieldProp { table })
 }
 
 fn get_dinput_attribute<'a>(dinput: &'a DeriveInput, name: &str) -> Option<&'a Attribute> {

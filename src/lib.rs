@@ -14,7 +14,7 @@ pub mod field;
 mod sea_utils;
 
 #[cfg(feature = "with-sea-query")]
-pub use sea_utils::SIden;
+pub use sea_utils::*;
 
 #[cfg(feature = "with-rusqlite")]
 pub mod sqlite;
