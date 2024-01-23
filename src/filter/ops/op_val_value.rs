@@ -88,37 +88,47 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, SeaResult, ToSeaValueFnHolder};
+	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult, ToSeaValueFnHolder};
+	use crate::into_node_value_expr;
 	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
 
 	impl OpValValue {
 		pub fn into_sea_cond_expr_with_json_to_sea(
 			self,
 			col: &ColumnRef,
+			node_options: &FilterNodeOptions,
 			to_sea_value: &ToSeaValueFnHolder,
 		) -> SeaResult<ConditionExpression> {
 			// -- CondExpr builder for single value
 			let binary_fn = |op: BinOper, json_value: serde_json::Value| -> SeaResult<ConditionExpression> {
 				let sea_value = to_sea_value.call(json_value)?;
-				let vxpr = SimpleExpr::Value(sea_value);
+
+				let vxpr = into_node_value_expr(sea_value, node_options);
 				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(
 					col.clone().into(),
 					op,
 					vxpr,
 				)))
 			};
+
 			// -- CondExpr builder for single value
 			let binaries_fn = |op: BinOper, json_values: Vec<serde_json::Value>| -> SeaResult<ConditionExpression> {
+				// -- Build the list of sea_query::Value
 				let sea_values: Vec<sea_query::Value> = json_values
 					.into_iter()
 					.map(|v| to_sea_value.call(v))
 					.collect::<SeaResult<_>>()?;
 
-				let value_expressions = SimpleExpr::Values(sea_values.into_iter().collect());
+				// -- Transform to the list of SimpleExpr
+				let vxpr_list: Vec<SimpleExpr> =
+					sea_values.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
+				let vxpr = SimpleExpr::Tuple(vxpr_list);
+
+				// -- Return the condition expression
 				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(
 					col.clone().into(),
 					op,
-					value_expressions,
+					vxpr,
 				)))
 			};
 

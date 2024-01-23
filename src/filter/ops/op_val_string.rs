@@ -125,7 +125,6 @@ mod json {
 				Ok(values)
 			}
 
-			// FIXME: Needs to do the In/Array patterns.
 			let ov = match (op, value) {
 				("$eq", Value::String(string_v)) => OpValString::Eq(string_v),
 				("$in", value) => OpValString::In(into_strings(value)?),
@@ -178,17 +177,23 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, SeaResult};
-	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, SimpleExpr, Value};
+	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
+	use crate::into_node_value_expr;
+	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, SimpleExpr};
 
 	impl OpValString {
-		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> SeaResult<ConditionExpression> {
+		pub fn into_sea_cond_expr(
+			self,
+			col: &ColumnRef,
+			node_options: &FilterNodeOptions,
+		) -> SeaResult<ConditionExpression> {
 			let binary_fn = |op: BinOper, v: String| {
-				let vxpr = SimpleExpr::Value(Value::from(v));
+				let vxpr = into_node_value_expr(v, node_options);
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
+
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
-				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(Value::from).map(SimpleExpr::from).collect();
+				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};

@@ -94,17 +94,24 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, SeaResult};
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
+	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
+	use crate::into_node_value_expr;
+	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
 
 	impl OpValBool {
-		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> SeaResult<ConditionExpression> {
-			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
+		pub fn into_sea_cond_expr(
+			self,
+			col: &ColumnRef,
+			node_options: &FilterNodeOptions,
+		) -> SeaResult<ConditionExpression> {
+			let binary_fn = |op: BinOper, val: bool| {
+				let vxpr = into_node_value_expr(val, node_options);
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
+
 			let cond = match self {
-				OpValBool::Eq(s) => binary_fn(BinOper::Equal, Value::from(s).into()),
-				OpValBool::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
+				OpValBool::Eq(b) => binary_fn(BinOper::Equal, b),
+				OpValBool::Not(b) => binary_fn(BinOper::NotEqual, b),
 				OpValBool::Null(null) => sea_is_col_value_null(col.clone(), null),
 			};
 

@@ -1,4 +1,5 @@
-use sea_query::Iden;
+use crate::filter::FilterNodeOptions;
+use sea_query::{Iden, SimpleExpr, Value};
 
 /// String sea-query `Iden` wrapper
 #[derive(Debug)]
@@ -24,4 +25,16 @@ impl Iden for SIden {
 			println!("modql SIden fail write_str. Cause: {err}");
 		}
 	}
+}
+
+/// Convert a FilterNode value T into a sea-query SimpleExpr as long as T implements Into<sea_query::Value>
+pub fn into_node_value_expr<T>(val: T, node_options: &FilterNodeOptions) -> SimpleExpr
+where
+	T: Into<Value>,
+{
+	let mut vxpr = SimpleExpr::Value(val.into());
+	if let Some(cast_as) = node_options.cast_as.as_ref() {
+		vxpr = vxpr.cast_as(StringIden(cast_as.to_string()));
+	}
+	vxpr
 }

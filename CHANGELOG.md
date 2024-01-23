@@ -1,6 +1,17 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+
+## 2024-01-22 - `0.3.7`
+
+- `+` Add `cast_as` to `filter`
+- `!` Potential API break for user using `FieldNode` struct constructor (e.g., `FieldNode {...}`). New property `options: FieldNodeOptions`. Use `options: FieldNodeOptions::default()`. 
+	- Using the `FieldNode::new(...)` functions and every other interface should be unchanged. 
+
+## 2024-01-20 - `0.3.6`
+
+- `+` Add `cast_as` to `field`
+
 ## 2024-01-13 - `0.3.5`
 
 - `+` first pass at the `sqlite::FromRow` trait/macro for `rusqlite`

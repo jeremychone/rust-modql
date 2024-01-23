@@ -12,7 +12,7 @@ impl IntoFilterNodes for ProjectFilter {
 		let mut nodes = Vec::new();
 
 		if let Some(id) = self.id {
-			let node = FilterNode::new_with_context(
+			let node = FilterNode::new_with_context_path(
 				context.clone(),
 				"id".to_string(),
 				id.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
@@ -21,7 +21,7 @@ impl IntoFilterNodes for ProjectFilter {
 		}
 
 		if let Some(name) = self.name {
-			let node = FilterNode::new_with_context(
+			let node = FilterNode::new_with_context_path(
 				context,
 				"name".to_string(),
 				name.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
@@ -45,7 +45,7 @@ impl IntoFilterNodes for TaskFilter {
 		let mut nodes = Vec::new();
 
 		if let Some(title) = self.title {
-			let node = FilterNode::new_with_context(
+			let node = FilterNode::new_with_context_path(
 				context,
 				"title".to_string(),
 				title.0.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),

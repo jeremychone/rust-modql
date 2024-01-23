@@ -7,6 +7,7 @@ pub struct MoqlFieldAttr {
 	pub context_path: Option<String>,
 	pub to_sea_condition_fn: Option<String>,
 	pub to_sea_value_fn: Option<String>,
+	pub cast_as: Option<String>,
 }
 
 pub fn get_modql_field_attr(field: &Field) -> Result<MoqlFieldAttr, syn::Error> {
@@ -15,6 +16,7 @@ pub fn get_modql_field_attr(field: &Field) -> Result<MoqlFieldAttr, syn::Error> 
 	let mut context_path: Option<String> = None;
 	let mut to_sea_condition_fn: Option<String> = None;
 	let mut to_sea_value_fn: Option<String> = None;
+	let mut cast_as: Option<String> = None;
 
 	if let Some(attribute) = attribute {
 		let nested = attribute.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?;
@@ -29,6 +31,8 @@ pub fn get_modql_field_attr(field: &Field) -> Result<MoqlFieldAttr, syn::Error> 
 						to_sea_condition_fn = get_meta_value_string(nv);
 					} else if nv.path.is_ident("to_sea_value_fn") {
 						to_sea_value_fn = get_meta_value_string(nv);
+					} else if nv.path.is_ident("cast_as") {
+						cast_as = get_meta_value_string(nv);
 					}
 				}
 
@@ -44,5 +48,6 @@ pub fn get_modql_field_attr(field: &Field) -> Result<MoqlFieldAttr, syn::Error> 
 		context_path,
 		to_sea_condition_fn,
 		to_sea_value_fn,
+		cast_as,
 	})
 }

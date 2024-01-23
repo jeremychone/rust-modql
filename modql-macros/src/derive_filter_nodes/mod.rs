@@ -15,9 +15,10 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 
 	//// Properties to be collected
 	let mut props: Vec<&Option<Ident>> = Vec::new(); // not needed for now.
-	let mut prop_opval_idents: Vec<&Ident> = Vec::new();
+	let mut props_opval_idents: Vec<&Ident> = Vec::new();
 	let mut props_opval_contexts: Vec<proc_macro2::TokenStream> = Vec::new();
 	let mut props_opval_to_sea_holder_fn_build: Vec<proc_macro2::TokenStream> = Vec::new();
+	let mut props_filter_node_options: Vec<proc_macro2::TokenStream> = Vec::new();
 
 	for field in fields.named.iter() {
 		// NOTE: By macro limitation, we can do only type name match and it would not support type alias
@@ -28,7 +29,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 		// NOTE: For now only convert the properties of types with option and OpVal
 		if type_name.starts_with("Option ") && type_name.contains("OpVal") {
 			if let Some(ident) = field.ident.as_ref() {
-				prop_opval_idents.push(ident);
+				props_opval_idents.push(ident);
 
 				// -- Extract the attributes
 				let modql_field_attr = get_modql_field_attr(field).unwrap();
@@ -42,6 +43,18 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 					quote! { None }
 				};
 				props_opval_contexts.push(block_context);
+
+				// -- options: FilterNodeOptions
+				let quote_filter_node_options_cast_as = if let Some(cast_as) = modql_field_attr.cast_as {
+					quote! { Some(#cast_as.to_string()) }
+				} else {
+					quote! { None }
+				};
+				props_filter_node_options.push(quote! {
+					modql::filter::FilterNodeOptions {
+						cast_as: #quote_filter_node_options_cast_as,
+					}
+				});
 
 				// -- to_sea_holder_build
 				if cfg!(feature = "with-sea-query") {
@@ -77,13 +90,14 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	let ff_opt_node_pushes = if cfg!(feature = "with-sea-query") {
 		quote! {
 			#(
-				if let Some(val) = self.#prop_opval_idents {
+				if let Some(val) = self.#props_opval_idents {
 					let op_vals: Vec<modql::filter::OpVal> = val.0.into_iter().map(|n| n.into()).collect();
 					#props_opval_to_sea_holder_fn_build
 					let node = modql::filter::FilterNode{
 						context_path: #props_opval_contexts,
-						name: stringify!(#prop_opval_idents).to_string(),
+						name: stringify!(#props_opval_idents).to_string(),
 						opvals: op_vals,
+						options: #props_filter_node_options,
 						for_sea_condition: fn_holder,
 					};
 					nodes.push(node);
@@ -93,12 +107,13 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	} else {
 		quote! {
 			#(
-				if let Some(val) = self.#prop_opval_idents {
+				if let Some(val) = self.#props_opval_idents {
 					let op_vals: Vec<modql::filter::OpVal> = val.0.into_iter().map(|n| n.into()).collect();
 					let node = modql::filter::FilterNode{
 						context_path: #props_opval_contexts,
-						name: stringify!(#prop_opval_idents).to_string(),
+						name: stringify!(#props_opval_idents).to_string(),
 						opvals: op_vals,
+						options: #props_filter_node_options,
 					};
 					nodes.push(node);
 				}

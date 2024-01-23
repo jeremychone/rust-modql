@@ -1,7 +1,9 @@
 #![allow(unused)] // For early development.
 #![cfg(feature = "with-sea-query")]
 
-use modql::filter::{FilterNode, IntoSeaError, OpValInt32, OpValValue, SeaResult, ToSeaConditionFnHolder};
+use modql::filter::{
+	FilterNode, FilterNodeOptions, IntoSeaError, OpValInt32, OpValValue, SeaResult, ToSeaConditionFnHolder,
+};
 use sea_query::{ColumnRef, ConditionExpression};
 use std::sync::Arc;
 
@@ -13,6 +15,7 @@ fn test_filter_node_with_sea_condition() {
 		context_path: None,
 		name: "some_name".to_string(),
 		opvals: vec![123.into()],
+		options: FilterNodeOptions::default(),
 		for_sea_condition: Some(special_to_sea_cond.into()),
 	};
 }

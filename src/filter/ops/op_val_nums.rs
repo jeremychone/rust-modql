@@ -181,32 +181,33 @@ impl OpValueToOpValType for $ov {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, SeaResult};
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
+	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
+	use crate::into_node_value_expr;
+	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
 
 	macro_rules! impl_into_sea_op_val {
 		($($ov:ident),+) => {
 			$(
 	impl $ov {
-		pub fn into_sea_cond_expr(self, col: &ColumnRef) -> SeaResult<ConditionExpression>  {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef, node_options: &FilterNodeOptions) -> SeaResult<ConditionExpression>  {
 			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
 			let cond = match self {
-				$ov::Eq(s) => binary_fn(BinOper::Equal, Value::from(s).into()),
-				$ov::Not(s) => binary_fn(BinOper::NotEqual, Value::from(s).into()),
+				$ov::Eq(s) => binary_fn(BinOper::Equal, into_node_value_expr(s, node_options)),
+				$ov::Not(s) => binary_fn(BinOper::NotEqual, into_node_value_expr(s, node_options)),
 				$ov::In(s) => binary_fn(
 					BinOper::In,
-					SimpleExpr::Tuple(s.into_iter().map(Value::from).map(SimpleExpr::from).collect()),
+					SimpleExpr::Tuple(s.into_iter().map(|v| into_node_value_expr(v, node_options)).collect()),
 				),
 				$ov::NotIn(s) => binary_fn(
 					BinOper::NotIn,
-					SimpleExpr::Tuple(s.into_iter().map(Value::from).map(SimpleExpr::from).collect()),
+					SimpleExpr::Tuple(s.into_iter().map(|v| into_node_value_expr(v, node_options)).collect()),
 				),
-				$ov::Lt(s) => binary_fn(BinOper::SmallerThan, Value::from(s).into()),
-				$ov::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, Value::from(s).into()),
-				$ov::Gt(s) => binary_fn(BinOper::GreaterThan, Value::from(s).into()),
-				$ov::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, Value::from(s).into()),
+				$ov::Lt(s) => binary_fn(BinOper::SmallerThan, into_node_value_expr(s, node_options)),
+				$ov::Lte(s) => binary_fn(BinOper::SmallerThanOrEqual, into_node_value_expr(s, node_options)),
+				$ov::Gt(s) => binary_fn(BinOper::GreaterThan, into_node_value_expr(s, node_options)),
+				$ov::Gte(s) => binary_fn(BinOper::GreaterThanOrEqual, into_node_value_expr(s, node_options)),
 
 				$ov::Null(null) => sea_is_col_value_null(col.clone(), null),
 			};
