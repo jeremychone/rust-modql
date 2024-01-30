@@ -83,13 +83,13 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let output = quote! {
 		impl modql::field::HasFields for #struct_name {
 
-			fn not_none_fields<'a>( self) -> modql::field::Fields {
+			fn not_none_fields(self) -> modql::field::Fields {
 				let mut ff: Vec<modql::field::Field> = Vec::new();
 				#(#not_none_fields_quotes)*
 				modql::field::Fields::new(ff)
 			}
 
-			fn all_fields<'a>( self) -> modql::field::Fields {
+			fn all_fields(self) -> modql::field::Fields {
 				let mut ff: Vec<modql::field::Field> = Vec::new();
 				#(#all_fields_quotes)*
 				modql::field::Fields::new(ff)
