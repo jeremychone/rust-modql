@@ -7,7 +7,6 @@ pub(crate) fn derive_field_enum_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
 	let input = parse_macro_input!(input as DeriveInput);
 
-	// Get the identifier of the enum (e.g., "Model")
 	let name = input.ident;
 
 	// Build the match arms and get the first variant

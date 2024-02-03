@@ -26,7 +26,7 @@ unsafe_code = "forbid"
 members = [".", "modql-macros"]
 
 [features]
-default = ["modql-macros", "with-sea-query", "with-rusqlite"]
+default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 

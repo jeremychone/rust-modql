@@ -1,6 +1,9 @@
 // #![allow(unused)]
 // --- Sub-Modules
 mod error;
+#[cfg(feature = "with-rusqlite")]
+mod sqlite;
+
 pub mod filter;
 pub mod includes;
 
@@ -17,4 +20,4 @@ mod sea_utils;
 pub use sea_utils::*;
 
 #[cfg(feature = "with-rusqlite")]
-pub mod sqlite;
+pub use sqlite::*;

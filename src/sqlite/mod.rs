@@ -2,13 +2,13 @@
 //! and provides a very basic `sqlite::FromRow` based on the `Fields` derivation.
 //!
 
-// region:    --- Section
+// #[deprecated(note = "Use FromSqliteRow")]
+// pub use modql_macros::FromSqliteRow as FromRow;
 
-pub use modql_macros::FromSqliteRow as FromRow;
+pub use modql_macros::FromSqliteRow;
+pub use modql_macros::FromSqliteValue;
 
-// endregion: --- Section
-
-pub trait FromRow
+pub trait FromSqliteRow
 where
 	Self: Sized,
 {
