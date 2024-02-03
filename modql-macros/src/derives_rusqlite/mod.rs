@@ -3,6 +3,7 @@ use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
+// FromSqliteRow (aliased to FromRow)
 pub(crate) fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
 	let fields = get_struct_fields(&ast);
@@ -35,3 +36,5 @@ pub(crate) fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 
 	output.into()
 }
+
+// TextEnum

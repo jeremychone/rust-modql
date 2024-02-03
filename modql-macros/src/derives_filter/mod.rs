@@ -1,6 +1,6 @@
 mod utils;
 
-use crate::derive_filter_nodes::utils::get_modql_field_attr;
+use crate::derives_filter::utils::get_modql_field_attr;
 use crate::utils::{get_struct_fields, get_type_name};
 use proc_macro::TokenStream;
 use quote::quote;
