@@ -12,5 +12,5 @@ pub trait FromSqliteRow
 where
 	Self: Sized,
 {
-	fn from_rusqlite_row<'r>(val: &'r rusqlite::Row<'r>) -> rusqlite::Result<Self>;
+	fn from_sqlite_row(val: &rusqlite::Row<'_>) -> rusqlite::Result<Self>;
 }

@@ -24,7 +24,7 @@ pub fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 	// -- Compose the final code
 	let output = quote! {
 		impl modql::FromSqliteRow for #struct_name {
-			fn from_rusqlite_row<'r>(val: &'r rusqlite::Row<'r>) -> rusqlite::Result<Self> {
+			fn from_sqlite_row(val: &rusqlite::Row<'_>) -> rusqlite::Result<Self> {
 				let entity = Self {
 					#(#getters)*
 				};
