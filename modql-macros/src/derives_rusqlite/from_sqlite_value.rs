@@ -2,8 +2,9 @@
 extern crate proc_macro;
 
 use proc_macro::TokenStream;
+use proc_macro2::Ident;
 use quote::quote;
-use syn::{parse_macro_input, Data, DeriveInput};
+use syn::{parse_macro_input, Data, DataEnum, DeriveInput};
 
 pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
@@ -13,20 +14,27 @@ pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	let name = input.ident;
 
 	// Build the match arms
-	let arms = match input.data {
-		Data::Enum(data) => data
-			.variants
-			.iter()
-			.map(|variant| {
-				let variant_name = &variant.ident;
-				let variant_name_str = variant_name.to_string();
-				quote! {
-					#variant_name_str => Ok(#name::#variant_name),
-				}
-			})
-			.collect::<Vec<_>>(),
+	let expanded = match input.data {
+		Data::Enum(data) => process_enum(name, data),
 		_ => panic!("FromSqliteValue can only be used with enums for now (see FromRow)"),
 	};
+
+	// Return the generated token stream
+	TokenStream::from(expanded)
+}
+
+fn process_enum(name: Ident, data: DataEnum) -> proc_macro2::TokenStream {
+	let arms = data
+		.variants
+		.iter()
+		.map(|variant| {
+			let variant_name = &variant.ident;
+			let variant_name_str = variant_name.to_string();
+			quote! {
+				#variant_name_str => Ok(#name::#variant_name),
+			}
+		})
+		.collect::<Vec<_>>();
 
 	// Generate the final token stream
 	let expanded = quote! {
@@ -43,6 +51,5 @@ pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 		}
 	};
 
-	// Return the generated token stream
-	TokenStream::from(expanded)
+	expanded
 }
