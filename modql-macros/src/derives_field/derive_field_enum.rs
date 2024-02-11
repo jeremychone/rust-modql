@@ -10,6 +10,9 @@ pub(crate) fn derive_field_enum_inner(input: TokenStream) -> TokenStream {
 	let name = input.ident;
 
 	// Build the match arms and get the first variant
+	// Note: At this point, we do not nseed the first_variant anymore since we return
+	//       `sea_query::Value::String(None)` for nullable, but we keep the code for future
+	//       reference.
 	let mut first_variant = None;
 	let arms = match input.data {
 		syn::Data::Enum(data) => data
@@ -43,7 +46,8 @@ pub(crate) fn derive_field_enum_inner(input: TokenStream) -> TokenStream {
 
 		impl sea_query::Nullable for #name {
 			fn null() -> sea_query::Value {
-				#name::#first_variant.into()
+				// #name::#first_variant.into()
+				sea_query::Value::String(None)
 			}
 		}
 	};
