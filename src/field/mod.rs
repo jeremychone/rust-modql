@@ -10,5 +10,6 @@ pub use self::error::{Error, Result};
 pub use field::*;
 pub use fields::*;
 pub use has_fields::*;
+pub use modql_macros::Field;
 pub use modql_macros::FieldEnum;
 pub use modql_macros::Fields;

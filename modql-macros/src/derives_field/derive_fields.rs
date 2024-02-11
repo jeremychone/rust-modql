@@ -1,11 +1,9 @@
-mod utils;
-
 use crate::utils::modql_field::ModqlFieldProp;
+use crate::utils::struct_modql_attr::get_modql_struct_prop;
 use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
-use utils::get_struct_modql_prop;
 
 pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
@@ -14,13 +12,15 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let struct_name = &ast.ident;
 
 	// -- Collect Elements
-	let props = modql_field::get_modql_field_props(fields);
+	// Properties for all fields (with potential additional info with #[field(...)])
+	let field_props = modql_field::get_modql_field_props(fields);
 
-	let props_all_names: Vec<&String> = props.iter().map(|p| &p.name).collect();
+	let props_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
-	// Will be "" if none
-	let struct_modql_prop = get_struct_modql_prop(&ast).unwrap();
-	let props_all_tables: Vec<String> = props
+	// Will be "" if none (this if for the struct #[modql(table = ...)])
+	let struct_modql_prop = get_modql_struct_prop(&ast).unwrap();
+	// this will repeat the struct table name for all fields.
+	let props_all_tables: Vec<String> = field_props
 		.iter()
 		.map(|p| {
 			p.table
@@ -30,7 +30,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 		})
 		.collect();
 
-	let props_all_columns: Vec<String> = props
+	let props_all_columns: Vec<String> = field_props
 		.iter()
 		.map(|p| p.column.as_ref().map(|c| c.to_string()).unwrap_or_else(|| p.name.to_string()))
 		.collect();
@@ -44,7 +44,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	}
 
 	// -- all_fields() quotes!
-	let all_fields_quotes = props.iter().map(|p| {
+	let all_fields_quotes = field_props.iter().map(|p| {
 		let name = &p.name;
 		let field_options = field_options_quote(p);
 		let ident = p.ident;
@@ -57,7 +57,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	});
 
 	// -- The not_none_fields quotes!
-	let not_none_fields_quotes = props.iter().map(|p| {
+	let not_none_fields_quotes = field_props.iter().map(|p| {
 		let name = &p.name;
 		let field_options = field_options_quote(p);
 		let ident = p.ident;

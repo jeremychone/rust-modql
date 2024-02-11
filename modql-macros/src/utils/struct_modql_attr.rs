@@ -1,13 +1,13 @@
-use crate::utils::get_meta_value_string;
+use crate::utils::{get_dinput_attribute, get_meta_value_string};
 use syn::punctuated::Punctuated;
-use syn::{Attribute, DeriveInput, Meta, Token};
+use syn::{DeriveInput, Meta, Token};
 
 // region:    --- SQLB TO BE DEPRECATED: Struct Prop Attribute
 pub struct StructModqlFieldProp {
 	pub table: Option<String>,
 }
 
-pub fn get_struct_modql_prop(dinput: &DeriveInput) -> Result<StructModqlFieldProp, syn::Error> {
+pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldProp, syn::Error> {
 	// FIXME: We should remove this, 'sqlb' should not be a thing anymore.
 	let sqlb_attr = get_dinput_attribute(dinput, "modql");
 	let mut table = None;
@@ -35,7 +35,4 @@ pub fn get_struct_modql_prop(dinput: &DeriveInput) -> Result<StructModqlFieldPro
 	Ok(StructModqlFieldProp { table })
 }
 
-fn get_dinput_attribute<'a>(dinput: &'a DeriveInput, name: &str) -> Option<&'a Attribute> {
-	dinput.attrs.iter().find(|a| a.path().is_ident(name))
-}
 // endregion: --- SQLB TO BE DEPRECATED: Struct Prop Attribute

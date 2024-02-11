@@ -30,6 +30,12 @@ pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 	derives_field::derive_field_enum_inner(input)
 }
 
+#[cfg(feature = "with-sea-query")]
+#[proc_macro_derive(Field, attributes(field, fields))]
+pub fn derive_field(input: TokenStream) -> TokenStream {
+	derives_field::derive_field_inner(input)
+}
+
 // endregion: --- with-seaquery
 
 // region:    --- with-rusqlite
