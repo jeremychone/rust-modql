@@ -44,6 +44,19 @@ pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 /// #[derive(modql::field::Field)]
 /// pub struct EpochTime(pub(in crate::time) i64);
 /// ```
+/// Will generate something like
+/// ```rust,norun
+/// impl From<EpochTime> for sea_query::Value {
+///   fn from(value: EpochTime) -> Self {
+///     Self::BigInt(Some(value.0))
+///   }
+/// }
+/// impl sea_query::Nullable for EpochTime {
+///   fn null() -> sea_query::Value {
+///     sea_query::Value::BigInt(None)
+///   }
+/// }
+/// ```
 /// Notes:
 ///   - Supports only primitive types (no array yet)
 ///   - Supports only one tuple field.
@@ -79,6 +92,50 @@ pub fn derive_from_sqlite_row(input: TokenStream) -> TokenStream {
 	derives_rusqlite::derive_from_sqlite_row_inner(input)
 }
 
+/// Will implement the `rusqlite::types::FromSql` for the annotated type.
+///
+/// For example:
+///
+/// - For simple enum (with variant name only)
+/// ```rust,norun
+/// pub enum Kind {
+///   Md,
+///   Pdf,
+///   Unknown,
+/// }
+/// ```
+/// Will generate something like:
+/// ```rust,norun
+///  impl rusqlite::types::FromSql for Kind {
+///    fn column_result(value: rusqlite::types::ValueRef<'_>) -> rusqlite::types::FromSqlResult<Self> {
+///      let txt: String = rusqlite::types::FromSql::column_result(value)?;
+///      match txt.as_str() {
+///        "Md"      => Ok(Kind::Md),
+///        "Pdf"     => Ok(Kind::Pdf),
+///        "Unknown" => Ok(Kind::Unknown),
+///        _ => Err(rusqlite::types::FromSqlError::Other(
+///        format!("Invalid enum variant string '{}'", txt).into(),
+///        )),
+///      }
+///    }
+///  }
+/// ```
+///
+/// - For simple tuple struct (one value that already implement the FromSqlt)
+/// ```rust,norun
+/// #[derive(modql::FromSqliteType)]
+/// pub struct EpochTime(i64);
+/// ```
+/// Will generate something like:
+/// ```rust,norun
+/// impl rusqlite::types::FromSql for EpochTime {
+///   fn column_result(value: rusqlite::types::ValueRef<'_>) -> rusqlite::types::FromSqlResult<Self> {
+///     let val = i64::column_result(value)?;
+///     Ok(EpochTime(val))
+///   }
+/// }
+/// ````
+///
 #[cfg(feature = "with-rusqlite")]
 #[proc_macro_derive(FromSqliteValue, attributes(field, fields))]
 pub fn derive_from_sqlite_value(input: TokenStream) -> TokenStream {

@@ -4,7 +4,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::quote;
-use syn::{parse_macro_input, Data, DataEnum, DeriveInput};
+use syn::{parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Fields};
 
 pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
@@ -16,11 +16,32 @@ pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	// Build the match arms
 	let expanded = match input.data {
 		Data::Enum(data) => process_enum(name, data),
+		syn::Data::Struct(data) => process_struct(name, data),
 		_ => panic!("FromSqliteValue can only be used with enums for now (see FromRow)"),
 	};
 
 	// Return the generated token stream
 	TokenStream::from(expanded)
+}
+
+fn process_struct(name: Ident, data: DataStruct) -> proc_macro2::TokenStream {
+	let first_tuple_field = match data.fields {
+		Fields::Unnamed(fields) if fields.unnamed.len() == 1 => fields.unnamed.into_iter().next().unwrap(),
+		_ => panic!("Expected a tuple struct with one field"),
+	};
+
+	let field_type = &first_tuple_field.ty;
+
+	let expanded = quote! {
+		impl rusqlite::types::FromSql for #name {
+			fn column_result(value: rusqlite::types::ValueRef<'_>) -> rusqlite::types::FromSqlResult<Self> {
+				let val = #field_type::column_result(value)?;
+				Ok(#name(val))
+			}
+		}
+	};
+
+	expanded
 }
 
 fn process_enum(name: Ident, data: DataEnum) -> proc_macro2::TokenStream {
