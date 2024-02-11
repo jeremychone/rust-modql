@@ -26,6 +26,7 @@ pub fn derive_fields(input: TokenStream) -> TokenStream {
 
 #[cfg(feature = "with-sea-query")]
 #[proc_macro_derive(FieldEnum, attributes(field, fields))]
+#[deprecated(note = "Use derive(Field) instead")]
 pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 	derives_field::derive_field_enum_inner(input)
 }
