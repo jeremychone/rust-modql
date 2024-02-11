@@ -31,6 +31,7 @@ pub fn get_field_attribute<'a>(field: &'a Field, name: &str) -> Option<&'a Attri
 	field.attrs.iter().find(|a| a.path().is_ident(name))
 }
 
+#[cfg(feature = "with-sea-query")]
 pub fn get_dinput_attribute<'a>(dinput: &'a DeriveInput, name: &str) -> Option<&'a Attribute> {
 	dinput.attrs.iter().find(|a| a.path().is_ident(name))
 }
