@@ -29,7 +29,7 @@ pub(crate) fn derive_field_enum_inner(input: TokenStream) -> TokenStream {
 				}
 			})
 			.collect::<Vec<_>>(),
-		_ => panic!("SeaEnum can only be used with enums"),
+		_ => panic!("FieldEnum can only be used with enums"),
 	};
 
 	let first_variant = first_variant.expect("Enum must have at least one variant");
