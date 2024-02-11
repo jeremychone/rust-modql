@@ -31,6 +31,35 @@ pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 	derives_field::derive_field_enum_inner(input)
 }
 
+/// Implements `From<T> for sea_query::Value` and `sea_query::Nullable for T`
+/// where T is the struct or enum annotated with `#[derive(Field)]` for simple
+/// tuple structs or enums.
+///
+/// For more complex types, implement both of these traits for the type.
+///
+/// For example:
+///
+/// - On simple type and single element tuple struct
+/// ```rust,norun
+/// #[derive(modql::field::Field)]
+/// pub struct EpochTime(pub(in crate::time) i64);
+/// ```
+/// Notes:
+///   - Supports only primitive types (no array yet)
+///   - Supports only one tuple field.
+///
+/// - On Simple enum (plain variant only).
+/// ```rust,norun
+/// #[derive(modql::field::Field)]
+/// pub enum Kind {
+///   Md,
+///   Pdf,
+///   Unknown,
+/// }
+/// ```
+/// Notes:
+///   - Will be treated a sea_query::Value::String with the name of the variant.
+///   - No rename for now.
 #[cfg(feature = "with-sea-query")]
 #[proc_macro_derive(Field, attributes(field, fields))]
 pub fn derive_field(input: TokenStream) -> TokenStream {
