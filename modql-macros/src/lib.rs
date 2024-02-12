@@ -26,7 +26,7 @@ pub fn derive_fields(input: TokenStream) -> TokenStream {
 
 #[cfg(feature = "with-sea-query")]
 #[proc_macro_derive(FieldEnum, attributes(field, fields))]
-#[deprecated(note = "Use derive(Field) instead")]
+#[deprecated(note = "Use derive(FieldValue) instead")]
 pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 	derives_field::derive_field_enum_inner(input)
 }
@@ -74,9 +74,9 @@ pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 ///   - Will be treated a sea_query::Value::String with the name of the variant.
 ///   - No rename for now.
 #[cfg(feature = "with-sea-query")]
-#[proc_macro_derive(Field, attributes(field, fields))]
+#[proc_macro_derive(FieldValue)]
 pub fn derive_field(input: TokenStream) -> TokenStream {
-	derives_field::derive_field_inner(input)
+	derives_field::derive_field_value_inner(input)
 }
 
 // endregion: --- with-seaquery

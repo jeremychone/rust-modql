@@ -2,7 +2,7 @@ use crate::utils::{get_dinput_attribute, get_meta_value_string};
 use syn::punctuated::Punctuated;
 use syn::{DeriveInput, Meta, Token};
 
-// region:    --- SQLB TO BE DEPRECATED: Struct Prop Attribute
+// region:    --- Struct Prop Attribute
 pub struct StructModqlFieldProp {
 	pub table: Option<String>,
 }
@@ -35,4 +35,4 @@ pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldPro
 	Ok(StructModqlFieldProp { table })
 }
 
-// endregion: --- SQLB TO BE DEPRECATED: Struct Prop Attribute
+// endregion: --- Struct Prop Attribute
