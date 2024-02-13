@@ -1,6 +1,6 @@
 mod utils;
 
-use crate::derives_filter::utils::get_modql_field_attr;
+use crate::derives_filter::utils::get_filter_field_attr;
 use crate::utils::{get_struct_fields, get_type_name};
 use proc_macro::TokenStream;
 use quote::quote;
@@ -32,7 +32,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 				props_opval_idents.push(ident);
 
 				// -- Extract the attributes
-				let modql_field_attr = get_modql_field_attr(field).unwrap();
+				let modql_field_attr = get_filter_field_attr(field).unwrap();
 
 				// -- context_path
 				let block_context = if let Some(context_path) = modql_field_attr.context_path {

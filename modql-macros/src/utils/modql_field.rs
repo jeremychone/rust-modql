@@ -7,7 +7,7 @@ use syn::{Field, FieldsNamed, Meta, Token};
 // region:    --- Field Prop (i.e., sqlb Field)
 pub struct ModqlFieldProp<'a> {
 	pub name: String,
-	pub table: Option<String>,
+	pub rel: Option<String>,
 	pub column: Option<String>,
 	pub cast_as: Option<String>,
 	pub is_option: bool,
@@ -50,7 +50,7 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 
 		// -- Add to array.
 		props.push(ModqlFieldProp {
-			table: mfield_attr.table,
+			rel: mfield_attr.rel,
 			column: mfield_attr.column,
 			name,
 			is_option,
@@ -66,7 +66,7 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 
 // region:    --- Field Prop Attribute
 pub struct ModqlFieldPropAttr {
-	pub table: Option<String>,
+	pub rel: Option<String>,
 	pub column: Option<String>,
 	pub skip: bool,
 	pub name: Option<String>,
@@ -80,7 +80,7 @@ pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Er
 
 	let mut skip = false;
 	let mut name: Option<String> = None;
-	let mut table: Option<String> = None;
+	let mut rel: Option<String> = None;
 	let mut column: Option<String> = None;
 	let mut cast_as: Option<String> = None;
 
@@ -98,12 +98,16 @@ pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Er
 				Meta::NameValue(nv) => {
 					if nv.path.is_ident("name") {
 						name = get_meta_value_string(nv);
-					} else if nv.path.is_ident("table") {
-						table = get_meta_value_string(nv);
+					} else if nv.path.is_ident("rel") {
+						rel = get_meta_value_string(nv);
 					} else if nv.path.is_ident("column") {
 						column = get_meta_value_string(nv);
 					} else if nv.path.is_ident("cast_as") {
 						cast_as = get_meta_value_string(nv);
+					}
+					// NOTE: This is to deprated. Should use `rel` for `relation`
+					else if nv.path.is_ident("table") {
+						rel = get_meta_value_string(nv);
 					}
 				}
 
@@ -117,7 +121,7 @@ pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Er
 
 	Ok(ModqlFieldPropAttr {
 		skip,
-		table,
+		rel,
 		column,
 		name,
 		cast_as,

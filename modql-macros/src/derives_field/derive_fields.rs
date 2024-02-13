@@ -23,10 +23,10 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let props_all_tables: Vec<String> = field_props
 		.iter()
 		.map(|p| {
-			p.table
+			p.rel
 				.as_ref()
 				.map(|t| t.to_string())
-				.unwrap_or_else(|| struct_modql_prop.table.as_ref().map(|s| s.to_string()).unwrap_or_default())
+				.unwrap_or_else(|| struct_modql_prop.rel.as_ref().map(|s| s.to_string()).unwrap_or_default())
 		})
 		.collect();
 
@@ -123,6 +123,27 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 							SIden(#props_all_tables).into_iden(),
 							SIden(#props_all_columns).into_iden())
 					};
+					v.push(col_ref);
+				)*
+				v
+			}
+
+			fn field_column_refs_with_rel(rel_iden: impl sea_query::IntoIden) -> Vec<sea_query::ColumnRef> {
+				use sea_query::IntoIden;
+				use sea_query::ColumnRef;
+				use modql::SIden;
+
+				let rel_iden = rel_iden.into_iden();
+
+				let mut v = Vec::new();
+
+				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
+				#(
+					let col_ref =
+						ColumnRef::TableColumn(
+							rel_iden.clone(),
+							SIden(#props_all_columns).into_iden());
+
 					v.push(col_ref);
 				)*
 				v
