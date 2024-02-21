@@ -1,10 +1,27 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2024-02-21 - `0.3.10`
+
+- `+` Add HasField::field_column_refs_with_rel
+- `+` Derive FromSqliteValue - Add support for simple tuple struct
+- `+` Derive Field - Add simple tuple struct support
+- `!` Deprecate (warning) `FieldEnum` in favor of `FieldValue` (does enum and single tuple struct)
+
+## 2024-02-04 - `0.3.9`
+
+- `!` Rename FromSqliteRow::from_rusqlite_row to FromSqliteRow::from_sqlite_row)
+- `!` Change sqlite::FromRow to FromSqliteRow
+- `+` FromSqliteValue for enum 
+- `+` Add `field::FieldEnum` derive to implement to seaqueryvalue for simple enum (also some code relayout)
+
+## 2024-01-29 - `0.3.8`
+
+- `^` sea-query - use `thread-safe` feature
 
 ## 2024-01-22 - `0.3.7`
 
-- `+` Add `cast_as` to `filter`
+- `+` `cast_as` to `filter`
 - `!` Potential API break for user using `FieldNode` struct constructor (e.g., `FieldNode {...}`). New property `options: FieldNodeOptions`. Use `options: FieldNodeOptions::default()`. 
 	- Using the `FieldNode::new(...)` functions and every other interface should be unchanged. 
 
