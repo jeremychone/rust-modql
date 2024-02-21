@@ -1,6 +1,6 @@
 [package]
 name = "modql-macros"
-version = "0.3.10"
+version = "0.3.11-rc-1"
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
@@ -22,8 +22,8 @@ syn = {version = "2", features = ["full"]}
 proc-macro2 = "1"
 
 # -- For features
-sea-query = { version = "0.30", optional = true }
-rusqlite = { version = "0.30", optional = true }
+sea-query = { version = "0.31.0-rc", optional = true }
+rusqlite = { version = "0.31", optional = true }
 
 [lib]
 proc-macro = true
