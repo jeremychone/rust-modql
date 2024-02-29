@@ -4,7 +4,7 @@ use quote::quote;
 use syn::{parse_macro_input, DataEnum, DataStruct, DeriveInput, Fields, Type};
 
 // TODO: Needs to assert that variants do not have any data
-pub(crate) fn derive_field_value_inner(input: TokenStream) -> TokenStream {
+pub(crate) fn derive_field_sea_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
 	let input = parse_macro_input!(input as DeriveInput);
 

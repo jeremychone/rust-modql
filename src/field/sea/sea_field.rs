@@ -4,13 +4,13 @@ use sea_query::{ColumnRef, DynIden, SimpleExpr, Value};
 use sea_query::{IntoIden, ValueType};
 
 #[derive(Debug, Clone)]
-pub struct Field {
+pub struct SeaField {
 	pub iden: DynIden,
 	pub column_ref: ColumnRef,
 	pub value: SimpleExpr,
 }
 
-impl Field {
+impl SeaField {
 	pub fn sea_value(&self) -> Option<&Value> {
 		if let SimpleExpr::Value(value) = &self.value {
 			Some(value)
@@ -38,11 +38,11 @@ pub struct FieldOptions {
 	pub cast_as: Option<String>,
 }
 
-impl Field {
+impl SeaField {
 	pub fn new(iden: impl IntoIden, value: SimpleExpr) -> Self {
 		let iden = iden.into_iden();
 		let column_ref = ColumnRef::Column(iden.clone());
-		Field {
+		SeaField {
 			iden,
 			column_ref,
 			value,
@@ -57,7 +57,7 @@ impl Field {
 			value = value.cast_as(StringIden(cast_as))
 		}
 
-		Field {
+		SeaField {
 			iden,
 			column_ref,
 			value,

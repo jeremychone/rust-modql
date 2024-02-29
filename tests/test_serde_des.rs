@@ -1,3 +1,5 @@
+pub type Result<T> = core::result::Result<T, Error>;
+pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::filter::{FilterNodes, IntoFilterNodes, OpValsInt64, OpValsString};
 use serde::Deserialize;
 use serde_json::Value;
@@ -9,7 +11,7 @@ struct MyFilter {
 }
 
 #[test]
-fn test_des_string_simple() -> anyhow::Result<()> {
+fn test_des_string_simple() -> Result<()> {
 	let json = r#"
 	{
 		"name": "Hello"
@@ -26,7 +28,7 @@ fn test_des_string_simple() -> anyhow::Result<()> {
 }
 
 #[test]
-fn test_des_string_map() -> anyhow::Result<()> {
+fn test_des_string_map() -> Result<()> {
 	let json = r#"
 {"name": {
 	"$contains": "World",
@@ -48,7 +50,7 @@ fn test_des_string_map() -> anyhow::Result<()> {
 }
 
 #[test]
-fn test_des_number_simple() -> anyhow::Result<()> {
+fn test_des_number_simple() -> Result<()> {
 	let json = r#"
 	{
 		"id": 123
@@ -66,7 +68,7 @@ fn test_des_number_simple() -> anyhow::Result<()> {
 }
 
 #[test]
-fn test_des_number_map() -> anyhow::Result<()> {
+fn test_des_number_map() -> Result<()> {
 	let json = r#"
 	{
 		"id": {"$gt": 100}

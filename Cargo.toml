@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.3.11-rc.1"
+version = "0.4.0-rc.1"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -19,19 +19,20 @@ repository = "https://github.com/jeremychone/rust-modql"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-# unused = "allow" # For experimental dev.
+unused = "allow" # For experimental dev.
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace]
 members = [".", "modql-macros"]
 
 [features]
+# default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
 default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="0.3.11-rc", path = "modql-macros", optional=true}
+modql-macros = { version="0.4.0-rc", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
@@ -40,6 +41,5 @@ sea-query = { version = "0.31.0-rc.4", features = ["thread-safe"], optional = tr
 rusqlite = { version = "0.31", optional = true }
 
 [dev-dependencies]
-anyhow = "1"
 serde_with = "3"
 

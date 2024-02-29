@@ -1,5 +1,6 @@
 // region:    --- Modules
 
+mod derives_field;
 mod derives_filter;
 mod utils;
 
@@ -15,20 +16,9 @@ pub fn derive_filter_nodes(input: TokenStream) -> TokenStream {
 
 // region:    --- with-seaquery
 
-#[cfg(feature = "with-sea-query")]
-mod derives_field;
-
-#[cfg(feature = "with-sea-query")]
 #[proc_macro_derive(Fields, attributes(field, modql))]
 pub fn derive_fields(input: TokenStream) -> TokenStream {
 	derives_field::derive_fields_inner(input)
-}
-
-#[cfg(feature = "with-sea-query")]
-#[proc_macro_derive(FieldEnum, attributes(field, fields))]
-#[deprecated(note = "Use derive(FieldValue) instead")]
-pub fn derive_field_enum(input: TokenStream) -> TokenStream {
-	derives_field::derive_field_enum_inner(input)
 }
 
 /// Implements `From<T> for sea_query::Value` and `sea_query::Nullable for T`
@@ -74,9 +64,9 @@ pub fn derive_field_enum(input: TokenStream) -> TokenStream {
 ///   - Will be treated a sea_query::Value::String with the name of the variant.
 ///   - No rename for now.
 #[cfg(feature = "with-sea-query")]
-#[proc_macro_derive(FieldValue)]
-pub fn derive_field(input: TokenStream) -> TokenStream {
-	derives_field::derive_field_value_inner(input)
+#[proc_macro_derive(FieldSeaValue)]
+pub fn derive_field_sea_value(input: TokenStream) -> TokenStream {
+	derives_field::derive_field_sea_value_inner(input)
 }
 
 // endregion: --- with-seaquery

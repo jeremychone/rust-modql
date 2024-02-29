@@ -6,9 +6,9 @@ use syn::{Field, FieldsNamed, Meta, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
 pub struct ModqlFieldProp<'a> {
-	pub name: String,
+	pub prop_name: String, // property name
+	pub name: String,      // resolved name col_name or prop name;
 	pub rel: Option<String>,
-	pub column: Option<String>,
 	pub cast_as: Option<String>,
 	pub is_option: bool,
 	pub ident: &'a Option<Ident>,
@@ -38,20 +38,17 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 		let is_option = type_name.contains("Option ");
 
 		// -- name
-		let name = if let Some(name) = mfield_attr.name {
-			name
-		} else {
-			ident.as_ref().map(|i| i.to_string()).unwrap()
-			// quote! {stringify!(#ident)}
-		};
+		let prop_name = ident.as_ref().map(|i| i.to_string()).unwrap();
+		let field_name = mfield_attr.name;
+		let name = field_name.unwrap_or_else(|| prop_name.clone());
 
 		// -- cast_as
 		let cast_as = mfield_attr.cast_as;
 
 		// -- Add to array.
 		props.push(ModqlFieldProp {
+			prop_name,
 			rel: mfield_attr.rel,
-			column: mfield_attr.column,
 			name,
 			is_option,
 			ident,
@@ -67,19 +64,17 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 // region:    --- Field Prop Attribute
 pub struct ModqlFieldPropAttr {
 	pub rel: Option<String>,
-	pub column: Option<String>,
-	pub skip: bool,
 	pub name: Option<String>,
+	pub skip: bool,
 	pub cast_as: Option<String>,
 }
 
-// #[field(skip, name = "new_name")]
+// #[field(skip)]
 // #[field(name = "new_name")]
 pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error> {
 	let attribute = get_field_attribute(field, "field");
 
 	let mut skip = false;
-	let mut name: Option<String> = None;
 	let mut rel: Option<String> = None;
 	let mut column: Option<String> = None;
 	let mut cast_as: Option<String> = None;
@@ -96,24 +91,26 @@ pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Er
 
 				// #[field(name=value)]
 				Meta::NameValue(nv) => {
-					if nv.path.is_ident("name") {
-						name = get_meta_value_string(nv);
-					} else if nv.path.is_ident("rel") {
+					if nv.path.is_ident("rel") {
 						rel = get_meta_value_string(nv);
-					} else if nv.path.is_ident("column") {
+					} else if nv.path.is_ident("name") {
 						column = get_meta_value_string(nv);
 					} else if nv.path.is_ident("cast_as") {
 						cast_as = get_meta_value_string(nv);
-					}
-					// NOTE: This is to deprated. Should use `rel` for `relation`
-					else if nv.path.is_ident("table") {
-						rel = get_meta_value_string(nv);
 					}
 				}
 
 				/* ... */
 				_ => {
-					return Err(syn::Error::new_spanned(meta, "unrecognized field"));
+					return Err(syn::Error::new_spanned(
+						meta,
+						r#"
+Unrecognized #[field...] attribute. Accepted attribute
+#[field(skip)]
+or
+#[field(rel="table_name}, name="some_col_name", cast_as="sea query cast as type")]
+"#,
+					));
 				}
 			}
 		}
@@ -122,8 +119,7 @@ pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Er
 	Ok(ModqlFieldPropAttr {
 		skip,
 		rel,
-		column,
-		name,
+		name: column,
 		cast_as,
 	})
 }

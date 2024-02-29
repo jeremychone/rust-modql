@@ -4,7 +4,12 @@
 
 In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has built-in support for [sea-query](https://crates.io/crates/sea-query), and can be expressed either in JSON or Rust types.
 
-For example:
+> **IMPORTANT**: **v0.4.0**, currently in `rc`, includes significant refactoring (retaining the same functionalities, just with cleaner naming and decoupled from sea-query) to allow `derive(Fields)` to provide `field_names` and `field_refs` without the need for the `with-sea-query` feature.
+> 
+> For more information, see [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
+
+
+## Quick Overview
 
 ```rs
 /// This is the model entity, annotated with Fields.
@@ -141,28 +146,34 @@ The following tables show the list of possible operators for each type.
 ## More Info
 
 - `modql::filter` - Delivers a declarative structure that can be deserialized from JSON.
-- `modql::field` - Provides a method to derive a `sea-query` compatible data structure from standard structs.
+- `modql::field` - Provides a method get field information on a struct. The `with-sea-query` feature add `sea-query` compatible data structure from standard structs and derive.
 
-This introduces the following:
+## `#[derive(modql::field::Fields)` provide the following
 
-- `Task::field_column_refs() -> Vec<ColumnRef>`: Constructs `sea-query` select queries.
-- `Task::field_idens() -> Vec<ColumnRef>`: Constructs `sea-query` select queries, suited for simpler cases.
-- `task.all_fields().for_sea_insert() -> (Vec<DynIden>, Vec<SimpleExpr>)`: Used for `sea-query` inserts.
-- `task.all_fields().for_sea_update() -> impl Iterator<Item = (DynIden, SimpleExpr)>`: Used for `sea-query` updates.
+- `Task::field_names()` returns the property names of the struct. It can be overridden with the `#[field(name="another_name")]` property attribute.
+- `Task::field_refs()` returns `FieldRef { name: &'static str, rel: Option<&'static str>}` for the properties. `rel` acts like the table name. It can be set as `#[modql(rel="some_table_name")]` at the struct level, or `#[field(rel="special_rel_name")]` at the field level.
+
+When compiled with the `with-sea-query` feature, these additional functions are available on the struct:
+
+- `Task::sea_column_refs() -> Vec<ColumnRef>`: Constructs `sea-query` select queries (with `rel` as the table, and `name` as the column name).
+- `Task::sea_idens() -> Vec<DynIden>`: Constructs `sea-query` select queries, suited for simpler cases. (similar to `::field_names()` but returns the sea-query `DynIden`).
+- `task.all_sea_fields().for_sea_insert() -> (Vec<DynIden>, Vec<SimpleExpr>)`: Used for `sea-query` inserts.
+- `task.all_sea_fields().for_sea_update() -> impl Iterator<Item = (DynIden, SimpleExpr)>`: Used for `sea-query` updates.
 
 Additionally, it offers:
 
-- `task.not_none_fields()`: Operates similarly to the above, but only for fields where their Option is not `None`.
-
+- `task.not_none_fields()`: Operates similarly to the above, but only for fields where their `Option` is not `None`.
 
 ### Rust types
 
 On the Rust side, this can be expressed like this:
 
 ```rs
+pub type Result<T> = core::result::Result<T, Error>;
+pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::filter::{FilterGroups, FilterNode, OpValtring};
 
-fn main() -> anyhow::Result<()> {
+fn main() -> Result<()> {
     let filter_nodes: Vec<FilterNode> = vec![
         (
             "title",

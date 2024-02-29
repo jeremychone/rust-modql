@@ -4,14 +4,12 @@ mod error;
 #[cfg(feature = "with-rusqlite")]
 mod sqlite;
 
+pub mod field;
 pub mod filter;
 pub mod includes;
 
 // --- Re-Exports
 pub use crate::error::{Error, Result};
-
-#[cfg(feature = "with-sea-query")]
-pub mod field;
 
 #[cfg(feature = "with-sea-query")]
 mod sea_utils;

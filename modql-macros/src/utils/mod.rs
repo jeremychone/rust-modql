@@ -1,8 +1,5 @@
 // region:    --- Modules
-#[cfg(any(feature = "with-sea-query", feature = "with-rusqlite"))]
 pub mod modql_field;
-
-#[cfg(any(feature = "with-sea-query", feature = "with-rusqlite"))]
 pub mod struct_modql_attr;
 
 use quote::ToTokens;
@@ -31,7 +28,6 @@ pub fn get_field_attribute<'a>(field: &'a Field, name: &str) -> Option<&'a Attri
 	field.attrs.iter().find(|a| a.path().is_ident(name))
 }
 
-#[cfg(feature = "with-sea-query")]
 pub fn get_dinput_attribute<'a>(dinput: &'a DeriveInput, name: &str) -> Option<&'a Attribute> {
 	dinput.attrs.iter().find(|a| a.path().is_ident(name))
 }
@@ -44,20 +40,3 @@ pub fn get_meta_value_string(nv: MetaNameValue) -> Option<String> {
 	}
 	None
 }
-
-// region:    --- Old
-
-// TODO: Needs to make sure to only take the value of context
-// pub(crate) fn DEPREATED_extract_context_attr_value(field: &Field) -> Option<String> {
-// 	// FIXME: Finding the attribute context
-// 	for att in field.attrs.iter() {
-// 		let lit = att.parse_args::<syn::LitStr>();
-// 		if let Ok(lit) = lit {
-// 			let lit = lit.value();
-// 			return Some(lit);
-// 		}
-// 	}
-// 	None
-// }
-
-// endregion: --- Old

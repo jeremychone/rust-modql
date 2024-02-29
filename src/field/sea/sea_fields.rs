@@ -1,24 +1,24 @@
-use crate::field::Field;
+use crate::field::SeaField;
 use sea_query::{DynIden, SimpleExpr};
 
 // region:    --- Fields
 #[derive(Debug, Clone)]
-pub struct Fields(Vec<Field>);
+pub struct SeaFields(Vec<SeaField>);
 
 // Constructor
-impl Fields {
-	pub fn new(fields: Vec<Field>) -> Self {
-		Fields(fields)
+impl SeaFields {
+	pub fn new(fields: Vec<SeaField>) -> Self {
+		SeaFields(fields)
 	}
 }
 
 // Api
-impl Fields {
-	pub fn push(&mut self, field: Field) {
+impl SeaFields {
+	pub fn push(&mut self, field: SeaField) {
 		self.0.push(field);
 	}
 
-	pub fn into_vec(self) -> Vec<Field> {
+	pub fn into_vec(self) -> Vec<SeaField> {
 		self.0
 	}
 
@@ -42,8 +42,8 @@ impl Fields {
 	}
 }
 
-impl IntoIterator for Fields {
-	type Item = Field;
+impl IntoIterator for SeaFields {
+	type Item = SeaField;
 	type IntoIter = std::vec::IntoIter<Self::Item>;
 
 	fn into_iter(self) -> Self::IntoIter {

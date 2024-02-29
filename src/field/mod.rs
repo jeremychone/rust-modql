@@ -1,15 +1,16 @@
 //! Requires feature `with-sea-query` and provides convenient sea-query serialization for field names and values.
 
 mod error;
-#[allow(clippy::module_inception)] // ok, because internal and flatten below.
-mod field;
-mod fields;
 mod has_fields;
+#[cfg(feature = "with-sea-query")]
+mod sea;
 
 pub use self::error::{Error, Result};
-pub use field::*;
-pub use fields::*;
 pub use has_fields::*;
-pub use modql_macros::FieldEnum;
-pub use modql_macros::FieldValue;
 pub use modql_macros::Fields;
+
+#[cfg(feature = "with-sea-query")]
+pub use modql_macros::FieldSeaValue;
+
+#[cfg(feature = "with-sea-query")]
+pub use sea::*;

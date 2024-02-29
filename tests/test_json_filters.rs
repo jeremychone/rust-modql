@@ -1,9 +1,8 @@
-//! cargo watch -x 'test --test test_json_filters --features with-sea-query -- --nocapture'
-
-#![allow(unused)] // Ok for those tests.
 #![cfg(feature = "with-sea-query")]
+#![allow(unused)] // Ok for those tests.
 
-use anyhow::Result;
+pub type Result<T> = core::result::Result<T, Error>;
+pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsBool, OpValsInt64, OpValsString};
 use modql::SIden;
 use modql_macros::FilterNodes;

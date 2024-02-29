@@ -1,6 +1,10 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2024-04-06 - `0.4.0-rc.1`
+
+- `!` Major Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
+
 ## 2024-02-21 - `0.3.10`
 
 - `+` Add HasField::field_column_refs_with_rel

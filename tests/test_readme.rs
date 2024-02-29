@@ -1,9 +1,11 @@
 // #![allow(unused)]
+pub type Result<T> = core::result::Result<T, Error>;
+pub type Error = Box<dyn std::error::Error>; // For early dev.
 
 use modql::filter::{FilterGroups, FilterNode, FilterNodes, OpValBool, OpValString, OpValsBool, OpValsString};
 
 #[test]
-fn test_readme_01() -> anyhow::Result<()> {
+fn test_readme_01() -> Result<()> {
 	let filter_nodes: Vec<FilterNode> = vec![
 		(
 			"title",
@@ -20,7 +22,7 @@ fn test_readme_01() -> anyhow::Result<()> {
 }
 
 #[test]
-fn test_readme_02() -> anyhow::Result<()> {
+fn test_readme_02() -> Result<()> {
 	#[derive(FilterNodes)]
 	struct MyFilter {
 		done: Option<OpValsBool>,

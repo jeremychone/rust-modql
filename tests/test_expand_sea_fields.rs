@@ -1,9 +1,10 @@
+#![cfg(feature = "with-sea-query")]
+
 pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
-use modql::field::{Fields, HasFields};
+use modql::field::{Fields, HasSeaFields};
 
 #[derive(Debug, Default, Fields)]
-#[modql(rel = "todo_table")]
 pub struct Todo {
 	pub id: i64,
 
@@ -19,23 +20,13 @@ pub struct Todo {
 
 #[test]
 fn test_struct_field_names() -> Result<()> {
-	assert_eq!(Todo::field_names(), &["id", "special_title_col", "description"]);
-	Ok(())
-}
-
-#[test]
-fn test_struct_field_refs() -> Result<()> {
 	// -- Exec
-	let field_refs = Todo::field_refs();
+	let sea_idens = Todo::sea_idens();
 
 	// -- Check
-	let names: Vec<&'static str> = field_refs.iter().map(|fr| fr.name).collect();
-	let rels: Vec<Option<&'static str>> = field_refs.iter().map(|fr| fr.rel).collect();
+	let names = sea_idens.iter().map(|i| i.to_string()).collect::<Vec<_>>();
+	let names = names.iter().map(|s| s.as_str()).collect::<Vec<_>>();
 	assert_eq!(names, &["id", "special_title_col", "description"]);
-	assert_eq!(
-		rels,
-		&[Some("todo_table"), Some("special_todo_table"), Some("todo_table")]
-	);
 
 	Ok(())
 }

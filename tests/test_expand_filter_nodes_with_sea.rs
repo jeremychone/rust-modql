@@ -1,8 +1,8 @@
-//! Should compile. No test functions yet.
-
 #![cfg(feature = "with-sea-query")]
 
-use anyhow::Result;
+//! Should compile. No test functions yet.
+pub type Result<T> = core::result::Result<T, Error>;
+pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::filter::{FilterNodes, OpValValue, OpValsInt64, OpValsString, OpValsValue, SeaResult};
 use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
 
