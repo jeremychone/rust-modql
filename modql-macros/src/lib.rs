@@ -64,7 +64,7 @@ pub fn derive_fields(input: TokenStream) -> TokenStream {
 ///   - Will be treated a sea_query::Value::String with the name of the variant.
 ///   - No rename for now.
 #[cfg(feature = "with-sea-query")]
-#[proc_macro_derive(FieldSeaValue)]
+#[proc_macro_derive(SeaFieldValue)]
 pub fn derive_field_sea_value(input: TokenStream) -> TokenStream {
 	derives_field::derive_field_sea_value_inner(input)
 }

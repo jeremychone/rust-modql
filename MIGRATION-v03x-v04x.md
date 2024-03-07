@@ -19,7 +19,7 @@ Key changes include:
 | **Rename Field/s to SeaField/s**                      |                                                             |
 | `field::Field`                                        | `field::SeaField`                                           |
 | `field::Fields`                                       | `field::SeaFields`                                          |
-| `#[derive(FieldValue)]`                               | `#[derive(FieldSeaValue)]`                                  |
+| `#[derive(FieldValue)]`                               | `#[derive(SeaFieldValue)]`                                  |
 | **Refactor HasFields to HasSeaFields**                |                                                             |
 | `field::HasFields::not_none_fields`                   | `field::HasSeaFields::not_none_sea_fields`                  |
 | `field::HasFields::all_fields`                        | `field::HasSeaFields::all_sea_fields`                       |

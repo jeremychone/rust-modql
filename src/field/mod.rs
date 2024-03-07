@@ -10,7 +10,7 @@ pub use has_fields::*;
 pub use modql_macros::Fields;
 
 #[cfg(feature = "with-sea-query")]
-pub use modql_macros::FieldSeaValue;
+pub use modql_macros::SeaFieldValue;
 
 #[cfg(feature = "with-sea-query")]
 pub use sea::*;

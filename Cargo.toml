@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.4.0-rc.1"
+version = "0.4.0-rc.2"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 edition = "2021"
 license = "MIT OR Apache-2.0"
@@ -26,13 +26,13 @@ unused = "allow" # For experimental dev.
 members = [".", "modql-macros"]
 
 [features]
-# default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
-default = ["modql-macros"]
+default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
+# default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="0.4.0-rc", path = "modql-macros", optional=true}
+modql-macros = { version="0.4.0-rc.2", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
