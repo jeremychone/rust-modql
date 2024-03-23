@@ -1,7 +1,7 @@
 use crate::filter::OpVal;
 use serde_json::Value;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OpValsValue(pub Vec<OpValValue>);
 
 #[derive(Debug, Clone)]

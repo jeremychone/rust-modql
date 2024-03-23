@@ -1,6 +1,6 @@
 use crate::filter::OpVal;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OpValsBool(pub Vec<OpValBool>);
 
 #[derive(Debug, Clone)]

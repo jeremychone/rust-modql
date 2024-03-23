@@ -2,7 +2,7 @@ use crate::filter::{FilterNode, IntoFilterNodes};
 
 // region:    --- Filter Group
 /// A FilterGroup is a vector of FilterNode that are intended to be interpreted as AND.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FilterGroup(Vec<FilterNode>);
 
 impl FilterGroup {
@@ -38,7 +38,7 @@ impl From<FilterNode> for FilterGroup {
 
 /// A FilterGroups is a vector of FilterGroup, and each groups are intended to be OR between them,
 ///  and inside the group, that will be the And
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct FilterGroups(Vec<FilterGroup>);
 
 impl FilterGroups {

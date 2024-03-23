@@ -2,7 +2,7 @@
 
 use crate::filter::OpVal;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct OpValsString(pub Vec<OpValString>);
 
 #[derive(Debug, Clone)]

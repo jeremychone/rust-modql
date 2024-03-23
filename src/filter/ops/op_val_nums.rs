@@ -8,7 +8,7 @@ macro_rules! impl_op_val {
 	($(($ovs:ident, $ov:ident,$nt:ty, $vr:expr)),+) => {
 		$(
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct $ovs(pub Vec<$ov>);
 
 #[derive(Debug, Clone)]
