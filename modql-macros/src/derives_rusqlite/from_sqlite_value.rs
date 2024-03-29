@@ -6,7 +6,7 @@ use proc_macro2::Ident;
 use quote::quote;
 use syn::{parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Fields};
 
-pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
+pub fn derive_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
 	let input = parse_macro_input!(input as DeriveInput);
 
@@ -17,7 +17,7 @@ pub fn sqlite_from_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	let expanded = match input.data {
 		Data::Enum(data) => process_enum(name, data),
 		syn::Data::Struct(data) => process_struct(name, data),
-		_ => panic!("FromSqliteValue can only be used with enums for now (see FromRow)"),
+		_ => panic!("FromSqliteValue can only be used with enums or simple tuple struct for now (see FromRow)"),
 	};
 
 	// Return the generated token stream

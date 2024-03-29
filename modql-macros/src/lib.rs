@@ -127,9 +127,15 @@ pub fn derive_from_sqlite_row(input: TokenStream) -> TokenStream {
 /// ````
 ///
 #[cfg(feature = "with-rusqlite")]
-#[proc_macro_derive(FromSqliteValue, attributes(field, fields))]
+#[proc_macro_derive(FromSqliteValue)]
 pub fn derive_from_sqlite_value(input: TokenStream) -> TokenStream {
-	derives_rusqlite::sqlite_from_sqlite_value_inner(input)
+	derives_rusqlite::derive_from_sqlite_value_inner(input)
+}
+
+#[cfg(feature = "with-rusqlite")]
+#[proc_macro_derive(ToSqliteValue)]
+pub fn derive_to_sqlite_value(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_to_sqlite_value_inner(input)
 }
 
 // endregion: --- with-rusqlite

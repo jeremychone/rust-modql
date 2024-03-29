@@ -7,6 +7,7 @@
 
 pub use modql_macros::FromSqliteRow;
 pub use modql_macros::FromSqliteValue;
+pub use modql_macros::ToSqliteValue;
 
 pub trait FromSqliteRow
 where
