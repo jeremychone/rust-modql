@@ -2,7 +2,7 @@ use crate::utils::modql_field::ModqlFieldProp;
 use crate::utils::struct_modql_attr::{get_modql_struct_prop, StructModqlFieldProp};
 use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
-use proc_macro2::Ident;
+use proc_macro2::{Ident, Span};
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput};
 
@@ -19,7 +19,14 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 
 	// Will be "" if none (this if for the struct #[modql(table = ...)])
 
-	let impl_base_fields = impl_has_fields(struct_name, &struct_modql_prop, &field_props);
+	let impl_has_fields = impl_has_fields(struct_name, &struct_modql_prop, &field_props);
+
+	let impl_names_as_consts = if let Some(names_as_consts) = struct_modql_prop.names_as_consts.as_deref() {
+		//
+		impl_names_as_consts(struct_name, &field_props, names_as_consts)
+	} else {
+		quote! {}
+	};
 
 	let impl_sea_fields = if cfg!(feature = "with-sea-query") {
 		impl_has_sea_fields(struct_name, &struct_modql_prop, &field_props)
@@ -28,12 +35,44 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	};
 
 	let output = quote! {
-		#impl_base_fields
+		#impl_has_fields
+
+		#impl_names_as_consts
 
 		#impl_sea_fields
 	};
 
 	output.into()
+}
+
+fn impl_names_as_consts(
+	struct_name: &Ident,
+	field_props: &[ModqlFieldProp<'_>],
+	prop_name_prefix: &str,
+) -> proc_macro2::TokenStream {
+	// If prefix not empty, amek sure it ends with `_`
+	let prop_name_prefix = if !prop_name_prefix.is_empty() && !prop_name_prefix.ends_with('_') {
+		format!("{prop_name_prefix}_")
+	} else {
+		prop_name_prefix.to_string()
+	};
+
+	let consts = field_props.iter().map(|field| {
+		let prop_name = &field.prop_name;
+		let const_name = format!("{}{}", prop_name_prefix, prop_name.to_uppercase());
+		let const_name = Ident::new(&const_name, Span::call_site());
+
+		let name = &field.name;
+		quote! {
+			pub const #const_name: &'static str = #name;
+		}
+	});
+
+	quote! {
+		impl #struct_name {
+			#(#consts)*
+		}
+	}
 }
 
 fn impl_has_fields(
@@ -58,7 +97,6 @@ fn impl_has_fields(
 	let output = quote! {
 
 		impl modql::field::HasFields for #struct_name {
-
 
 			fn field_names() -> &'static [&'static str] {
 				&[#(

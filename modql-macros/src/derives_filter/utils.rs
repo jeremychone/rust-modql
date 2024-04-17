@@ -40,7 +40,8 @@ pub fn get_filter_field_attr(field: &Field) -> Result<MoqlFilterFieldAttr, syn::
 
 				/* ... */
 				_ => {
-					return Err(syn::Error::new_spanned(meta, "unrecognized field"));
+					let msg = format!("unrecognized modql attribute value: {meta:?}");
+					return Err(syn::Error::new_spanned(meta, msg));
 				}
 			}
 		}
