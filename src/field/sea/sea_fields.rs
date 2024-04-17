@@ -1,7 +1,6 @@
 use crate::field::SeaField;
 use sea_query::{DynIden, SimpleExpr};
 
-// region:    --- Fields
 #[derive(Debug, Clone)]
 pub struct SeaFields(Vec<SeaField>);
 
@@ -26,6 +25,7 @@ impl SeaFields {
 	pub fn for_sea_insert(self) -> (Vec<DynIden>, Vec<SimpleExpr>) {
 		self.unzip()
 	}
+
 	/// returns a tuble: (Vec_of_column_idens, Vec_of_value_exprs)
 	pub fn unzip(self) -> (Vec<DynIden>, Vec<SimpleExpr>) {
 		self.0.into_iter().map(|f| (f.iden, f.value)).unzip()
@@ -35,6 +35,7 @@ impl SeaFields {
 	pub fn for_sea_update(self) -> impl Iterator<Item = (DynIden, SimpleExpr)> {
 		self.zip()
 	}
+
 	/// returns Iterator of (column_iden, value_expr)
 	/// Useful for sea query update.
 	pub fn zip(self) -> impl Iterator<Item = (DynIden, SimpleExpr)> {
@@ -51,4 +52,18 @@ impl IntoIterator for SeaFields {
 	}
 }
 
-// endregion: --- Fields
+// region:    --- Froms
+
+impl From<Vec<SeaField>> for SeaFields {
+	fn from(val: Vec<SeaField>) -> Self {
+		SeaFields(val)
+	}
+}
+
+impl From<SeaField> for SeaFields {
+	fn from(val: SeaField) -> Self {
+		SeaFields(vec![val])
+	}
+}
+
+// endregion: --- Froms

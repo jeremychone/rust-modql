@@ -2,7 +2,9 @@
 
 #[derive(Debug)]
 pub struct FieldRef {
+	/// Eventual relation (e.g., table name)
 	pub rel: Option<&'static str>,
+	/// The name of the field (e.g., column name)
 	pub name: &'static str,
 }
 

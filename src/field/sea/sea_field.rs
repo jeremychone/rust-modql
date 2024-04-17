@@ -1,5 +1,6 @@
 use crate::field::{Error, Result};
 use crate::sea_utils::StringIden;
+use crate::SIden;
 use sea_query::{ColumnRef, DynIden, SimpleExpr, Value};
 use sea_query::{IntoIden, ValueType};
 
@@ -39,13 +40,25 @@ pub struct FieldOptions {
 }
 
 impl SeaField {
-	pub fn new(iden: impl IntoIden, value: SimpleExpr) -> Self {
+	/// Create a new SeaField from an `IntoIden` and `Into<SimpleExpr>` for the value
+	pub fn new(iden: impl IntoIden, value: impl Into<SimpleExpr>) -> Self {
 		let iden = iden.into_iden();
 		let column_ref = ColumnRef::Column(iden.clone());
 		SeaField {
 			iden,
 			column_ref,
-			value,
+			value: value.into(),
+		}
+	}
+
+	/// Create a new SeaField for a static column name and a `Into<SimpleExpr>` for the value
+	pub fn siden(col: &'static str, value: impl Into<SimpleExpr>) -> Self {
+		let iden = SIden(col).into_iden();
+		let column_ref = ColumnRef::Column(iden.clone());
+		SeaField {
+			iden,
+			column_ref,
+			value: value.into(),
 		}
 	}
 
@@ -64,3 +77,13 @@ impl SeaField {
 		}
 	}
 }
+
+// region:    --- Froms
+
+impl From<(&'static str, SimpleExpr)> for SeaField {
+	fn from(val: (&'static str, SimpleExpr)) -> Self {
+		SeaField::new(SIden(val.0), val.1)
+	}
+}
+
+// endregion: --- Froms
