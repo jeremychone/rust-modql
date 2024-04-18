@@ -13,8 +13,22 @@ impl SeaFields {
 
 // Api
 impl SeaFields {
+	/// Simple api to append a SeaField to the list.
 	pub fn push(&mut self, field: SeaField) {
 		self.0.push(field);
+	}
+
+	/// The consuming builder API equivalent to `push(..)`
+	pub fn append(mut self, field: SeaField) -> Self {
+		self.push(field);
+		self
+	}
+
+	/// The static 'str for iden version of the `append(..)`
+	pub fn append_siden(mut self, iden: &'static str, value: impl Into<SimpleExpr>) -> Self {
+		let field = SeaField::siden(iden, value);
+		self.push(field);
+		self
 	}
 
 	pub fn into_vec(self) -> Vec<SeaField> {

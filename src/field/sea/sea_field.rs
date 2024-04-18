@@ -52,8 +52,8 @@ impl SeaField {
 	}
 
 	/// Create a new SeaField for a static column name and a `Into<SimpleExpr>` for the value
-	pub fn siden(col: &'static str, value: impl Into<SimpleExpr>) -> Self {
-		let iden = SIden(col).into_iden();
+	pub fn siden(iden: &'static str, value: impl Into<SimpleExpr>) -> Self {
+		let iden = SIden(iden).into_iden();
 		let column_ref = ColumnRef::Column(iden.clone());
 		SeaField {
 			iden,
