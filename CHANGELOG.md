@@ -1,9 +1,20 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
-## 2024-04-06 - `0.4.0-rc.1`
+## 2024-04-18 - `0.4.0-rc.4` 
 
-- `!` Major Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
+- SEE: Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
+- `+` ToSqliteValue - added ToSqliteValue for simple enum and single tuple struct
+- `!` SeaField::new takes an Into<SimpleExpr> as second arg now
+- `^` SeaField added From<SeaField> for SeaFields, and simple From (static str, SimpleExpr) for SeaField
+- `^` SeaField added ::siden(..) for static str column name
+- `^` SeaFields - add append and append_siden
+- `!` filter - rename context_path to rel
+- `^` SeaField - add new_concrete
+
+## 2024-03-07 - `0.4.0-rc.2` 
+
+- `!` Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
 
 ## 2024-02-21 - `0.3.10`
 

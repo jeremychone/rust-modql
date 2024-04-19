@@ -53,7 +53,7 @@ pub fn derive_fields(input: TokenStream) -> TokenStream {
 ///
 /// - On Simple enum (plain variant only).
 /// ```rust,norun
-/// #[derive(modql::field::Field)]
+/// #[derive(modql::field::SeaFieldValue)]
 /// pub enum Kind {
 ///   Md,
 ///   Pdf,

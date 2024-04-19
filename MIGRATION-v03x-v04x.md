@@ -28,4 +28,6 @@ Key changes include:
 | `field::HasFields::field_column_refs`                 | `field::HasSeaFields::sea_column_refs`                                |
 | `field::HasFields::field_column_refs_with_rel`        | `field::HasSeaFields::sea_column_refs_with_rel`                       |
 | **Attributes**                                        |                                                                       |
-| `#[field(table="table_name",name="col_name")]`        | `#[field(rel"table_name",name="col_name")]`                           |
+| `#[field(table="table_name",name="col_name")]`        | `#[field(rel="table_name",name="col_name")]`                          |
+| **SQLite**                                            |                                                                       |
+|                                                       | `ToSqliteValue`                                                       |
