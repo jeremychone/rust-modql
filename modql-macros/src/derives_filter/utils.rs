@@ -38,7 +38,7 @@ pub fn get_filter_field_attr(field: &Field) -> Result<MoqlFilterFieldAttr, syn::
 
 				/* ... */
 				_ => {
-					let msg = format!("unrecognized modql attribute value: {meta:?}");
+					let msg = "unrecognized modql attribute value";
 					return Err(syn::Error::new_spanned(meta, msg));
 				}
 			}

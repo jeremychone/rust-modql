@@ -44,7 +44,7 @@ pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldPro
 
 				/* ... */
 				_ => {
-					let msg = format!("unrecognized modql attribute value: {meta:?}");
+					let msg = "unrecognized modql attribute value";
 					return Err(syn::Error::new_spanned(meta, msg));
 					// return Err(syn::Error::new_spanned(meta, "unrecognized field"));
 				}
