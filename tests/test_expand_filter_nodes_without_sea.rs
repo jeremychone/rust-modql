@@ -6,7 +6,7 @@ use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 
 #[derive(FilterNodes, Default)]
 pub struct ProjectFilter {
-	#[modql(context_path = "foo_context_path")]
+	#[modql(rel = "foo_rel")]
 	id: Option<OpValsInt64>,
 	name: Option<OpValsString>,
 }

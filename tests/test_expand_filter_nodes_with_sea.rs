@@ -8,7 +8,7 @@ use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
 
 #[derive(FilterNodes, Default)]
 pub struct ProjectFilter {
-	#[modql(context_path = "foo_context_path")]
+	#[modql(rels = "foo_rel")]
 	id: Option<OpValsInt64>,
 	name: Option<OpValsString>,
 

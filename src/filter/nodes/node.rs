@@ -2,7 +2,7 @@ use crate::filter::ops::OpVal;
 use crate::filter::{OpValBool, OpValFloat64, OpValInt32, OpValInt64, OpValString};
 
 pub trait IntoFilterNodes {
-	fn filter_nodes(self, context_path: Option<String>) -> Vec<FilterNode>;
+	fn filter_nodes(self, rel: Option<String>) -> Vec<FilterNode>;
 }
 
 #[derive(Debug, Clone, Default)]
@@ -12,7 +12,7 @@ pub struct FilterNodeOptions {
 
 #[derive(Debug, Clone)]
 pub struct FilterNode {
-	pub context_path: Option<String>, // would be for the project.title (project in this case)
+	pub rel: Option<String>, // would be for the project.title (project in this case)
 	pub name: String,
 	pub opvals: Vec<OpVal>,
 	pub options: FilterNodeOptions,
@@ -24,7 +24,7 @@ pub struct FilterNode {
 impl FilterNode {
 	pub fn new(name: impl Into<String>, opvals: impl Into<Vec<OpVal>>) -> FilterNode {
 		FilterNode {
-			context_path: None,
+			rel: None,
 			name: name.into(),
 			opvals: opvals.into(),
 			options: FilterNodeOptions::default(),
@@ -34,13 +34,9 @@ impl FilterNode {
 		}
 	}
 
-	pub fn new_with_context_path(
-		context_path: Option<String>,
-		name: impl Into<String>,
-		opvals: impl Into<Vec<OpVal>>,
-	) -> FilterNode {
+	pub fn new_with_rel(rel: Option<String>, name: impl Into<String>, opvals: impl Into<Vec<OpVal>>) -> FilterNode {
 		FilterNode {
-			context_path,
+			rel,
 			name: name.into(),
 			opvals: opvals.into(),
 			options: FilterNodeOptions::default(),

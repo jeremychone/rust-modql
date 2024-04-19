@@ -12,7 +12,7 @@ fn test_filter_node_with_sea_condition() {
 	let special_to_sea_cond = ToSeaConditionFnHolder::new(special_to_sea_condition); // This should implement IntoSeaCondition
 
 	let node = FilterNode {
-		context_path: None,
+		rel: None,
 		name: "some_name".to_string(),
 		opvals: vec![123.into()],
 		options: FilterNodeOptions::default(),

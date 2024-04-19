@@ -21,7 +21,6 @@ repository = "https://github.com/jeremychone/rust-modql"
 unsafe_code = "forbid"
 unused = "allow" # For experimental dev.
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [workspace]
 members = [".", "modql-macros"]
 

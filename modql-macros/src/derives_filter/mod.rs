@@ -16,7 +16,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	//// Properties to be collected
 	let mut props: Vec<&Option<Ident>> = Vec::new(); // not needed for now.
 	let mut props_opval_idents: Vec<&Ident> = Vec::new();
-	let mut props_opval_contexts: Vec<proc_macro2::TokenStream> = Vec::new();
+	let mut props_opval_rels: Vec<proc_macro2::TokenStream> = Vec::new();
 	let mut props_opval_to_sea_holder_fn_build: Vec<proc_macro2::TokenStream> = Vec::new();
 	let mut props_filter_node_options: Vec<proc_macro2::TokenStream> = Vec::new();
 
@@ -34,15 +34,15 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 				// -- Extract the attributes
 				let modql_field_attr = get_filter_field_attr(field).unwrap();
 
-				// -- context_path
-				let block_context = if let Some(context_path) = modql_field_attr.context_path {
+				// -- rel
+				let block_rel = if let Some(rel) = modql_field_attr.rel {
 					quote! {
-						Some(#context_path.to_string())
+						Some(#rel.to_string())
 					}
 				} else {
 					quote! { None }
 				};
-				props_opval_contexts.push(block_context);
+				props_opval_rels.push(block_rel);
 
 				// -- options: FilterNodeOptions
 				let quote_filter_node_options_cast_as = if let Some(cast_as) = modql_field_attr.cast_as {
@@ -94,7 +94,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 					let op_vals: Vec<modql::filter::OpVal> = val.0.into_iter().map(|n| n.into()).collect();
 					#props_opval_to_sea_holder_fn_build
 					let node = modql::filter::FilterNode{
-						context_path: #props_opval_contexts,
+						rel: #props_opval_rels,
 						name: stringify!(#props_opval_idents).to_string(),
 						opvals: op_vals,
 						options: #props_filter_node_options,
@@ -110,7 +110,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 				if let Some(val) = self.#props_opval_idents {
 					let op_vals: Vec<modql::filter::OpVal> = val.0.into_iter().map(|n| n.into()).collect();
 					let node = modql::filter::FilterNode{
-						context_path: #props_opval_contexts,
+						rel: #props_opval_rels,
 						name: stringify!(#props_opval_idents).to_string(),
 						opvals: op_vals,
 						options: #props_filter_node_options,
@@ -124,7 +124,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	//// Out code for the impl IntoFilterNodes
 	let out_impl_into_filter_nodes = quote! {
 		impl modql::filter::IntoFilterNodes for #struct_name {
-			fn filter_nodes(self, context: Option<String>) -> Vec<modql::filter::FilterNode> {
+			fn filter_nodes(self, rel: Option<String>) -> Vec<modql::filter::FilterNode> {
 				let mut nodes = Vec::new();
 				#ff_opt_node_pushes
 				nodes

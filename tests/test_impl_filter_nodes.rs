@@ -8,12 +8,12 @@ pub struct ProjectFilter {
 }
 
 impl IntoFilterNodes for ProjectFilter {
-	fn filter_nodes(self, context: Option<String>) -> Vec<FilterNode> {
+	fn filter_nodes(self, rel: Option<String>) -> Vec<FilterNode> {
 		let mut nodes = Vec::new();
 
 		if let Some(id) = self.id {
-			let node = FilterNode::new_with_context_path(
-				context.clone(),
+			let node = FilterNode::new_with_rel(
+				rel.clone(),
 				"id".to_string(),
 				id.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
 			);
@@ -21,8 +21,8 @@ impl IntoFilterNodes for ProjectFilter {
 		}
 
 		if let Some(name) = self.name {
-			let node = FilterNode::new_with_context_path(
-				context,
+			let node = FilterNode::new_with_rel(
+				rel,
 				"name".to_string(),
 				name.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
 			);
@@ -41,12 +41,12 @@ pub struct TaskFilter {
 }
 
 impl IntoFilterNodes for TaskFilter {
-	fn filter_nodes(self, context: Option<String>) -> Vec<FilterNode> {
+	fn filter_nodes(self, rel: Option<String>) -> Vec<FilterNode> {
 		let mut nodes = Vec::new();
 
 		if let Some(title) = self.title {
-			let node = FilterNode::new_with_context_path(
-				context,
+			let node = FilterNode::new_with_rel(
+				rel,
 				"title".to_string(),
 				title.0.into_iter().map(|n| n.into()).collect::<Vec<OpVal>>(),
 			);
