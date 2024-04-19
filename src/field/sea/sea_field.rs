@@ -42,12 +42,16 @@ pub struct FieldOptions {
 impl SeaField {
 	/// Create a new SeaField from an `IntoIden` and `Into<SimpleExpr>` for the value
 	pub fn new(iden: impl IntoIden, value: impl Into<SimpleExpr>) -> Self {
-		let iden = iden.into_iden();
+		Self::new_concrete(iden.into_iden(), value.into())
+	}
+
+	/// The concrete version of the new.
+	pub fn new_concrete(iden: DynIden, value: SimpleExpr) -> Self {
 		let column_ref = ColumnRef::Column(iden.clone());
 		SeaField {
 			iden,
 			column_ref,
-			value: value.into(),
+			value,
 		}
 	}
 
@@ -79,6 +83,13 @@ impl SeaField {
 }
 
 // region:    --- Froms
+
+// From (DynIden, SimpleExpr)
+impl From<(DynIden, SimpleExpr)> for SeaField {
+	fn from(val: (DynIden, SimpleExpr)) -> Self {
+		SeaField::new(val.0, val.1)
+	}
+}
 
 impl From<(&'static str, SimpleExpr)> for SeaField {
 	fn from(val: (&'static str, SimpleExpr)) -> Self {

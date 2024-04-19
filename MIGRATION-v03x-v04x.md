@@ -11,20 +11,21 @@ Key changes include:
 - Naming within `HasSeaFields` has been cleaned up.
 - The `#[field(...)]` naming convention has been cleaned up (replacing `table` with `rel`), similar to the struct `#[modql(rel...)]`.
 
-| v0.3.x                                                | v0.4.x                                                      |
-|-------------------------------------------------------|-------------------------------------------------------------|
-| **Refactor HasFields without sea-query dependencies** |                                                             |
-| `field::HasFields::field_names()`                     | `field::HasFields::field_names()`                           |
-|                                                       | `field::HasFields::field_refs()` with new `FieldRef` struct |
-| **Rename Field/s to SeaField/s**                      |                                                             |
-| `field::Field`                                        | `field::SeaField`                                           |
-| `field::Fields`                                       | `field::SeaFields`                                          |
-| `#[derive(FieldValue)]`                               | `#[derive(SeaFieldValue)]`                                  |
-| **Refactor HasFields to HasSeaFields**                |                                                             |
-| `field::HasFields::not_none_fields`                   | `field::HasSeaFields::not_none_sea_fields`                  |
-| `field::HasFields::all_fields`                        | `field::HasSeaFields::all_sea_fields`                       |
-| `field::HasFields::field_idens`                       | `field::HasSeaFields::sea_idens`                            |
-| `field::HasFields::field_column_refs`                 | `field::HasSeaFields::sea_column_refs`                      |
-| `field::HasFields::field_column_refs_with_rel`        | `field::HasSeaFields::sea_column_refs_with_rel`             |
-| **Attributes**                                        |                                                             |
-| `#[field(table="table_name",name="col_name")]`        | `#[field(rel"table_name",name="col_name")]`                 |
+| v0.3.x                                                | v0.4.x                                                                |
+|-------------------------------------------------------|-----------------------------------------------------------------------|
+| **Refactor HasFields without sea-query dependencies** |                                                                       |
+| `field::HasFields::field_names()`                     | `field::HasFields::field_names()`                                     |
+|                                                       | `field::HasFields::field_refs()` with new `FieldRef` struct           |
+| **Rename Field/s to SeaField/s**                      |                                                                       |
+| `field::Field`                                        | `field::SeaField`                                                     |
+|                                                       | `SeaField::new(iden, value)` both have `impl into..` so, no `.into()` |
+| `field::Fields`                                       | `field::SeaFields`                                                    |
+| `#[derive(FieldValue)]`                               | `#[derive(SeaFieldValue)]`                                            |
+| **Refactor HasFields to HasSeaFields**                |                                                                       |
+| `field::HasFields::not_none_fields`                   | `field::HasSeaFields::not_none_sea_fields`                            |
+| `field::HasFields::all_fields`                        | `field::HasSeaFields::all_sea_fields`                                 |
+| `field::HasFields::field_idens`                       | `field::HasSeaFields::sea_idens`                                      |
+| `field::HasFields::field_column_refs`                 | `field::HasSeaFields::sea_column_refs`                                |
+| `field::HasFields::field_column_refs_with_rel`        | `field::HasSeaFields::sea_column_refs_with_rel`                       |
+| **Attributes**                                        |                                                                       |
+| `#[field(table="table_name",name="col_name")]`        | `#[field(rel"table_name",name="col_name")]`                           |
