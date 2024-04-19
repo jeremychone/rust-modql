@@ -31,7 +31,7 @@ with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="0.4.0-rc", path = "modql-macros", optional=true}
+modql-macros = { version="=0.4.0-rc.4", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
