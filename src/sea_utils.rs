@@ -1,5 +1,5 @@
 use crate::filter::FilterNodeOptions;
-use sea_query::{Iden, SimpleExpr, Value};
+use sea_query::{Iden, IdenStatic, SimpleExpr, Value};
 
 /// String sea-query `Iden` wrapper
 #[derive(Debug)]
@@ -15,7 +15,7 @@ impl Iden for StringIden {
 }
 
 /// Static str sea-query `Iden` wrapper
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy)]
 pub struct SIden(pub &'static str);
 
 impl Iden for SIden {
@@ -24,6 +24,12 @@ impl Iden for SIden {
 		if let Err(err) = s.write_str(self.0) {
 			println!("modql SIden fail write_str. Cause: {err}");
 		}
+	}
+}
+
+impl IdenStatic for SIden {
+	fn as_str(&self) -> &'static str {
+		self.0
 	}
 }
 
