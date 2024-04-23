@@ -126,7 +126,7 @@ impl OpValueToOpValType for $ov {
 			("$gt", Value::Number(num)) => $ov::Gt($asfn(num)?),
 			("$gte", Value::Number(num)) => $ov::Gte($asfn(num)?),
 
-			("$null", Value::Number(num)) => $ov::Gte($asfn(num)?),
+			("$null", Value::Bool(v)) => $ov::Null(v),
 
 			(_, value) => return Err(Error::JsonOpValNotSupported{
 						operator: op.to_string(),
