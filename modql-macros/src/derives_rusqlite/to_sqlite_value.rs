@@ -4,7 +4,7 @@ extern crate proc_macro;
 use proc_macro::TokenStream;
 use proc_macro2::Ident;
 use quote::quote;
-use syn::{parse_macro_input, Data, DataEnum, DataStruct, DeriveInput, Fields};
+use syn::{parse_macro_input, Data, DataEnum, DataStruct, DeriveInput};
 
 pub fn derive_to_sqlite_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
@@ -37,14 +37,14 @@ pub fn derive_to_sqlite_value_inner(input: TokenStream) -> TokenStream {
 ///   }
 /// }
 /// ```
-fn process_struct(name: Ident, data: DataStruct) -> proc_macro2::TokenStream {
-	let first_tuple_field = match data.fields {
-		Fields::Unnamed(fields) if fields.unnamed.len() == 1 => fields.unnamed.into_iter().next().unwrap(),
-		_ => panic!("Expected a tuple struct with one field"),
-	};
+fn process_struct(name: Ident, _data: DataStruct) -> proc_macro2::TokenStream {
+	// let first_tuple_field = match data.fields {
+	// 	Fields::Unnamed(fields) if fields.unnamed.len() == 1 => fields.unnamed.into_iter().next().unwrap(),
+	// 	_ => panic!("Expected a tuple struct with one field"),
+	// };
 
-	let field_type = &first_tuple_field.ty;
-	let field_ident = &first_tuple_field.ident;
+	// let field_type = &first_tuple_field.ty;
+	// let field_ident = &first_tuple_field.ident;
 
 	#[rustfmt::skip]
 	let expanded = quote! {
