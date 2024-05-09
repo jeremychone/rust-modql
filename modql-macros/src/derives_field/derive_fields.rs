@@ -1,5 +1,5 @@
 use crate::utils::modql_field::ModqlFieldProp;
-use crate::utils::struct_modql_attr::{get_modql_struct_prop, StructModqlFieldProp};
+use crate::utils::struct_modql_attr::{get_struct_modql_attrs, StructModqlFieldAttrs};
 use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
@@ -15,7 +15,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	// -- Collect Elements
 	// Properties for all fields (with potential additional info with #[field(...)])
 	let field_props = modql_field::get_modql_field_props(fields);
-	let struct_modql_prop = get_modql_struct_prop(&ast).unwrap();
+	let struct_modql_prop = get_struct_modql_attrs(&ast).unwrap();
 
 	// Will be "" if none (this if for the struct #[modql(table = ...)])
 
@@ -77,7 +77,7 @@ fn impl_names_as_consts(
 
 fn impl_has_fields(
 	struct_name: &Ident,
-	struct_modql_prop: &StructModqlFieldProp,
+	struct_modql_prop: &StructModqlFieldAttrs,
 	field_props: &[ModqlFieldProp<'_>],
 ) -> proc_macro2::TokenStream {
 	let props_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
@@ -118,7 +118,7 @@ fn impl_has_fields(
 
 fn impl_has_sea_fields(
 	struct_name: &Ident,
-	struct_modql_prop: &StructModqlFieldProp,
+	struct_modql_prop: &StructModqlFieldAttrs,
 	field_props: &[ModqlFieldProp<'_>],
 ) -> proc_macro2::TokenStream {
 	let props_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();

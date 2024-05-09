@@ -15,8 +15,44 @@ pub struct ProjectFilter {
 	label: Option<OpValsString>,
 }
 
+#[derive(Clone, FilterNodes, Default)]
+#[modql(rel = "task_tbl")]
+pub struct TaskFilter {
+	id: Option<OpValsInt64>,
+	title: Option<OpValsString>,
+	#[modql(rel = "foo_rel")]
+	label: Option<OpValsString>,
+}
+
 #[test]
-fn test_expand_filter_nodes() -> Result<()> {
+fn test_expand_filter_nodes_filter_rel() -> Result<()> {
+	// -- Setup & Fixtures
+	let filter = TaskFilter {
+		id: Some(123.into()),
+		title: Some("some title".into()),
+		label: Some("Test".into()),
+	};
+
+	// -- Exec
+	let cond: Result<sea_query::Condition, modql::filter::IntoSeaError> = filter.try_into();
+	let cond = cond?;
+
+	let mut query = Query::select();
+	query.from(SIden("task")).cond_where(cond);
+	let (sql, _) = query.build(SqliteQueryBuilder);
+	// Note: No columns, but that's ok for this test for now.
+
+	// -- Check
+	assert!(
+		sql.contains(r#"WHERE "task_tbl"."id" = ? AND "task_tbl"."title" = ? AND "foo_rel"."label" = ?"#),
+		"Incorrect where statment"
+	);
+
+	Ok(())
+}
+
+#[test]
+fn test_expand_filter_nodes_simple() -> Result<()> {
 	// -- Setup & Fixtures
 	let filter = ProjectFilter {
 		id: Some(123.into()),

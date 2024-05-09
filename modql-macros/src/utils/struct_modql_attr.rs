@@ -3,12 +3,12 @@ use syn::punctuated::Punctuated;
 use syn::{DeriveInput, Meta, Token};
 
 // region:    --- Struct Prop Attribute
-pub struct StructModqlFieldProp {
+pub struct StructModqlFieldAttrs {
 	pub rel: Option<String>,
 	pub names_as_consts: Option<String>,
 }
 
-pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldProp, syn::Error> {
+pub fn get_struct_modql_attrs(dinput: &DeriveInput) -> Result<StructModqlFieldAttrs, syn::Error> {
 	// FIXME: We should remove this, 'sqlb' should not be a thing anymore.
 	let sqlb_attr = get_dinput_attribute(dinput, "modql");
 	let mut rel = None;
@@ -20,13 +20,10 @@ pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldPro
 		for meta in nested {
 			match meta {
 				// #[modql(rel=value)]
-				Meta::NameValue(nv) => {
+				Meta::NameValue(nv) =>
+				{
 					#[allow(clippy::if_same_then_else)]
 					if nv.path.is_ident("rel") {
-						rel = get_meta_value_string(nv);
-					}
-					// NOTE: To be deprecated (should be `rel` for relation)
-					else if nv.path.is_ident("table") {
 						rel = get_meta_value_string(nv);
 					} else if nv.path.is_ident("names_as_consts") {
 						names_as_consts = get_meta_value_string(nv);
@@ -52,7 +49,7 @@ pub fn get_modql_struct_prop(dinput: &DeriveInput) -> Result<StructModqlFieldPro
 		}
 	}
 
-	Ok(StructModqlFieldProp { rel, names_as_consts })
+	Ok(StructModqlFieldAttrs { rel, names_as_consts })
 }
 
 // endregion: --- Struct Prop Attribute
