@@ -1,3 +1,4 @@
+#![cfg(feature = "with-sea-query")]
 //! Should compile. No test functions yet.
 
 pub type Result<T> = core::result::Result<T, Error>;
@@ -11,7 +12,6 @@ pub struct ProjectFilter {
 	name: Option<OpValsString>,
 }
 
-#[cfg(feature = "with-sea-query")]
 #[test]
 fn test_expand_filter_nodes() -> Result<()> {
 	let filter = ProjectFilter {

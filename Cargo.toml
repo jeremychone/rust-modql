@@ -19,7 +19,7 @@ repository = "https://github.com/jeremychone/rust-modql"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-unused = "allow" # For experimental dev.
+# unused = "allow" # For experimental dev.
 
 [workspace]
 members = [".", "modql-macros"]
