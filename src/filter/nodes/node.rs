@@ -156,11 +156,14 @@ mod with_sea_query {
 	use super::*;
 	use crate::filter::{ForSeaCondition, IntoSeaError, OpValValue, SeaResult};
 	use crate::sea_utils::StringIden;
-	use sea_query::{ColumnRef, ConditionExpression, IntoColumnRef};
+	use sea_query::{ColumnRef, ConditionExpression, IntoColumnRef, IntoIden};
 
 	impl FilterNode {
 		pub fn into_sea_cond_expr_list(self) -> SeaResult<Vec<ConditionExpression>> {
-			let col: ColumnRef = StringIden(self.name).into_column_ref();
+			let col: ColumnRef = match self.rel {
+				Some(rel) => ColumnRef::TableColumn(StringIden(rel).into_iden(), StringIden(self.name).into_iden()),
+				None => StringIden(self.name).into_column_ref(),
+			};
 			let mut node_sea_exprs: Vec<ConditionExpression> = Vec::new();
 			let for_sea_cond = self.for_sea_condition;
 			let node_options = &self.options;

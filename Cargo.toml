@@ -16,7 +16,6 @@ keywords = [
 homepage = "https://github.com/jeremychone/rust-modql"
 repository = "https://github.com/jeremychone/rust-modql"
 
-
 [workspace.lints.rust]
 unsafe_code = "forbid"
 # unused = "allow" # For experimental dev.
@@ -41,4 +40,5 @@ rusqlite = { version = "0.31", optional = true }
 
 [dev-dependencies]
 serde_with = "3"
+rusqlite = {version = "0.31", features = ["bundled"]}
 
