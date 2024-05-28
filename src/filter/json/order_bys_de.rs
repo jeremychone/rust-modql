@@ -1,5 +1,4 @@
 use crate::filter::{OrderBy, OrderBys};
-use serde::de::SeqAccess;
 use serde::{de, Deserialize, Deserializer};
 use std::fmt;
 
@@ -35,7 +34,7 @@ impl<'de> de::Visitor<'de> for OrderBysVisitor {
 		Ok(OrderBy::from(v.to_string()).into())
 	}
 
-	fn visit_seq<A: SeqAccess<'de>>(self, mut seq: A) -> Result<Self::Value, A::Error>
+	fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
 	where
 		A: de::SeqAccess<'de>,
 	{
