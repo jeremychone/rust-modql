@@ -1,3 +1,4 @@
+use crate::utils::modql_field::ModqlFieldsAndSkips;
 use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use quote::quote;
@@ -10,14 +11,25 @@ pub fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 
 	let struct_name = &ast.ident;
 
-	let props = modql_field::get_modql_field_props(fields);
+	let ModqlFieldsAndSkips {
+		modql_fields,
+		skipped_fields,
+	} = modql_field::get_modql_field_props_and_skips(fields);
 
-	let getters = props.iter().map(|p| {
+	let getters = modql_fields.iter().map(|p| {
 		let name = &p.name;
 		let ident = p.ident;
 
 		quote! {
 			#ident: val.get(#name)?,
+		}
+	});
+
+	// for skipped
+	let skipped_fields = skipped_fields.iter().map(|field| {
+		let ident = field.ident.as_ref().unwrap();
+		quote! {
+			#ident: Default::default(),
 		}
 	});
 
@@ -27,6 +39,7 @@ pub fn derive_from_sqlite_row_inner(input: TokenStream) -> TokenStream {
 			fn from_sqlite_row(val: &rusqlite::Row<'_>) -> rusqlite::Result<Self> {
 				let entity = Self {
 					#(#getters)*
+					#(#skipped_fields)*
 				};
 
 				Ok(entity)

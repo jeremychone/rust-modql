@@ -15,7 +15,18 @@ pub struct ModqlFieldProp<'a> {
 }
 
 pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
-	let mut props = Vec::new();
+	let modql_fields_and_skips = get_modql_field_props_and_skips(fields);
+	modql_fields_and_skips.modql_fields
+}
+
+pub struct ModqlFieldsAndSkips<'a> {
+	pub modql_fields: Vec<ModqlFieldProp<'a>>,
+	pub skipped_fields: Vec<&'a Field>,
+}
+
+pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSkips {
+	let mut modql_fields = Vec::new();
+	let mut skipped_fields = Vec::new();
 
 	for field in fields.named.iter() {
 		// -- Get the FieldAttr
@@ -24,6 +35,7 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 		// TODO: Need to check better handling.
 		let mfield_attr = mfield_attr.unwrap();
 		if mfield_attr.skip {
+			skipped_fields.push(field);
 			continue;
 		}
 
@@ -46,7 +58,7 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 		let cast_as = mfield_attr.cast_as;
 
 		// -- Add to array.
-		props.push(ModqlFieldProp {
+		modql_fields.push(ModqlFieldProp {
 			prop_name,
 			rel: mfield_attr.rel,
 			name,
@@ -56,7 +68,10 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 		})
 	}
 
-	props
+	ModqlFieldsAndSkips {
+		modql_fields,
+		skipped_fields,
+	}
 }
 
 // endregion: --- Field Prop (i.e., sqlb Field)
