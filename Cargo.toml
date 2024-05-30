@@ -18,27 +18,32 @@ repository = "https://github.com/jeremychone/rust-modql"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-# unused = "allow" # For experimental dev.
+unused = "allow" # For experimental dev.
+
+[lints.rust]
+unsafe_code = "forbid"
+unused = { level = "allow", priority = -1 } # For test files (dev)
 
 [workspace]
 members = [".", "modql-macros"]
 
 [features]
-# default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
-default = ["modql-macros"]
+default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
+# default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="=0.4.0-rc.6", path = "modql-macros", optional=true}
+modql-macros = { version="0.4.0-rc", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 # -- For features
-sea-query = { version = "0.31.0-rc.4", features = ["thread-safe"], optional = true }
+sea-query = { version = "0.31.0-rc.6", features = ["thread-safe"], optional = true }
 rusqlite = { version = "0.31", optional = true }
 
 [dev-dependencies]
 serde_with = "3"
 rusqlite = {version = "0.31", features = ["bundled"]}
+sea-query-rusqlite = {version = "0.6.0-rc"}
 

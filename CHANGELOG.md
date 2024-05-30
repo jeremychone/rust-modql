@@ -1,6 +1,28 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## - `0.4.0-rc.7`
+
+- `+` `T::field_metas()`, `FieldMetas`, and `FieldMeta`  when `#[derive(Fields)]`
+- `!` `FieldRef` in favor of `FieldMeta`
+- `+` `SqliteFromRow::sqlite_from_row_partial(row, prop_names)` to retrieve partial objects.
+- `!` Sqlite types & derives rename
+	- Traits:
+		- Now: `SqliteFromRow`, before: `FromSqliteRow`
+			- Now: `fn sqlite_from_row`, before: `fn from_sqlite_row...`
+	- derive: 
+		- Now: `SqliteFromValue`, before: `FromSqliteRow`
+		- Now: `SqliteFromValue`, before: `FromSqliteValue`
+		- Now: `ToSqliteValue`, before: `SqliteToValue`
+
+## 2024-05-09 - `0.4.0-rc.6 & rc.5`
+
+- `^` filter - add support for `#[modql(rel=...)]` at the Filter struct level
+- `.` cleanup
+- `-` filter - fix rel missing from FilterNode to SeaCondExpr
+- `.` update to v0.4.0-rc.5
+- `^` sea-query - impl IdenStatic for SIden (and SIden: Clone + Copy)
+
 ## 2024-04-18 - `0.4.0-rc.4` 
 
 - SEE: Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)

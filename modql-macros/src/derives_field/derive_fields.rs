@@ -1,5 +1,5 @@
 use crate::utils::modql_field::ModqlFieldProp;
-use crate::utils::struct_modql_attr::{get_struct_modql_attrs, StructModqlFieldAttrs};
+use crate::utils::struct_modql_attr::{get_struct_modql_props, StructModqlFieldProps};
 use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
@@ -15,7 +15,7 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	// -- Collect Elements
 	// Properties for all fields (with potential additional info with #[field(...)])
 	let field_props = modql_field::get_modql_field_props(fields);
-	let struct_modql_prop = get_struct_modql_attrs(&ast).unwrap();
+	let struct_modql_prop = get_struct_modql_props(&ast).unwrap();
 
 	// Will be "" if none (this if for the struct #[modql(table = ...)])
 
@@ -77,13 +77,14 @@ fn impl_names_as_consts(
 
 fn impl_has_fields(
 	struct_name: &Ident,
-	struct_modql_prop: &StructModqlFieldAttrs,
+	struct_modql_prop: &StructModqlFieldProps,
 	field_props: &[ModqlFieldProp<'_>],
 ) -> proc_macro2::TokenStream {
 	let props_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
 	let struct_rel = struct_modql_prop.rel.as_ref();
 
+	// -- Build FieldRef quotes
 	let props_field_refs = field_props.iter().map(|field_prop| {
 		let name = field_prop.name.to_string();
 		let rel = field_prop.rel.as_ref().or(struct_rel);
@@ -92,6 +93,39 @@ fn impl_has_fields(
 			None => quote! { None },
 		};
 		quote! {&modql::field::FieldRef{rel: #rel, name: #name}}
+	});
+
+	// -- Build the FieldMeta quotes
+	let props_field_metas = field_props.iter().map(|field_prop| {
+		// This below is resolved in the FieldMeta implemntation (same logic)
+		// let name = field_prop.name.to_string();
+
+		let prop_name = field_prop.prop_name.to_string();
+
+		let attr_name = match field_prop.attr_name.as_ref() {
+			Some(attr_name) => quote! { Some(#attr_name)},
+			None => quote! { None },
+		};
+
+		let rel = field_prop.rel.as_ref().or(struct_rel);
+		let rel = match rel {
+			Some(rel) => quote! { Some(#rel)},
+			None => quote! { None },
+		};
+		let cast_as = match &field_prop.cast_as {
+			Some(cast_as) => quote! { Some(#cast_as)},
+			None => quote! { None },
+		};
+		let is_option = field_prop.is_option;
+
+		quote! {&modql::field::FieldMeta{
+				rel: #rel,
+				prop_name: #prop_name,
+				attr_name: #attr_name,
+				cast_as: #cast_as,
+				is_option: #is_option,
+			}
+		}
 	});
 
 	let output = quote! {
@@ -104,12 +138,22 @@ fn impl_has_fields(
 				)*]
 			}
 
-
 			fn field_refs() -> &'static [&'static modql::field::FieldRef] {
 				&[#(
 				#props_field_refs,
 				)*]
 			}
+
+			fn field_metas() -> &'static modql::field::FieldMetas {
+				static METAS: &[&modql::field::FieldMeta] = &[#(
+				#props_field_metas,
+				)*];
+
+				static METAS_HOLDER: modql::field::FieldMetas = modql::field::FieldMetas::new(METAS);
+
+				&METAS_HOLDER
+			}
+
 		}
 	};
 
@@ -118,13 +162,13 @@ fn impl_has_fields(
 
 fn impl_has_sea_fields(
 	struct_name: &Ident,
-	struct_modql_prop: &StructModqlFieldAttrs,
+	struct_modql_prop: &StructModqlFieldProps,
 	field_props: &[ModqlFieldProp<'_>],
 ) -> proc_macro2::TokenStream {
-	let props_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
+	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
 	// this will repeat the struct table name for all fields.
-	let props_all_tables: Vec<String> = field_props
+	let prop_all_rels: Vec<String> = field_props
 		.iter()
 		.map(|p| {
 			p.rel
@@ -197,7 +241,7 @@ fn impl_has_sea_fields(
 
 			fn sea_idens() -> Vec<sea_query::SeaRc<dyn sea_query::Iden>> {
 				vec![#(
-				sea_query::IntoIden::into_iden(modql::SIden(#props_all_names)),
+				sea_query::IntoIden::into_iden(modql::SIden(#prop_all_names)),
 				)*]
 			}
 
@@ -210,12 +254,12 @@ fn impl_has_sea_fields(
 
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
 				#(
-					let col_ref = if #props_all_tables == "" {
-						ColumnRef::Column(SIden(#props_all_names).into_iden())
+					let col_ref = if #prop_all_rels == "" {
+						ColumnRef::Column(SIden(#prop_all_names).into_iden())
 					} else {
 						ColumnRef::TableColumn(
-							SIden(#props_all_tables).into_iden(),
-							SIden(#props_all_names).into_iden())
+							SIden(#prop_all_rels).into_iden(),
+							SIden(#prop_all_names).into_iden())
 					};
 					v.push(col_ref);
 				)*
@@ -236,7 +280,7 @@ fn impl_has_sea_fields(
 					let col_ref =
 						ColumnRef::TableColumn(
 							rel_iden.clone(),
-							SIden(#props_all_names).into_iden());
+							SIden(#prop_all_names).into_iden());
 
 					v.push(col_ref);
 				)*

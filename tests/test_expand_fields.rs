@@ -24,12 +24,12 @@ fn test_struct_field_names() -> Result<()> {
 }
 
 #[test]
-fn test_struct_field_refs() -> Result<()> {
+fn test_struct_field_metas() -> Result<()> {
 	// -- Exec
-	let field_refs = Todo::field_refs();
+	let field_refs = Todo::field_metas();
 
 	// -- Check
-	let names: Vec<&'static str> = field_refs.iter().map(|fr| fr.name).collect();
+	let names: Vec<&'static str> = field_refs.iter().map(|&meta| meta.name()).collect();
 	let rels: Vec<Option<&'static str>> = field_refs.iter().map(|fr| fr.rel).collect();
 	assert_eq!(names, &["id", "special_title_col", "description"]);
 	assert_eq!(

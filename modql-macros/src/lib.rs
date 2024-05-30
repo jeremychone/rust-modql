@@ -77,9 +77,9 @@ pub fn derive_field_sea_value(input: TokenStream) -> TokenStream {
 mod derives_rusqlite;
 
 #[cfg(feature = "with-rusqlite")]
-#[proc_macro_derive(FromSqliteRow, attributes(field, fields))]
-pub fn derive_from_sqlite_row(input: TokenStream) -> TokenStream {
-	derives_rusqlite::derive_from_sqlite_row_inner(input)
+#[proc_macro_derive(SqliteFromRow, attributes(field, fields))]
+pub fn derive_sqlite_from_row(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_sqlite_from_row_inner(input)
 }
 
 /// Will implement the `rusqlite::types::FromSql` for the annotated type.
@@ -127,15 +127,39 @@ pub fn derive_from_sqlite_row(input: TokenStream) -> TokenStream {
 /// ````
 ///
 #[cfg(feature = "with-rusqlite")]
-#[proc_macro_derive(FromSqliteValue)]
-pub fn derive_from_sqlite_value(input: TokenStream) -> TokenStream {
+#[proc_macro_derive(SqliteFromValue)]
+pub fn derive_sqlite_from_value(input: TokenStream) -> TokenStream {
 	derives_rusqlite::derive_from_sqlite_value_inner(input)
 }
 
 #[cfg(feature = "with-rusqlite")]
-#[proc_macro_derive(ToSqliteValue)]
-pub fn derive_to_sqlite_value(input: TokenStream) -> TokenStream {
-	derives_rusqlite::derive_to_sqlite_value_inner(input)
+#[proc_macro_derive(SqliteToValue)]
+pub fn derive_sqlite_to_value(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_sqlite_to_value_inner(input)
 }
 
 // endregion: --- with-rusqlite
+
+// region:    --- with-rusqlite Deprecated
+
+#[deprecated(note = "use SqliteFromRow")]
+#[cfg(feature = "with-rusqlite")]
+#[proc_macro_derive(FromSqliteRow, attributes(field, fields))]
+pub fn derive_sqlite_from_row_deprecated(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_sqlite_from_row_inner(input)
+}
+
+#[deprecated(note = "use SqliteFromValue")]
+#[cfg(feature = "with-rusqlite")]
+#[proc_macro_derive(FromSqliteValue)]
+pub fn derive_sqlite_from_value_deprecated(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_from_sqlite_value_inner(input)
+}
+
+#[deprecated(note = "use SqliteToValue")]
+#[cfg(feature = "with-rusqlite")]
+#[proc_macro_derive(ToSqliteValue)]
+pub fn derive_sqlite_to_value_depcreated(input: TokenStream) -> TokenStream {
+	derives_rusqlite::derive_sqlite_to_value_inner(input)
+}
+// endregion: --- with-rusqlite Deprecated

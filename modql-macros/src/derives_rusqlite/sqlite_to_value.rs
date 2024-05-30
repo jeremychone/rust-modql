@@ -6,7 +6,7 @@ use proc_macro2::Ident;
 use quote::quote;
 use syn::{parse_macro_input, Data, DataEnum, DataStruct, DeriveInput};
 
-pub fn derive_to_sqlite_value_inner(input: TokenStream) -> TokenStream {
+pub fn derive_sqlite_to_value_inner(input: TokenStream) -> TokenStream {
 	// Parse the input tokens into a syntax tree
 	let input = parse_macro_input!(input as DeriveInput);
 

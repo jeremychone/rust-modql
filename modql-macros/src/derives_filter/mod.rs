@@ -1,7 +1,7 @@
 mod utils;
 
 use crate::derives_filter::utils::get_filter_field_attr;
-use crate::utils::struct_modql_attr::get_struct_modql_attrs;
+use crate::utils::struct_modql_attr::get_struct_modql_props;
 use crate::utils::{get_struct_fields, get_type_name};
 use proc_macro::TokenStream;
 use quote::quote;
@@ -14,7 +14,7 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 	let struct_name = &ast.ident;
 	let fields = get_struct_fields(&ast);
 
-	let struct_attrs = get_struct_modql_attrs(&ast).unwrap();
+	let struct_attrs = get_struct_modql_props(&ast).unwrap();
 
 	//// Properties to be collected
 	let mut props: Vec<&Option<Ident>> = Vec::new(); // not needed for now.

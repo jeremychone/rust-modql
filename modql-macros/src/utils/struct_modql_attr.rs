@@ -3,12 +3,12 @@ use syn::punctuated::Punctuated;
 use syn::{DeriveInput, Meta, Token};
 
 // region:    --- Struct Prop Attribute
-pub struct StructModqlFieldAttrs {
+pub struct StructModqlFieldProps {
 	pub rel: Option<String>,
 	pub names_as_consts: Option<String>,
 }
 
-pub fn get_struct_modql_attrs(dinput: &DeriveInput) -> Result<StructModqlFieldAttrs, syn::Error> {
+pub fn get_struct_modql_props(dinput: &DeriveInput) -> Result<StructModqlFieldProps, syn::Error> {
 	// FIXME: We should remove this, 'sqlb' should not be a thing anymore.
 	let sqlb_attr = get_dinput_attribute(dinput, "modql");
 	let mut rel = None;
@@ -49,7 +49,7 @@ pub fn get_struct_modql_attrs(dinput: &DeriveInput) -> Result<StructModqlFieldAt
 		}
 	}
 
-	Ok(StructModqlFieldAttrs { rel, names_as_consts })
+	Ok(StructModqlFieldProps { rel, names_as_consts })
 }
 
 // endregion: --- Struct Prop Attribute

@@ -6,8 +6,9 @@ use syn::{Field, FieldsNamed, Meta, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
 pub struct ModqlFieldProp<'a> {
-	pub prop_name: String, // property name
-	pub name: String,      // resolved name col_name or prop name;
+	pub prop_name: String,         // property name
+	pub attr_name: Option<String>, // The eventual `#[field(name=..._)]`
+	pub name: String,              // resolved name attr_name or prop name;
 	pub rel: Option<String>,
 	pub cast_as: Option<String>,
 	pub is_option: bool,
@@ -51,20 +52,21 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 
 		// -- name
 		let prop_name = ident.as_ref().map(|i| i.to_string()).unwrap();
-		let field_name = mfield_attr.name;
-		let name = field_name.unwrap_or_else(|| prop_name.clone());
+		let attr_name = mfield_attr.name;
+		let name = attr_name.clone().unwrap_or_else(|| prop_name.clone());
 
 		// -- cast_as
 		let cast_as = mfield_attr.cast_as;
 
 		// -- Add to array.
 		modql_fields.push(ModqlFieldProp {
-			prop_name,
 			rel: mfield_attr.rel,
 			name,
-			is_option,
+			prop_name,
+			attr_name,
 			ident,
 			cast_as,
+			is_option,
 		})
 	}
 
@@ -77,7 +79,7 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 // endregion: --- Field Prop (i.e., sqlb Field)
 
 // region:    --- Field Prop Attribute
-pub struct ModqlFieldPropAttr {
+struct ModqlFieldPropAttr {
 	pub rel: Option<String>,
 	pub name: Option<String>,
 	pub skip: bool,
@@ -86,7 +88,7 @@ pub struct ModqlFieldPropAttr {
 
 // #[field(skip)]
 // #[field(name = "new_name")]
-pub fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error> {
+fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error> {
 	let attribute = get_field_attribute(field, "field");
 
 	let mut skip = false;
