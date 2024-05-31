@@ -3,6 +3,9 @@ pub struct FieldMeta {
 	/// rel from either the struct `#[modql(rel=...)]` or from property `#[field(rel=...)]`
 	pub rel: Option<&'static str>,
 
+	/// If the rel is a struct rel or the field rel matches the struct rel
+	pub is_struct_rel: bool,
+
 	/// Name of the struct property no matter what.
 	pub prop_name: &'static str,
 

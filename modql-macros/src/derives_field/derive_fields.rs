@@ -107,6 +107,14 @@ fn impl_has_fields(
 			None => quote! { None },
 		};
 
+		let field_rel = field_prop.rel.as_ref();
+
+		let is_struct_rel = match (struct_rel, field_rel) {
+			(Some(_), None) => true,
+			(Some(struct_rel), Some(field_rel)) => struct_rel == field_rel, 
+			_ => false
+		};
+
 		let rel = field_prop.rel.as_ref().or(struct_rel);
 		let rel = match rel {
 			Some(rel) => quote! { Some(#rel)},
@@ -120,6 +128,7 @@ fn impl_has_fields(
 
 		quote! {&modql::field::FieldMeta{
 				rel: #rel,
+				is_struct_rel: #is_struct_rel,
 				prop_name: #prop_name,
 				attr_name: #attr_name,
 				cast_as: #cast_as,
