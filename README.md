@@ -7,7 +7,7 @@ In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has
 > **RECOMMENDATION**: It is recommended to use **0.4.0-rc.x** at this point as it has significant changes and is relatively stable. We are just waiting for [sea-query 0.31](https://crates.io/crates/sea-query/versions) to release to publish **modql v0.4.0**.
 
 > **IMPORTANT**: **v0.4.0**, currently in `rc`, includes significant refactoring (retaining the same functionalities, just with cleaner naming and decoupled from sea-query) to allow `derive(Fields)` to provide `field_names` and `field_refs` without the need for the `with-sea-query` feature.
-> 
+>
 > For more information, see [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
 
 
@@ -46,7 +46,7 @@ let list_options: modql::filter::ListOptions =
         "limit": 2,
         "order_bys": "!title" // ! for descending
     }))?;
-    
+
 // -- Building a sea-query select query with those condition
 // Convert the TaskFilter into sea-query condition
 let cond: sea_query::Condition = filter.try_into()?;
@@ -71,7 +71,7 @@ let entities = sqlx::query_as_with::<_, E, _>(&sql, values)
 
 This crate is instrumental for JSON-RPC or other types of model APIs (e.g., the [joql pattern](https://joql.org)).
 
-**IMPORTANT** v0.3.x represents the new version of modql, featuring the `with-sea-query` feature set. It is utilized in the [rust10x web-app production code blueprint Episode 02](https://rust10x.com/web-app). 
+**IMPORTANT** v0.3.x represents the new version of modql, featuring the `with-sea-query` feature set. It is utilized in the [rust10x web-app production code blueprint Episode 02](https://rust10x.com/web-app).
 This version is somewhat incompatible with v0.2.x, mainly due to module reorganization. If you are using the rust10x/awesomeapp desktop app, please stick with v0.2.x for the time being. I plan to upgrade the codebase to v0.3.x soon.
 
 [changelog](CHANGELOG.md)
@@ -87,7 +87,7 @@ The basic JSON representation of an `OpVal[Type]` follows the `{field_name: {$op
 
 ```js
 {
-    "title": {"$startsWith": "Hello", "$contains": "World"} 
+    "title": {"$startsWith": "Hello", "$contains": "World"}
 }
 ```
 
@@ -97,30 +97,31 @@ The following tables show the list of possible operators for each type.
 
 ### `OpValString` Operators
 
-| Operator            | Meaning                                         | Example                                                  |
-|---------------------|-------------------------------------------------|----------------------------------------------------------|
-| `$eq`               | Exact match with one value                      | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
-| `$in`               | Exact match with within a list of values (or)   | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
-| `$not`              | Exclude any exact match                         | `{name: {"$not": "Jon Doe"}}`                            |
-| `$notIn`            | Exclude any exact withing a list                | `{name: {"$notIn": ["Jon Doe"]}}`                        |
-| `$contains`         | For string, does a contains                     | `{name: {"$contains": "Doe"}}`                           |
-| `$containsAny`      | For string, match if contained in any of items  | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
-| `$containsAll`      | For string, match if all items are in the src   | `{name: {"$containsAll": ["Hello", "World"]}}`           |
-| `$notContains`      | Does not contain                                | `{name: {"$notContains": "Doe"}}`                        |
-| `$notContainsAny`   | Does not call any of (none is contained)        | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
-| `$startsWith`       | For string, does a startsWith                   | `{name: {"$startsWith": "Jon"}}`                         |
-| `$startsWithAny`    | For string, match if startsWith in any of items | `{name: {"$startsWithAny": ["Jon", "Al"]}}`              |
-| `$notStartsWith`    | Does not start with                             | `{name: {"$notStartsWith": "Jon"}}`                      |
-| `$notStartsWithAny` | Does not start with any of the items            | `{name: {"$notStartsWithAny": ["Jon", "Al"]}}`           |
-| `$endsWith`         | For string, does and end with                   | `{name: {"$endsWithAny": "Doe"}}`                        |
-| `$endsWithAny`      | For string, does a contains  (or)               | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
-| `$notEndsWith`      | Does not end with                               | `{name: {"$notEndsWithAny": "Doe"}}`                     |
-| `$notEndsWithAny`   | Does not end with any of the items              | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
-| `$lt`               | Lesser Than                                     | `{name: {"$lt": "C"}}`                                   |
-| `$lte`              | Lesser Than or =                                | `{name: {"$lte": "C"}}`                                  |
-| `$gt`               | Greater Than                                    | `{name: {"$gt": "J"}}`                                   |
-| `$gte`              | Greater Than or =                               | `{name: {"$gte": "J"}}`                                  |
-| `$null`             | If the value is null                            | `{name: {"$null": true}}`                                |
+| Operator            | Meaning                                                                                                   | Example                                                  |
+|---------------------|-----------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| `$eq`               | Exact match with one value                                                                                | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
+| `$in`               | Exact match with within a list of values (or)                                                             | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
+| `$not`              | Exclude any exact match                                                                                   | `{name: {"$not": "Jon Doe"}}`                            |
+| `$notIn`            | Exclude any exact withing a list                                                                          | `{name: {"$notIn": ["Jon Doe"]}}`                        |
+| `$contains`         | For string, does a contains                                                                               | `{name: {"$contains": "Doe"}}`                           |
+| `$containsAny`      | For string, match if contained in any of items                                                            | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
+| `$containsAll`      | For string, match if all items are in the src                                                             | `{name: {"$containsAll": ["Hello", "World"]}}`           |
+| `$notContains`      | Does not contain                                                                                          | `{name: {"$notContains": "Doe"}}`                        |
+| `$notContainsAny`   | Does not call any of (none is contained)                                                                  | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
+| `$startsWith`       | For string, does a startsWith                                                                             | `{name: {"$startsWith": "Jon"}}`                         |
+| `$startsWithAny`    | For string, match if startsWith in any of items                                                           | `{name: {"$startsWithAny": ["Jon", "Al"]}}`              |
+| `$notStartsWith`    | Does not start with                                                                                       | `{name: {"$notStartsWith": "Jon"}}`                      |
+| `$notStartsWithAny` | Does not start with any of the items                                                                      | `{name: {"$notStartsWithAny": ["Jon", "Al"]}}`           |
+| `$endsWith`         | For string, does and end with                                                                             | `{name: {"$endsWithAny": "Doe"}}`                        |
+| `$endsWithAny`      | For string, does a contains  (or)                                                                         | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
+| `$notEndsWith`      | Does not end with                                                                                         | `{name: {"$notEndsWithAny": "Doe"}}`                     |
+| `$notEndsWithAny`   | Does not end with any of the items                                                                        | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
+| `$lt`               | Lesser Than                                                                                               | `{name: {"$lt": "C"}}`                                   |
+| `$lte`              | Lesser Than or =                                                                                          | `{name: {"$lte": "C"}}`                                  |
+| `$gt`               | Greater Than                                                                                              | `{name: {"$gt": "J"}}`                                   |
+| `$gte`              | Greater Than or =                                                                                         | `{name: {"$gte": "J"}}`                                  |
+| `$null`             | If the value is null                                                                                      | `{name: {"$null": true}}`                                |
+| `$ilike`            | For string, does a contains in a case-insensitive way. Needs `with-postgres` flag enabled in `Cargo.toml` | `{name: {"$ilike": "DoE"}}`                              |
 
 ### `OpValInt32, OpValInt64, OpValFloat64`  Operators
 
