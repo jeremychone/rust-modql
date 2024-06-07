@@ -41,6 +41,8 @@ pub enum OpValString {
 
 	Empty(bool),
 	Null(bool),
+
+	Ilike(String),
 }
 
 // region:    --- Simple value to Eq OpValString
@@ -161,6 +163,8 @@ mod json {
 				("$empty", Value::Bool(v)) => OpValString::Empty(v),
 				("$null", Value::Bool(v)) => OpValString::Null(v),
 
+				("$ilike", Value::String(string_v)) => OpValString::Ilike(string_v),
+
 				(_, v) => {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
@@ -181,6 +185,9 @@ mod with_sea_query {
 	use crate::into_node_value_expr;
 	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, SimpleExpr};
 
+	#[cfg(feature = "with-postgres")]
+    use sea_query::extension::postgres::PgBinOper;
+
 	impl OpValString {
 		pub fn into_sea_cond_expr(
 			self,
@@ -191,6 +198,16 @@ mod with_sea_query {
 				let vxpr = into_node_value_expr(v, node_options);
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
+
+            #[cfg(feature = "with-postgres")]
+            let pg_binary_fn = |op: PgBinOper, v: String| {
+                let vxpr = into_node_value_expr(v, node_options);
+                ConditionExpression::SimpleExpr(SimpleExpr::binary(
+                    col.clone().into(),
+                    BinOper::PgOperator(op),
+                    vxpr,
+                ))
+            };
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
 				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
@@ -257,6 +274,17 @@ mod with_sea_query {
 						.add(binary_fn(op, "".to_string()))
 						.into()
 				}
+
+                OpValString::Ilike(s) => {
+                    #[cfg(feature = "with-postgres")]
+                    {
+                        pg_binary_fn(PgBinOper::ILike, format!("%{s}%"))
+                    }
+                    #[cfg(not(feature = "with-postgres"))]
+                    {
+						binary_fn(BinOper::Like, format!("%{s}%"))
+                    }
+                },
 			};
 
 			Ok(cond)
