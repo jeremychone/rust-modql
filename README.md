@@ -1,6 +1,6 @@
 # modql
 
-**modql** is a set of types and utilities designed to structurally express model query filters and list options (e.g., `offset`, `limit`, `order_bys`). These can be easily represented in JSON.
+**modql** is a set of types and utilities designed to structurally express model query filters (e.g., `$eq: ..` `$startsWith: ..`, `$containsIn: [..]`) and list options (e.g., `offset`, `limit`, `order_bys`). These can be easily represented in JSON.
 
 In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has built-in support for [sea-query](https://crates.io/crates/sea-query), and can be expressed either in JSON or Rust types.
 
@@ -54,7 +54,7 @@ let mut query = sea_query::Query::select();
 
 // Select only the columns corresponding to the task type.
 // This is determined by the modql::field::Fields annotation.
-query.from(task_table).columns(Task::field_column_refs());
+query.from(task_table).columns(Task::sea_column_refs());
 
 // Add the condition from the filter
 query.cond_where(cond);
