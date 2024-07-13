@@ -56,6 +56,7 @@ pub fn insert_with_returnning_id<P: Params>(conn: &Connection, insert_sql: &str,
 	Ok(id)
 }
 
+#[allow(unused)]
 pub fn exec_select<T: SqliteFromRow>(conn: &Connection, sql: &str) -> Result<Vec<T>> {
 	let mut stmt = conn.prepare(sql)?;
 	let iter = stmt.query_and_then([], |r| T::sqlite_from_row(r))?;

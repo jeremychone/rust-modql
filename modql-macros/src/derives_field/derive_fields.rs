@@ -111,8 +111,8 @@ fn impl_has_fields(
 
 		let is_struct_rel = match (struct_rel, field_rel) {
 			(Some(_), None) => true,
-			(Some(struct_rel), Some(field_rel)) => struct_rel == field_rel, 
-			_ => false
+			(Some(struct_rel), Some(field_rel)) => struct_rel == field_rel,
+			_ => false,
 		};
 
 		let rel = field_prop.rel.as_ref().or(struct_rel);
@@ -198,12 +198,12 @@ fn impl_has_sea_fields(
 	// -- all_fields() quotes!
 	let all_fields_quotes = field_props.iter().map(|p| {
 		let name = &p.name;
-		let field_options = field_options_quote(p);
+		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
 
 		quote! {
 			ff.push(
-				modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options)
+				modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options_q)
 			);
 		}
 	});
@@ -211,21 +211,21 @@ fn impl_has_sea_fields(
 	// -- The not_none_sea_fields quotes!
 	let not_none_fields_quotes = field_props.iter().map(|p| {
 		let name = &p.name;
-		let field_options = field_options_quote(p);
+		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
 
 		if p.is_option {
 			quote! {
 					if let Some(val) = self.#ident {
 						ff.push(
-							modql::field::SeaField::new_with_options(modql::SIden(#name), val.into(), #field_options)
+							modql::field::SeaField::new_with_options(modql::SIden(#name), val.into(), #field_options_q)
 						);
 					}
 			}
 		} else {
 			quote! {
 					ff.push(
-						modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options)
+						modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options_q)
 					);
 			}
 		}

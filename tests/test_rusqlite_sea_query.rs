@@ -85,7 +85,7 @@ fn test_sea_insert_and_raw_select() -> Result<()> {
 	query.into_table(SIden("agent")).columns(columns).values(sea_values)?;
 	query.returning_col(SIden("id"));
 	let (sql, values) = query.build_rusqlite(SqliteQueryBuilder);
-	let agent_id = insert_with_returnning_id(&conn, &sql, &*values.as_params())?;
+	let _agent_id = insert_with_returnning_id(&conn, &sql, &*values.as_params())?;
 
 	// -- Build & execute raw select
 	let metas = Agent::field_metas();

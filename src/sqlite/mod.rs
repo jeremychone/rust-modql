@@ -31,9 +31,3 @@ where
 
 	fn sqlite_from_row_partial(row: &rusqlite::Row<'_>, prop_names: &[&str]) -> rusqlite::Result<Self>;
 }
-
-struct Stuff {
-	id: i32,
-	name: Option<String>,
-	desc: Option<String>,
-}
