@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.4.0-rc.7"
+version = "0.4.0-rc.8"
 edition = "2021"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -18,7 +18,7 @@ repository = "https://github.com/jeremychone/rust-modql"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
-unused = "allow" # For experimental dev.
+# unused = { level = "allow", priority = -1 } # For exploratory dev.
 
 [lints.rust]
 unsafe_code = "forbid"
@@ -34,16 +34,16 @@ with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 
 [dependencies]
-modql-macros = { version="0.4.0-rc.7", path = "modql-macros", optional=true}
+modql-macros = { version="0.4.0-rc.8", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 # -- For features
-sea-query = { version = "=0.31.0-rc.7", features = ["thread-safe"], optional = true }
+sea-query = { version = "=0.31.0-rc.9", features = ["thread-safe"], optional = true }
 rusqlite = { version = "0.31", optional = true }
 
 [dev-dependencies]
 serde_with = "3"
 rusqlite = {version = "0.31", features = ["bundled"]}
-sea-query-rusqlite = {version = "0.6.0-rc"}
+sea-query-rusqlite = {version = "0.6.0-rc.1"}
 

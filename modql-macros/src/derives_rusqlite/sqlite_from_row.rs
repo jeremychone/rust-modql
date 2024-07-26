@@ -79,7 +79,7 @@ fn impl_fn_sqlite_from_row_partial(
 
 		// NOTE: Here we assume the select column has been aliased to the name of the property
 		let col_name = &mf.prop_name;
-		let is_option = mf.is_option;
+		// let is_option = mf.is_option;
 
 		if mf.is_option {
 			quote! {

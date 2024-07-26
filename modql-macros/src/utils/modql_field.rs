@@ -22,6 +22,7 @@ pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
 
 pub struct ModqlFieldsAndSkips<'a> {
 	pub modql_fields: Vec<ModqlFieldProp<'a>>,
+	#[allow(unused)] // For early development.
 	pub skipped_fields: Vec<&'a Field>,
 }
 
