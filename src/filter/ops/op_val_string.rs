@@ -173,13 +173,13 @@ mod json {
 				("$null", Value::Bool(v)) => OpValString::Null(v),
 
 				("$containsCi", Value::String(string_v)) => OpValString::ContainsCi(string_v),
-                ("$notContainsCi", Value::String(string_v)) => OpValString::NotContainsCi(string_v),
+				("$notContainsCi", Value::String(string_v)) => OpValString::NotContainsCi(string_v),
 
-                ("$startsWithCi", Value::String(string_v)) => OpValString::StartsWithCi(string_v),
-                ("$notStartsWithCi", Value::String(string_v)) => OpValString::NotStartsWithCi(string_v),
+				("$startsWithCi", Value::String(string_v)) => OpValString::StartsWithCi(string_v),
+				("$notStartsWithCi", Value::String(string_v)) => OpValString::NotStartsWithCi(string_v),
 
-                ("$endsWithCi", Value::String(string_v)) => OpValString::EndsWithCi(string_v),
-                ("$notEndsWithCi", Value::String(string_v)) => OpValString::NotEndsWithCi(string_v),
+				("$endsWithCi", Value::String(string_v)) => OpValString::EndsWithCi(string_v),
+				("$notEndsWithCi", Value::String(string_v)) => OpValString::NotEndsWithCi(string_v),
 
 				// Postgres optimized case insensitive like
 				("$ilike", Value::String(string_v)) => OpValString::Ilike(string_v),
@@ -205,7 +205,7 @@ mod with_sea_query {
 	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, Expr, Func, SimpleExpr};
 
 	#[cfg(feature = "with-ilike")]
-    use sea_query::extension::postgres::PgBinOper;
+	use sea_query::extension::postgres::PgBinOper;
 
 	impl OpValString {
 		pub fn into_sea_cond_expr(
@@ -221,11 +221,7 @@ mod with_sea_query {
 			#[cfg(feature = "with-ilike")]
 			let pg_binary_fn = |op: PgBinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(
-					col.clone().into(),
-					BinOper::PgOperator(op),
-					vxpr,
-			    ))
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), BinOper::PgOperator(op), vxpr))
 			};
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
@@ -301,25 +297,25 @@ mod with_sea_query {
 						.into()
 				}
 
-                OpValString::ContainsCi(s) => case_insensitive_fn(BinOper::Like, format!("%{s}%")),
-                OpValString::NotContainsCi(s) => case_insensitive_fn(BinOper::NotLike, format!("%{s}%")),
+				OpValString::ContainsCi(s) => case_insensitive_fn(BinOper::Like, format!("%{s}%")),
+				OpValString::NotContainsCi(s) => case_insensitive_fn(BinOper::NotLike, format!("%{s}%")),
 
-                OpValString::StartsWithCi(s) => case_insensitive_fn(BinOper::Like, format!("{s}%")),
-                OpValString::NotStartsWithCi(s) => case_insensitive_fn(BinOper::NotLike, format!("{s}%")),
+				OpValString::StartsWithCi(s) => case_insensitive_fn(BinOper::Like, format!("{s}%")),
+				OpValString::NotStartsWithCi(s) => case_insensitive_fn(BinOper::NotLike, format!("{s}%")),
 
-                OpValString::EndsWithCi(s) => case_insensitive_fn(BinOper::Like, format!("%{s}")),
-                OpValString::NotEndsWithCi(s) => case_insensitive_fn(BinOper::NotLike, format!("%{s}")),
+				OpValString::EndsWithCi(s) => case_insensitive_fn(BinOper::Like, format!("%{s}")),
+				OpValString::NotEndsWithCi(s) => case_insensitive_fn(BinOper::NotLike, format!("%{s}")),
 
-                OpValString::Ilike(s) => {
-                    #[cfg(feature = "with-ilike")]
-                    {
-                        pg_binary_fn(PgBinOper::ILike, format!("%{s}%"))
-                    }
-                    #[cfg(not(feature = "with-ilike"))]
-                    {
+				OpValString::Ilike(s) => {
+					#[cfg(feature = "with-ilike")]
+					{
+						pg_binary_fn(PgBinOper::ILike, format!("%{s}%"))
+					}
+					#[cfg(not(feature = "with-ilike"))]
+					{
 						case_insensitive_fn(BinOper::Like, format!("%{s}%"))
-                    }
-                },
+					}
+				}
 			};
 
 			Ok(cond)
