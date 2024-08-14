@@ -46,5 +46,5 @@ rusqlite = { version = "0.31", optional = true }
 [dev-dependencies]
 serde_with = "3"
 rusqlite = {version = "0.31", features = ["bundled"]}
-sea-query-rusqlite = {version = "0.6.0-rc.1"}
+sea-query-rusqlite = {version = "0.6"}
 

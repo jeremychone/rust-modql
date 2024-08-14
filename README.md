@@ -10,6 +10,11 @@ In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has
 >
 > For more information, see [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
 
+## Thanks
+
+- [Marc Cámara](https://github.com/mcamara) for adding the Case Insensitive support and the `with-ilike` support for Postgresql. [PR #3](https://github.com/jeremychone/rust-modql/pull/3)
+- [Andrii Yermakov](https://github.com/andriy-yermakov) for fixing a "null operator for numbers" [PR #2](https://github.com/jeremychone/rust-modql/pull/2)
+
 
 ## Quick Overview
 
