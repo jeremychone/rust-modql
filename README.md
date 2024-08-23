@@ -4,11 +4,9 @@
 
 In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has built-in support for [sea-query](https://crates.io/crates/sea-query), and can be expressed either in JSON or Rust types.
 
-> **RECOMMENDATION**: It is recommended to use **0.4.0-rc.x** at this point as it has significant changes and is relatively stable. We are just waiting for [sea-query 0.31](https://crates.io/crates/sea-query/versions) to release to publish **modql v0.4.0**.
-
-> **IMPORTANT**: **v0.4.0**, currently in `rc`, includes significant refactoring (retaining the same functionalities, just with cleaner naming and decoupled from sea-query) to allow `derive(Fields)` to provide `field_names` and `field_refs` without the need for the `with-sea-query` feature.
+> **IMPORTANT**: **v0.4.0 is RELEASED**: This release includes significant refactoring (retaining the same functionality but with cleaner naming and decoupled from sea-query) to allow `derive(Fields)` to provide `field_names` and `field_refs` without requiring the `with-sea-query` feature.
 >
-> For more information, see [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
+> For more information, see [CHANGELOG.md](CHANGELOG.md) and [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
 
 ## Thanks
 

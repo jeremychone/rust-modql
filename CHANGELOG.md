@@ -1,7 +1,20 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
-## - `0.4.0-rc.7`
+## 2024-09-23 - `0.4.0`
+
+- `.` update to sea-query-rusqlite 0.6
+- `.` add rustfmt.toml
+- `^` Update sea-query version `0.31
+- `+` Add CaseInsensitive for StringOpVals (`StartsWithCt` .. )
+- `+` Add ILIKE for postgres (case-insensitive LIKE)
+
+## 2024-06-26 - `0.4.0-rc.8`
+
+- `.` update version to 0.4.0-rc.8 (with sea-query 31.0-rc.9)
+- `.` minor code clean
+
+## 2024-06-13 - `0.4.0-rc.7`
 
 - `+` `T::field_metas()`, `FieldMetas`, and `FieldMeta`  when `#[derive(Fields)]`
 - `!` `FieldRef` in favor of `FieldMeta`

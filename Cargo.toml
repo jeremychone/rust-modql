@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.4.0-rc.8"
+version = "0.4.0"
 edition = "2021"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -35,13 +35,17 @@ with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 with-ilike = ["sea-query/backend-postgres"]
 
 [dependencies]
-modql-macros = { version="0.4.0-rc.8", path = "modql-macros", optional=true}
+modql-macros = { version="0.4", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
 # -- For features
-sea-query = { version = "0.31", features = ["thread-safe"], optional = true }
-rusqlite = { version = "0.31", optional = true }
+sea-query = { workspace = true, optional = true }
+rusqlite = { workspace = true, optional = true }
+
+[workspace.dependencies]
+sea-query = { version = "0.31", features = ["thread-safe"] }
+rusqlite = { version = "0.31" }
 
 [dev-dependencies]
 serde_with = "3"
