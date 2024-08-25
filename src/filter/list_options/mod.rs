@@ -10,6 +10,36 @@ pub struct ListOptions {
 	pub order_bys: Option<OrderBys>,
 }
 
+// region:    --- Constructors
+
+impl ListOptions {
+	pub fn from_limit(limit: i64) -> Self {
+		Self {
+			limit: Some(limit),
+			..Default::default()
+		}
+	}
+
+	pub fn from_offset_limit(offset: i64, limit: i64) -> Self {
+		Self {
+			limit: Some(limit),
+			offset: Some(offset),
+			..Default::default()
+		}
+	}
+
+	pub fn from_order_bys(order_bys: impl Into<OrderBys>) -> Self {
+		Self {
+			order_bys: Some(order_bys.into()),
+			..Default::default()
+		}
+	}
+}
+
+// endregion: --- Constructors
+
+// region:    --- Froms
+
 impl From<OrderBys> for ListOptions {
 	fn from(val: OrderBys) -> Self {
 		Self {
@@ -45,6 +75,8 @@ impl From<OrderBy> for Option<ListOptions> {
 		})
 	}
 }
+
+// endregion: --- Froms
 
 // region:    --- with-sea-query
 #[cfg(feature = "with-sea-query")]
