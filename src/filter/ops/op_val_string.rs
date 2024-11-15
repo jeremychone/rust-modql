@@ -201,7 +201,7 @@ mod json {
 mod with_sea_query {
 	use super::*;
 	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
-	use crate::into_node_value_expr;
+	use crate::{into_node_column_expr, into_node_value_expr};
 	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, Expr, Func, SimpleExpr};
 
 	#[cfg(feature = "with-ilike")]
@@ -215,19 +215,22 @@ mod with_sea_query {
 		) -> SeaResult<ConditionExpression> {
 			let binary_fn = |op: BinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+				let column = into_node_column_expr(col.clone(), node_options);
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr))
 			};
 
 			#[cfg(feature = "with-ilike")]
 			let pg_binary_fn = |op: PgBinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), BinOper::PgOperator(op), vxpr))
+				let column = into_node_column_expr(col.clone(), node_options);
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr))
 			};
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
 				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+				let column = into_node_column_expr(col.clone(), node_options);
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr))
 			};
 
 			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {

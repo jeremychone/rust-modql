@@ -8,6 +8,7 @@ pub trait IntoFilterNodes {
 #[derive(Debug, Clone, Default)]
 pub struct FilterNodeOptions {
 	pub cast_as: Option<String>, // for db casting. e.g., Will be applied to sea-query value.
+	pub cast_column_as: Option<String>, // for db casting. e.g., Will be applied to sea-query column.
 }
 
 #[derive(Debug, Clone)]

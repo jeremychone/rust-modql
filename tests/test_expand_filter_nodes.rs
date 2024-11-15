@@ -19,6 +19,7 @@ pub struct ProjectFilter {
 #[modql(rel = "task_tbl")]
 pub struct TaskFilter {
 	id: Option<OpValsInt64>,
+	#[modql(cast_column_as = "text")]
 	title: Option<OpValsString>,
 	#[modql(rel = "foo_rel")]
 	label: Option<OpValsString>,
@@ -44,7 +45,7 @@ fn test_expand_filter_nodes_filter_rel() -> Result<()> {
 
 	// -- Check
 	assert!(
-		sql.contains(r#"WHERE "task_tbl"."id" = ? AND "task_tbl"."title" = ? AND "foo_rel"."label" = ?"#),
+		sql.contains(r#"WHERE "task_tbl"."id" = ? AND CAST("task_tbl"."title" AS text) = ? AND "foo_rel"."label" = ?"#),
 		"Incorrect where statment"
 	);
 
