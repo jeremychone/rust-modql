@@ -1,11 +1,16 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2024-11-15 - `0.4.1-WIP`
+
+- `^` Update `sea-query` and `rustsqlite` to version `0.32`
+- `!` Remove `cast_column_as` from filter, it's now on field
+
 ## 2024-09-23 - `0.4.0`
 
 - `.` update to sea-query-rusqlite 0.6
 - `.` add rustfmt.toml
-- `^` Update sea-query version `0.31
+- `^` Update sea-query version `0.31`
 - `+` Add CaseInsensitive for StringOpVals (`StartsWithCt` .. )
 - `+` Add ILIKE for postgres (case-insensitive LIKE)
 
@@ -23,7 +28,7 @@
 	- Traits:
 		- Now: `SqliteFromRow`, before: `FromSqliteRow`
 			- Now: `fn sqlite_from_row`, before: `fn from_sqlite_row...`
-	- derive: 
+	- derive:
 		- Now: `SqliteFromValue`, before: `FromSqliteRow`
 		- Now: `SqliteFromValue`, before: `FromSqliteValue`
 		- Now: `ToSqliteValue`, before: `SqliteToValue`
@@ -36,7 +41,7 @@
 - `.` update to v0.4.0-rc.5
 - `^` sea-query - impl IdenStatic for SIden (and SIden: Clone + Copy)
 
-## 2024-04-18 - `0.4.0-rc.4` 
+## 2024-04-18 - `0.4.0-rc.4`
 
 - SEE: Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
 - `+` ToSqliteValue - added ToSqliteValue for simple enum and single tuple struct
@@ -47,7 +52,7 @@
 - `!` filter - rename context_path to rel
 - `^` SeaField - add new_concrete
 
-## 2024-03-07 - `0.4.0-rc.2` 
+## 2024-03-07 - `0.4.0-rc.2`
 
 - `!` Major refactor/cleanup (see [v0.3.x to v0.4.x document](MIGRATION-v03x-v04x.md)
 
@@ -62,7 +67,7 @@
 
 - `!` Rename FromSqliteRow::from_rusqlite_row to FromSqliteRow::from_sqlite_row)
 - `!` Change sqlite::FromRow to FromSqliteRow
-- `+` FromSqliteValue for enum 
+- `+` FromSqliteValue for enum
 - `+` Add `field::FieldEnum` derive to implement to seaqueryvalue for simple enum (also some code relayout)
 
 ## 2024-01-29 - `0.3.8`
@@ -72,8 +77,8 @@
 ## 2024-01-22 - `0.3.7`
 
 - `+` `cast_as` to `filter`
-- `!` Potential API break for user using `FieldNode` struct constructor (e.g., `FieldNode {...}`). New property `options: FieldNodeOptions`. Use `options: FieldNodeOptions::default()`. 
-	- Using the `FieldNode::new(...)` functions and every other interface should be unchanged. 
+- `!` Potential API break for user using `FieldNode` struct constructor (e.g., `FieldNode {...}`). New property `options: FieldNodeOptions`. Use `options: FieldNodeOptions::default()`.
+	- Using the `FieldNode::new(...)` functions and every other interface should be unchanged.
 
 ## 2024-01-20 - `0.3.6`
 
@@ -118,7 +123,7 @@
 
 ## 2023-04-04 - `0.1.0`
 
-- `!` - Major refactoring from `0.0.5`. 
+- `!` - Major refactoring from `0.0.5`.
 - `!` - Moved from raw `Vec..` to specialized type `FilterGroups` and `FilterGroup`.
-- `!` - Rename all of the `[Type]OpVal` to `OpVal[Type]` with full num type description. 
+- `!` - Rename all of the `[Type]OpVal` to `OpVal[Type]` with full num type description.
 - `+` - Implemented lot of `From` traits.

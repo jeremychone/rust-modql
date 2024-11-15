@@ -89,7 +89,7 @@ mod json {
 mod with_sea_query {
 	use super::*;
 	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult, ToSeaValueFnHolder};
-	use crate::into_node_value_expr;
+	use crate::{into_node_column_expr, into_node_value_expr};
 	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
 
 	impl OpValValue {
@@ -104,11 +104,8 @@ mod with_sea_query {
 				let sea_value = to_sea_value.call(json_value)?;
 
 				let vxpr = into_node_value_expr(sea_value, node_options);
-				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(
-					col.clone().into(),
-					op,
-					vxpr,
-				)))
+				let column = into_node_column_expr(col.clone(), node_options);
+				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op,vxpr)))
 			};
 
 			// -- CondExpr builder for single value
@@ -125,11 +122,8 @@ mod with_sea_query {
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
 
 				// -- Return the condition expression
-				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(
-					col.clone().into(),
-					op,
-					vxpr,
-				)))
+				let column = into_node_column_expr(col.clone(), node_options);
+				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr)))
 			};
 
 			let cond = match self {

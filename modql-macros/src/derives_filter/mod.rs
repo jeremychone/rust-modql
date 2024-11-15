@@ -55,9 +55,16 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 				} else {
 					quote! { None }
 				};
+
+				let quote_filter_node_options_cast_column_as = if let Some(cast_column_as) = modql_field_attr.cast_column_as {
+					quote! { Some(#cast_column_as.to_string()) }
+				} else {
+					quote! { None }
+				};
 				props_filter_node_options.push(quote! {
 					modql::filter::FilterNodeOptions {
 						cast_as: #quote_filter_node_options_cast_as,
+						cast_column_as: #quote_filter_node_options_cast_column_as,
 					}
 				});
 

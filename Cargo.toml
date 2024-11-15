@@ -44,11 +44,11 @@ sea-query = { workspace = true, optional = true }
 rusqlite = { workspace = true, optional = true }
 
 [workspace.dependencies]
-sea-query = { version = "0.31", features = ["thread-safe"] }
-rusqlite = { version = "0.31" }
+sea-query = { version = "0.32", features = ["thread-safe"] }
+rusqlite = { version = "0.32" }
 
 [dev-dependencies]
 serde_with = "3"
-rusqlite = {version = "0.31", features = ["bundled"]}
-sea-query-rusqlite = {version = "0.6"}
+rusqlite = {version = "0.32", features = ["bundled"]}
+sea-query-rusqlite = {version = "0.7"}
 
