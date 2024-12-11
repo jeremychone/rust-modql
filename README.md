@@ -10,6 +10,9 @@ In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has
 
 ## Thanks
 
+- [Chetan Bhasin](https://github.com/ChetanBhasin) for [PR #8 Use sea-query 0.32](https://github.com/jeremychone/rust-modql/pull/8)
+- [Andrii Yermakov](https://github.com/andriy-yermakov) for [PR #2 Fix an errata in null operator for numbers](https://github.com/jeremychone/rust-modql/pull/2)
+- [Marc Cámara](https://github.com/mcamara) for [PR #9 Add Column Casting Support to Filter Nodes](https://github.com/jeremychone/rust-modql/pull/9)
 - [Marc Cámara](https://github.com/mcamara) for adding the Case Insensitive support and the `with-ilike` support for Postgresql. [PR #3](https://github.com/jeremychone/rust-modql/pull/3)
 - [Andrii Yermakov](https://github.com/andriy-yermakov) for fixing a "null operator for numbers" [PR #2](https://github.com/jeremychone/rust-modql/pull/2)
 
