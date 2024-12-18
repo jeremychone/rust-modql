@@ -50,7 +50,7 @@ rusqlite = { version = "0.32" }
 
 [dev-dependencies]
 serde_with = "3"
-pretty-sqlite = { path = "/Users/jeremychone/_jeremy/_rust/utils/rust-pretty-sqlite"}
+pretty-sqlite = "0.0.2"
 rusqlite = {version = "0.32", features = ["bundled"]}
 sea-query-rusqlite = {version = "0.7"}
 tokio = { version = "1", features = ["full"]}
