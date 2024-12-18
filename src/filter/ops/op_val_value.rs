@@ -105,7 +105,7 @@ mod with_sea_query {
 
 				let vxpr = into_node_value_expr(sea_value, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op,vxpr)))
+				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr)))
 			};
 
 			// -- CondExpr builder for single value
@@ -123,7 +123,7 @@ mod with_sea_query {
 
 				// -- Return the condition expression
 				let column = into_node_column_expr(col.clone(), node_options);
-				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr)))
+				Ok(ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr)))
 			};
 
 			let cond = match self {

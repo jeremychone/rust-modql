@@ -216,7 +216,7 @@ mod with_sea_query {
 			let binary_fn = |op: BinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr))
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr))
 			};
 
 			#[cfg(feature = "with-ilike")]
@@ -230,7 +230,7 @@ mod with_sea_query {
 				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), op, vxpr))
+				ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr))
 			};
 
 			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {
@@ -246,8 +246,8 @@ mod with_sea_query {
 
 			let case_insensitive_fn = |op: BinOper, v: String| {
 				let vxpr = SimpleExpr::Value(v.into());
-				let col_expr = SimpleExpr::FunctionCall(Func::lower(Expr::col(col.clone())).into());
-				let value_expr = SimpleExpr::FunctionCall(Func::lower(vxpr).into());
+				let col_expr = SimpleExpr::FunctionCall(Func::lower(Expr::col(col.clone())));
+				let value_expr = SimpleExpr::FunctionCall(Func::lower(vxpr));
 				ConditionExpression::SimpleExpr(SimpleExpr::binary(col_expr, op, value_expr))
 			};
 
