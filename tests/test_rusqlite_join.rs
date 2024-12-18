@@ -43,7 +43,6 @@ SELECT {cols} FROM agent
 LEFT JOIN module ON agent.module_id = module.id;	
 	"#
 	);
-	println!("->> {sql}");
 
 	// -- Excute Query
 	let mut stmt = conn.prepare(&sql)?;
@@ -79,7 +78,6 @@ SELECT {cols} FROM agent
 LEFT JOIN module ON agent.module_id = module.id;	
 	"#
 	);
-	println!("->> {sql}");
 
 	// -- Excute Query
 	let mut stmt = conn.prepare(&sql)?;

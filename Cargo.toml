@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.4.1"
+version = "0.4.2-WIP"
 edition = "2021"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -15,6 +15,7 @@ keywords = [
 ]
 homepage = "https://github.com/jeremychone/rust-modql"
 repository = "https://github.com/jeremychone/rust-modql"
+resolver = "2"
 
 [workspace.lints.rust]
 unsafe_code = "forbid"
@@ -22,7 +23,7 @@ unsafe_code = "forbid"
 
 [lints.rust]
 unsafe_code = "forbid"
-# unused = { level = "allow", priority = -1 } # For test files (dev)
+unused = { level = "allow", priority = -1 } # For test files (dev)
 
 [workspace]
 members = [".", "modql-macros"]
@@ -49,6 +50,24 @@ rusqlite = { version = "0.32" }
 
 [dev-dependencies]
 serde_with = "3"
+pretty-sqlite = { path = "/Users/jeremychone/_jeremy/_rust/utils/rust-pretty-sqlite"}
 rusqlite = {version = "0.32", features = ["bundled"]}
 sea-query-rusqlite = {version = "0.7"}
+tokio = { version = "1", features = ["full"]}
+sqlx = {version = "0.8", features = ["runtime-tokio"]}
+sea-query-binder = {version = "0.7", features = ["sqlx-sqlite"]}
 
+[[example]]
+name = "c02-rusqlite-sea-query-select"
+path = "examples/c02-rusqlite-sea-query-select.rs"
+required-features = ["with-rusqlite", "with-sea-query"]
+
+[[example]]
+name = "c02-rusqlite-sea-query-join"
+path = "examples/c02-rusqlite-sea-query-join.rs"
+required-features = ["with-rusqlite", "with-sea-query"]
+
+[[example]]
+name = "c03-sqlx-sea-query-join"
+path = "examples/c03-sqlx-sea-query-join.rs"
+required-features = ["with-rusqlite", "with-sea-query"]

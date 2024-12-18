@@ -1,7 +1,7 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
-## 2024-11-15 - `0.4.1-WIP`
+## 2024-11-15 - `0.4.1`
 
 - `^` Update `sea-query` and `rustsqlite` to version `0.32`
 - `!` Remove `cast_column_as` from filter, it's now on field

@@ -1,0 +1,66 @@
+mod support;
+
+use crate::support::sqlx_utils::{create_schema, seed_data};
+use crate::support::Result;
+use modql::field::HasFields;
+use modql::{SIden, SqliteFromRow};
+use modql_macros::Fields;
+use pretty_sqlite::pretty_table;
+use rusqlite::Connection;
+use sea_query::{Expr, IntoColumnRef, JoinType, Query, SqliteQueryBuilder};
+use sea_query_binder::SqlxBinder;
+use sea_query_rusqlite::RusqliteBinder;
+use sqlx::{FromRow, Row, SqlitePool};
+
+// cargo run --example c03-sqlx-sea-query-join --all-features
+
+#[tokio::main]
+async fn main() -> Result<()> {
+	let sqlx_pool = SqlitePool::connect("sqlite::memory:").await.unwrap();
+
+	create_schema(&sqlx_pool).await?;
+	seed_data(&sqlx_pool).await?;
+
+	let mut query = Query::select();
+	let task_iden = SIden("task");
+	let project_iden = SIden("project");
+	query.from(task_iden).join(
+		JoinType::LeftJoin,
+		project_iden,
+		Expr::col((task_iden, SIden("project_id")).into_column_ref())
+			.equals((project_iden, SIden("id")).into_column_ref()),
+	);
+	let metas = Task::field_metas();
+	for &meta in metas.iter() {
+		meta.sea_apply_select_column(&mut query);
+	}
+
+	let (sql, values) = query.build_sqlx(SqliteQueryBuilder);
+	println!("Sql: {sql}\n");
+
+	let tasks = sqlx::query_as_with::<_, Task, _>(&sql, values).fetch_all(&sqlx_pool).await?;
+
+	for task in tasks {
+		println!("Task: {:?}", task);
+	}
+
+	Ok(())
+}
+
+#[derive(Debug, Fields, FromRow)]
+#[modql(rel = "project")]
+struct Project {
+	id: i64,
+	name: String,
+}
+
+#[derive(Debug, Fields, FromRow)]
+#[modql(rel = "task")]
+struct Task {
+	title: String,
+	desc: String,
+	project_id: i64,
+
+	#[field(rel = "project", name = "name")]
+	project_name: String,
+}
