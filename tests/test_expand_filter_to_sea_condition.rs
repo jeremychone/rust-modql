@@ -4,7 +4,7 @@
 pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::filter::{FilterNodes, OpValValue, OpValsInt64, OpValsString, OpValsValue, SeaResult};
-use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr, Value};
+use sea_query::{BinOper, ColumnRef, ConditionExpression, ExprTrait as _, SimpleExpr, Value};
 
 #[derive(FilterNodes, Default)]
 pub struct ProjectFilter {
@@ -20,7 +20,7 @@ fn my_to_sea_condition(col: &ColumnRef, op_val_value: OpValValue) -> SeaResult<C
 		let v: i32 = serde_json::from_value(v).unwrap();
 		let vexpr: SimpleExpr = Value::from(v).into();
 		let expr = SimpleExpr::binary(col.clone().into(), op, vexpr);
-		SeaResult::Ok(ConditionExpression::SimpleExpr(expr))
+		SeaResult::Ok(ConditionExpression::Expr(expr))
 	};
 
 	match op_val_value {

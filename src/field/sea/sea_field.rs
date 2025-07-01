@@ -1,7 +1,7 @@
 use crate::field::{Error, Result};
 use crate::sea_utils::StringIden;
 use crate::SIden;
-use sea_query::{ColumnRef, DynIden, SimpleExpr, Value};
+use sea_query::{ColumnRef, DynIden, ExprTrait as _, SimpleExpr, Value};
 use sea_query::{IntoIden, ValueType};
 
 #[derive(Debug, Clone)]

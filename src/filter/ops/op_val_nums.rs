@@ -183,7 +183,7 @@ mod with_sea_query {
 	use super::*;
 	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
 	use crate::into_node_value_expr;
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, ConditionExpression, ExprTrait as _, SimpleExpr};
 
 	macro_rules! impl_into_sea_op_val {
 		($($ov:ident),+) => {
@@ -191,7 +191,7 @@ mod with_sea_query {
 	impl $ov {
 		pub fn into_sea_cond_expr(self, col: &ColumnRef, node_options: &FilterNodeOptions) -> SeaResult<ConditionExpression>  {
 			let binary_fn = |op: BinOper, vxpr: SimpleExpr| {
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+				ConditionExpression::Expr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
 			let cond = match self {
 				$ov::Eq(s) => binary_fn(BinOper::Equal, into_node_value_expr(s, node_options)),

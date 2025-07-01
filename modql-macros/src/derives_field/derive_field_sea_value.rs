@@ -59,7 +59,7 @@ fn process_struct(name: Ident, data: DataStruct) -> proc_macro2::TokenStream {
 			"String" => quote! { String },
 			"char" => quote! { Char },
 			// TODO: add more type support
-			_ => panic!("Unsupported type... {:?}", ident),
+			_ => panic!("Unsupported type... {ident:?}"),
 		},
 		None => panic!("Unsupported type... no ident found"),
 	};

@@ -96,7 +96,7 @@ mod with_sea_query {
 	use super::*;
 	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
 	use crate::into_node_value_expr;
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, ConditionExpression, ExprTrait, SimpleExpr};
 
 	impl OpValBool {
 		pub fn into_sea_cond_expr(
@@ -106,7 +106,7 @@ mod with_sea_query {
 		) -> SeaResult<ConditionExpression> {
 			let binary_fn = |op: BinOper, val: bool| {
 				let vxpr = into_node_value_expr(val, node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+				ConditionExpression::Expr(SimpleExpr::binary(col.clone().into(), op, vxpr))
 			};
 
 			let cond = match self {

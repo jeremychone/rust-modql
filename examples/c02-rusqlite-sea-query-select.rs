@@ -3,12 +3,12 @@ mod support;
 use crate::support::rusqlite_utils::{create_schema, seed_data};
 use crate::support::Result;
 use modql::field::HasFields;
+use modql::RusqliteBinder;
 use modql::{SIden, SqliteFromRow};
 use modql_macros::Fields;
 use pretty_sqlite::pretty_table;
 use rusqlite::Connection;
 use sea_query::{Query, SqliteQueryBuilder};
-use sea_query_rusqlite::RusqliteBinder;
 
 // cargo run --example c02-rusqlite-sea-query-select --all-features
 

@@ -82,7 +82,6 @@ fn process_struct(name: Ident, _data: DataStruct) -> proc_macro2::TokenStream {
 ///   }
 /// }
 /// ```
-
 fn process_enum(name: Ident, data: DataEnum) -> proc_macro2::TokenStream {
 	let arms = data
 		.variants

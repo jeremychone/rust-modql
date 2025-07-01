@@ -46,7 +46,7 @@ impl FieldMeta {
 		};
 
 		if let Some(alias_name) = self.alias() {
-			col_ref.push_str(&format!(" AS \"{}\"", alias_name));
+			col_ref.push_str(&format!(" AS \"{alias_name}\""));
 		}
 		col_ref
 	}

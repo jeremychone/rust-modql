@@ -72,7 +72,7 @@ pub use self::with_sea_query::*;
 
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
-	use sea_query::{ColumnRef, ConditionExpression, Expr};
+	use sea_query::{ColumnRef, ConditionExpression, Expr, ExprTrait as _};
 
 	pub fn sea_is_col_value_null(col: ColumnRef, null: bool) -> ConditionExpression {
 		if null {

@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.4.2-WIP"
+version = "0.5.0-alpha.1-WIP"
 edition = "2021"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -45,17 +45,20 @@ sea-query = { workspace = true, optional = true }
 rusqlite = { workspace = true, optional = true }
 
 [workspace.dependencies]
-sea-query = { version = "0.32", features = ["thread-safe"] }
-rusqlite = { version = "0.32" }
+sea-query = { version = "=1.0.0-rc.3", features = ["thread-safe"] }
+rusqlite = { version = "0.36" }
 
 [dev-dependencies]
 serde_with = "3"
-pretty-sqlite = "0.0.2"
-rusqlite = {version = "0.32", features = ["bundled"]}
-sea-query-rusqlite = {version = "0.7"}
 tokio = { version = "1", features = ["full"]}
-sqlx = {version = "0.8", features = ["runtime-tokio"]}
-sea-query-binder = {version = "0.7", features = ["sqlx-sqlite"]}
+pretty-sqlite = "0.2.0"
+rusqlite = {version = "0.36", features = ["bundled"]}
+
+# NOTE: for now, the sea-query-rusqlite is inlined in modql
+# sea-query-rusqlite = {version = "0.7"}
+# NOTE: Disable sqlx for now (not compatible lib sqlite with rusqlite 0.36)
+# sqlx = {version = "0.8", default-features = false, features = ["macros", "runtime-tokio", "sqlite-unbundled"]}
+# sea-query-binder = {version = "0.8.0-rc.1", features = ["sqlx-sqlite", "sqlite-unbundled"]}
 
 [[example]]
 name = "c02-rusqlite-sea-query-select"
@@ -67,7 +70,7 @@ name = "c02-rusqlite-sea-query-join"
 path = "examples/c02-rusqlite-sea-query-join.rs"
 required-features = ["with-rusqlite", "with-sea-query"]
 
-[[example]]
-name = "c03-sqlx-sea-query-join"
-path = "examples/c03-sqlx-sea-query-join.rs"
-required-features = ["with-rusqlite", "with-sea-query"]
+# [[example]]
+# name = "c03-sqlx-sea-query-join"
+# path = "examples/c03-sqlx-sea-query-join.rs"
+# required-features = ["with-rusqlite", "with-sea-query"]

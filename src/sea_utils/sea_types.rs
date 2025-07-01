@@ -1,5 +1,5 @@
 use crate::filter::FilterNodeOptions;
-use sea_query::{ColumnRef, Iden, IdenStatic, SimpleExpr, Value};
+use sea_query::{ColumnRef, ExprTrait, Iden, IdenStatic, SimpleExpr, Value};
 
 /// String sea-query `Iden` wrapper
 #[derive(Debug)]
@@ -46,10 +46,10 @@ where
 }
 
 pub fn into_node_column_expr(col: ColumnRef, node_options: &FilterNodeOptions) -> SimpleExpr {
-    let Some(cast_column_as) = &node_options.cast_column_as else {
-        // If no cast is needed, wrap the ColumnRef as a SimpleExpr
-        return SimpleExpr::Column(col);
-    };
+	let Some(cast_column_as) = &node_options.cast_column_as else {
+		// If no cast is needed, wrap the ColumnRef as a SimpleExpr
+		return SimpleExpr::Column(col);
+	};
 
-    SimpleExpr::Column(col).cast_as(StringIden(cast_column_as.to_string()))
+	SimpleExpr::Column(col).cast_as(StringIden(cast_column_as.to_string()))
 }

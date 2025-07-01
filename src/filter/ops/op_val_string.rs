@@ -202,7 +202,7 @@ mod with_sea_query {
 	use super::*;
 	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
 	use crate::{into_node_column_expr, into_node_value_expr};
-	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, Expr, Func, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, Expr, ExprTrait as _, Func, SimpleExpr};
 
 	#[cfg(feature = "with-ilike")]
 	use sea_query::extension::postgres::PgBinOper;
@@ -216,21 +216,21 @@ mod with_sea_query {
 			let binary_fn = |op: BinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr))
+				ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr))
 			};
 
 			#[cfg(feature = "with-ilike")]
 			let pg_binary_fn = |op: PgBinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr))
+				ConditionExpression::Expr(SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr))
 			};
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
 				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(column, op, vxpr))
+				ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr))
 			};
 
 			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {
@@ -248,7 +248,7 @@ mod with_sea_query {
 				let vxpr = SimpleExpr::Value(v.into());
 				let col_expr = SimpleExpr::FunctionCall(Func::lower(Expr::col(col.clone())));
 				let value_expr = SimpleExpr::FunctionCall(Func::lower(vxpr));
-				ConditionExpression::SimpleExpr(SimpleExpr::binary(col_expr, op, value_expr))
+				ConditionExpression::Expr(SimpleExpr::binary(col_expr, op, value_expr))
 			};
 
 			let cond = match self {
