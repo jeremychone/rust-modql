@@ -7,9 +7,9 @@ pub use modql_macros::SqliteFromValue;
 pub use modql_macros::SqliteToValue;
 
 // -- deprecated
-pub use modql_macros::FromSqliteRow;
-pub use modql_macros::FromSqliteValue;
-pub use modql_macros::ToSqliteValue;
+// pub use modql_macros::FromSqliteRow;
+// pub use modql_macros::FromSqliteValue;
+// pub use modql_macros::ToSqliteValue;
 
 #[deprecated(note = "use SqliteFromRow")]
 pub trait FromSqliteRow: SqliteFromRow

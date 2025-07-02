@@ -28,8 +28,16 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 		quote! {}
 	};
 
+	// -- impl HasSeaFields
 	let impl_sea_fields = if cfg!(feature = "with-sea-query") {
 		impl_has_sea_fields(struct_name, &struct_modql_prop, &field_props)
+	} else {
+		quote! {}
+	};
+
+	// -- impl HasSqliteFields
+	let impl_sqlite_fields = if cfg!(feature = "with-rusqlite") {
+		impl_has_sqlite_fields(struct_name, &struct_modql_prop, &field_props)
 	} else {
 		quote! {}
 	};
@@ -40,6 +48,8 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 		#impl_names_as_consts
 
 		#impl_sea_fields
+
+		#impl_sqlite_fields
 	};
 
 	output.into()
@@ -278,6 +288,83 @@ fn impl_has_sea_fields(
 					v.push(col_ref);
 				)*
 				v
+			}
+		}
+	};
+
+	output
+}
+
+fn impl_has_sqlite_fields(
+	struct_name: &Ident,
+	struct_modql_prop: &StructModqlFieldProps,
+	field_props: &[ModqlFieldProp<'_>],
+) -> proc_macro2::TokenStream {
+	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
+
+	fn field_options_quote(mfield_prop: &ModqlFieldProp) -> proc_macro2::TokenStream {
+		if let Some(cast_as) = &mfield_prop.cast_as {
+			quote! { modql::field::LiteFieldOptions { cast_as: Some(#cast_as.to_string()) } }
+		} else {
+			quote! { modql::field::LiteFieldOptions { cast_as: None } }
+		}
+	}
+
+	let all_fields_quotes = field_props.iter().map(|p| {
+		let name = &p.name;
+		let field_options_q = field_options_quote(p);
+		let ident = p.ident;
+
+		quote! {
+			ff.push(
+				modql::field::SqliteField::new_with_options(#name, self.#ident.into(), #field_options_q)
+			);
+		}
+	});
+
+	let not_none_fields_quotes = field_props.iter().map(|p| {
+		let name = &p.name;
+		let field_options_q = field_options_quote(p);
+		let ident = p.ident;
+
+		if p.is_option {
+			quote! {
+				if let Some(val) = self.#ident {
+					ff.push(
+						modql::field::SqliteField::new_with_options(#name, val.into(), #field_options_q)
+					);
+				}
+			}
+		} else {
+			quote! {
+				ff.push(
+					modql::field::SqliteField::new_with_options(#name, self.#ident.into(), #field_options_q)
+				);
+			}
+		}
+	});
+
+	let output = quote! {
+
+		impl modql::field::HasSqliteFields for #struct_name {
+			fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
+				let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+				#(#not_none_fields_quotes)*
+				modql::field::SqliteFields::new(ff)
+			}
+
+			fn sqlite_all_fields(self) -> modql::field::SqliteFields {
+				let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+				#(#all_fields_quotes)*
+				modql::field::SqliteFields::new(ff)
+			}
+
+			fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
+				vec![
+					#(
+						modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names },
+					)*
+				]
 			}
 		}
 	};

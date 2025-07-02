@@ -14,5 +14,6 @@ pub trait HasSqliteFields: HasFields {
 	// fn lite_column_refs() -> Vec<&'static str>;
 
 	/// Returns the list of column refs with the given relation (e.g., table name) and IntoIden (.e.g., StringIden or SIden)
-	fn sqlite_column_refs_with_rel(rel: &str) -> Vec<SqliteColumnRef>;
+	/// TODO: needs to fix the Iden
+	fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<SqliteColumnRef>;
 }

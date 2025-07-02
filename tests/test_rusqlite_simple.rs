@@ -9,6 +9,7 @@ pub type Error = Box<dyn std::error::Error>; // For early dev.
 use crate::support::sqlite::{seed_agent, seed_module};
 use modql::field::{Fields, HasFields};
 use modql::{SqliteFromRow, SqliteFromValue, SqliteToValue};
+use rusqlite::types::Value;
 use rusqlite::Connection;
 use std::result;
 
@@ -25,6 +26,12 @@ impl Id {
 impl From<&i64> for Id {
 	fn from(val: &i64) -> Id {
 		Id(*val)
+	}
+}
+
+impl From<Id> for Value {
+	fn from(value: Id) -> Self {
+		value.0.into()
 	}
 }
 
