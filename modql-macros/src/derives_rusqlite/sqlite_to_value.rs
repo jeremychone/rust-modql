@@ -48,9 +48,9 @@ fn process_struct(name: Ident, _data: DataStruct) -> proc_macro2::TokenStream {
 
 	#[rustfmt::skip]
 	let expanded = quote! {
-	  impl rusqlite::types::ToSql for #name {
-      fn to_sql(&self) -> rusqlite::Result<rusqlite::types::ToSqlOutput<'_>> {
-        Ok(rusqlite::types::ToSqlOutput::Owned(self.0.into()))
+	  impl From<#name> for rusqlite::types::Value {
+      fn from(rust_value: #name) -> rusqlite::types::Value {
+        rust_value.0.into()
       }
 	  }
 	};
@@ -99,15 +99,15 @@ fn process_enum(name: Ident, data: DataEnum) -> proc_macro2::TokenStream {
 	#[rustfmt::skip]
 	let expanded = quote! {
 
-	  impl rusqlite::types::ToSql for #name {
-      fn to_sql(&self) -> rusqlite::Result<rusqlite::types::ToSqlOutput<'_>> {
-        let val = match self {
-        #(#arms)*
-        }.to_string();
-
-        Ok(rusqlite::types::ToSqlOutput::Owned(val.into()))
+	  impl From<#name> for rusqlite::types::Value {
+      fn from(rust_value: #name) -> rusqlite::types::Value {
+				let val = match rust_value {
+					#(#arms)*
+					}.to_string();
+				val.into()
       }
 	  }
+
 	};
 
 	expanded
