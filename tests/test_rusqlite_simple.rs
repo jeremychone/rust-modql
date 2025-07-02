@@ -12,7 +12,7 @@ use modql::{SqliteFromRow, SqliteFromValue, SqliteToValue};
 use rusqlite::Connection;
 use std::result;
 
-#[derive(Debug, Clone, SqliteFromValue, SqliteToValue, modql::field::SeaFieldValue)]
+#[derive(Debug, Clone, SqliteFromValue, SqliteToValue)]
 pub struct Id(i64);
 
 impl Id {

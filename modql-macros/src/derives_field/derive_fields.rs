@@ -173,9 +173,9 @@ fn impl_has_sea_fields(
 
 	fn field_options_quote(mfield_prop: &ModqlFieldProp) -> proc_macro2::TokenStream {
 		if let Some(cast_as) = &mfield_prop.cast_as {
-			quote! { modql::field::FieldOptions { cast_as: Some(#cast_as.to_string()) } }
+			quote! { modql::field::SeaFieldOptions { cast_as: Some(#cast_as.to_string()) } }
 		} else {
-			quote! { modql::field::FieldOptions { cast_as: None } }
+			quote! { modql::field::SeaFieldOptions { cast_as: None } }
 		}
 	}
 

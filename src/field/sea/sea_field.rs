@@ -35,7 +35,7 @@ impl SeaField {
 }
 
 #[derive(Default, Debug)]
-pub struct FieldOptions {
+pub struct SeaFieldOptions {
 	pub cast_as: Option<String>,
 }
 
@@ -66,7 +66,7 @@ impl SeaField {
 		}
 	}
 
-	pub fn new_with_options(iden: impl IntoIden, value: SimpleExpr, options: FieldOptions) -> Self {
+	pub fn new_with_options(iden: impl IntoIden, value: SimpleExpr, options: SeaFieldOptions) -> Self {
 		let iden = iden.into_iden();
 		let column_ref = ColumnRef::Column(iden.clone());
 		let mut value = value;

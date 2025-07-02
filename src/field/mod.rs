@@ -6,6 +6,8 @@ mod field_metas;
 mod has_fields;
 #[cfg(feature = "with-sea-query")]
 mod sea;
+#[cfg(feature = "with-rusqlite")]
+mod sqlite;
 
 pub use self::error::{Error, Result};
 pub use field_meta::*;
@@ -18,3 +20,6 @@ pub use modql_macros::SeaFieldValue;
 
 #[cfg(feature = "with-sea-query")]
 pub use sea::*;
+
+#[cfg(feature = "with-rusqlite")]
+pub use sqlite::*;
