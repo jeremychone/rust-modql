@@ -4,10 +4,6 @@ pub trait HasFields {
 	/// Returns the array of all field names (can be customize with `#[field(rel=..., name=...], #[field(ignore)]`)
 	fn field_names() -> &'static [&'static str];
 
-	#[allow(deprecated)]
-	#[deprecated(note = "use field_metas")]
-	fn field_refs() -> &'static [&'static FieldRef];
-
 	fn field_metas() -> &'static FieldMetas;
 }
 

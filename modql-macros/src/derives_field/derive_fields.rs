@@ -84,17 +84,6 @@ fn impl_has_fields(
 
 	let struct_rel = struct_modql_prop.rel.as_ref();
 
-	// -- Build FieldRef quotes
-	let props_field_refs = field_props.iter().map(|field_prop| {
-		let name = field_prop.name.to_string();
-		let rel = field_prop.rel.as_ref().or(struct_rel);
-		let rel = match rel {
-			Some(rel) => quote! { Some(#rel)},
-			None => quote! { None },
-		};
-		quote! {&modql::field::FieldRef{rel: #rel, name: #name}}
-	});
-
 	// -- Build the FieldMeta quotes
 	let props_field_metas = field_props.iter().map(|field_prop| {
 		// This below is resolved in the FieldMeta implemntation (same logic)
@@ -147,11 +136,6 @@ fn impl_has_fields(
 				)*]
 			}
 
-			fn field_refs() -> &'static [&'static modql::field::FieldRef] {
-				&[#(
-				#props_field_refs,
-				)*]
-			}
 
 			fn field_metas() -> &'static modql::field::FieldMetas {
 				static METAS: &[&modql::field::FieldMeta] = &[#(
