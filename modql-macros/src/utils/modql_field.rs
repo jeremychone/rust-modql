@@ -5,6 +5,7 @@ use syn::punctuated::Punctuated;
 use syn::{Field, FieldsNamed, Meta, Token};
 
 // region:    --- Field Prop (i.e., sqlb Field)
+#[derive(Debug)]
 pub struct ModqlFieldProp<'a> {
 	pub prop_name: String,         // property name
 	pub attr_name: Option<String>, // The eventual `#[field(name=..._)]`
@@ -54,6 +55,7 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 		// -- name
 		let prop_name = ident.as_ref().map(|i| i.to_string()).unwrap();
 		let attr_name = mfield_attr.name;
+
 		let name = attr_name.clone().unwrap_or_else(|| prop_name.clone());
 
 		// -- cast_as
@@ -80,6 +82,7 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 // endregion: --- Field Prop (i.e., sqlb Field)
 
 // region:    --- Field Prop Attribute
+#[derive(Debug)]
 struct ModqlFieldPropAttr {
 	pub rel: Option<String>,
 	pub name: Option<String>,
