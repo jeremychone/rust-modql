@@ -5,6 +5,18 @@ pub trait HasFields {
 	fn field_names() -> &'static [&'static str];
 
 	fn field_metas() -> &'static FieldMetas;
+
+	fn sql_columns() -> String {
+		Self::field_names()
+			.iter()
+			.map(|name| format!("\"{name}\""))
+			.collect::<Vec<_>>()
+			.join(", ")
+	}
+
+	fn sql_placeholders() -> String {
+		Self::field_names().iter().map(|_| "?").collect::<Vec<_>>().join(", ")
+	}
 }
 
 /// To deprecate in favor of FieldMeta
