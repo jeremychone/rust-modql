@@ -29,12 +29,6 @@ impl From<&i64> for Id {
 	}
 }
 
-impl From<Id> for Value {
-	fn from(value: Id) -> Self {
-		value.0.into()
-	}
-}
-
 #[derive(Debug, Clone, Fields, SqliteFromRow)]
 pub struct Agent {
 	id: Id,
