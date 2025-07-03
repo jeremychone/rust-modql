@@ -9,12 +9,16 @@ impl core::fmt::Display for OrderBy {
 	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
 		match self {
 			OrderBy::Asc(val) => {
+				fmt.write_str("\"")?;
 				fmt.write_str(val)?;
+				fmt.write_str("\"")?;
 				fmt.write_str(" ")?;
 				fmt.write_str("ASC")?;
 			}
 			OrderBy::Desc(val) => {
+				fmt.write_str("\"")?;
 				fmt.write_str(val)?;
+				fmt.write_str("\"")?;
 				fmt.write_str(" ")?;
 				fmt.write_str("DESC")?;
 			}
@@ -48,6 +52,10 @@ impl OrderBys {
 	}
 	pub fn order_bys(self) -> Vec<OrderBy> {
 		self.0
+	}
+
+	pub fn join_for_sql(&self) -> String {
+		self.0.iter().map(|o| format!("{o}")).collect::<Vec<_>>().join(", ")
 	}
 }
 
