@@ -297,7 +297,7 @@ fn impl_has_sea_fields(
 
 fn impl_has_sqlite_fields(
 	struct_name: &Ident,
-	struct_modql_prop: &StructModqlFieldProps,
+	_struct_modql_prop: &StructModqlFieldProps,
 	field_props: &[ModqlFieldProp<'_>],
 ) -> proc_macro2::TokenStream {
 	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
