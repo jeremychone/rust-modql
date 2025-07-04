@@ -132,6 +132,7 @@ pub fn derive_sqlite_from_value(input: TokenStream) -> TokenStream {
 	derives_rusqlite::derive_from_sqlite_value_inner(input)
 }
 
+/// This will implement the rusqlite ToSql and the From<RustType> to rustqlite Value
 #[cfg(feature = "with-rusqlite")]
 #[proc_macro_derive(SqliteToValue)]
 pub fn derive_sqlite_to_value(input: TokenStream) -> TokenStream {

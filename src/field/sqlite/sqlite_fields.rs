@@ -52,6 +52,15 @@ impl SqliteFields {
 		self.0.iter().map(|_| "?").collect::<Vec<_>>().join(", ")
 	}
 
+	/// Will return `"id" = ?, "name" = ?, "content" = ?`
+	pub fn sql_setters(&self) -> String {
+		self.0
+			.iter()
+			.map(|f| format!("\"{}\" = ?", f.iden))
+			.collect::<Vec<_>>()
+			.join(", ")
+	}
+
 	pub fn into_values(self) -> Vec<Value> {
 		self.0.into_iter().map(|f| f.value).collect()
 	}
