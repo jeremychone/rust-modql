@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2-WIP"
 edition = "2021"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
