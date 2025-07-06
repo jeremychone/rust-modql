@@ -25,8 +25,12 @@ impl SqliteFields {
 		self
 	}
 
-	pub fn into_vec(self) -> Vec<SqliteField> {
+	pub fn into_fields(self) -> Vec<SqliteField> {
 		self.0
+	}
+
+	pub fn fields(&self) -> Vec<&SqliteField> {
+		self.0.iter().collect()
 	}
 
 	/// Alias to self.unzip()

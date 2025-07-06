@@ -15,17 +15,17 @@ pub struct SqliteField {
 	pub iden: &'static str,
 	pub column_ref: SqliteColumnRef,
 	pub value: Value,
-	pub options: LiteFieldOptions,
+	pub options: SqliteFieldOptions,
 }
 
 impl SqliteField {
 	/// Return the eventual Rusqlite Value hold in this struct
-	pub fn lite_value(&self) -> &Value {
+	pub fn sqlite_value(&self) -> &Value {
 		&self.value
 	}
 
 	/// Extract and transofrm the Rusqlite Value into the specified type
-	pub fn into_lite_value<T>(self) -> Result<T>
+	pub fn into_sqlite_value<T>(self) -> Result<T>
 	where
 		T: FromSql,
 	{
@@ -41,7 +41,7 @@ impl SqliteField {
 
 /// TODO: Might ant to have a common option (rather than SeaFieldOptions, ...)
 #[derive(Debug, Default, Clone)]
-pub struct LiteFieldOptions {
+pub struct SqliteFieldOptions {
 	pub cast_as: Option<String>,
 }
 
@@ -67,11 +67,11 @@ impl SqliteField {
 			iden,
 			column_ref,
 			value,
-			options: LiteFieldOptions::default(),
+			options: SqliteFieldOptions::default(),
 		}
 	}
 
-	pub fn new_with_options(iden: &'static str, value: Value, options: LiteFieldOptions) -> Self {
+	pub fn new_with_options(iden: &'static str, value: Value, options: SqliteFieldOptions) -> Self {
 		/// TODO: need to refactor that to make it more idiomatic
 		let mut field = Self::new_concrete(iden, value);
 		field.options = options;

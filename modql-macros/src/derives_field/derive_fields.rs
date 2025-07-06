@@ -304,9 +304,9 @@ fn impl_has_sqlite_fields(
 
 	fn field_options_quote(mfield_prop: &ModqlFieldProp) -> proc_macro2::TokenStream {
 		if let Some(cast_as) = &mfield_prop.cast_as {
-			quote! { modql::field::LiteFieldOptions { cast_as: Some(#cast_as.to_string()) } }
+			quote! { modql::field::SqliteFieldOptions { cast_as: Some(#cast_as.to_string()) } }
 		} else {
-			quote! { modql::field::LiteFieldOptions { cast_as: None } }
+			quote! { modql::field::SqliteFieldOptions { cast_as: None } }
 		}
 	}
 
