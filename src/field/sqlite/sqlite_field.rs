@@ -43,19 +43,21 @@ impl SqliteField {
 // region:    --- Constructors
 
 impl SqliteField {
-	pub fn new(iden: &'static str, value: impl Into<SqliteValue>) -> Self {
+	/// NOTE: for now, we do the impl Into Rusqlite Value (cannot have blanket implementation for rusqlite value)
+	pub fn new(iden: &'static str, value: impl Into<Value>) -> Self {
 		let value = value.into();
 		let column_ref = column_ref_from_iden(iden);
 		SqliteField {
 			iden,
 			column_ref,
-			value,
+			value: value.into(),
 			meta: None,
 		}
 	}
 
 	/// Preferred constructor when the `FieldMeta` is known.
-	pub fn new_with_options_meta(iden: &'static str, value: impl Into<SqliteValue>, meta: &'static FieldMeta) -> Self {
+	/// NOTE: This one is more advanced, so take the Into SqliteValue (do a `rusqlite::Value::from(..)`
+	pub fn new_with_meta(iden: &'static str, value: impl Into<SqliteValue>, meta: &'static FieldMeta) -> Self {
 		let value = value.into();
 		let column_ref = column_ref_from_iden(iden);
 
