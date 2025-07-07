@@ -16,6 +16,9 @@ pub fn derive_filter_nodes(input: TokenStream) -> TokenStream {
 
 // region:    --- with-seaquery
 
+#[cfg(feature = "with-sea-query")]
+mod derives_sea;
+
 #[proc_macro_derive(Fields, attributes(field, modql))]
 pub fn derive_fields(input: TokenStream) -> TokenStream {
 	derives_field::derive_fields_inner(input)
@@ -66,7 +69,7 @@ pub fn derive_fields(input: TokenStream) -> TokenStream {
 #[cfg(feature = "with-sea-query")]
 #[proc_macro_derive(SeaFieldValue)]
 pub fn derive_field_sea_value(input: TokenStream) -> TokenStream {
-	derives_field::derive_field_sea_value_inner(input)
+	derives_sea::derive_field_sea_value_inner(input)
 }
 
 // endregion: --- with-seaquery
