@@ -15,6 +15,9 @@ pub struct FieldMeta {
 	/// `#[field(cast_as=...)`
 	pub cast_as: Option<&'static str>,
 
+	/// `#[field(write_placeholder=...)`
+	pub write_placeholder: Option<&'static str>,
+
 	/// if it is an Option type
 	pub is_option: bool,
 }

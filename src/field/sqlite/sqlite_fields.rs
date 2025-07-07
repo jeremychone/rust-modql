@@ -1,6 +1,6 @@
 use crate::field::SqliteField;
-use rusqlite::types::Value;
 use rusqlite::ToSql;
+use rusqlite::types::Value;
 
 #[derive(Debug, Clone, Default)]
 pub struct SqliteFields(Vec<SqliteField>);
@@ -48,21 +48,40 @@ impl SqliteFields {
 impl SqliteFields {
 	/// will return a string like `"id", "name", "content"` for each member of the field
 	pub fn sql_columns(&self) -> String {
+		/// TODO: needs to handle when rel.col (should use col ref)
 		self.0.iter().map(|f| format!("\"{}\"", f.iden)).collect::<Vec<_>>().join(", ")
 	}
 
 	/// Will return a string like `?, ?, ?` for each member of the field
 	pub fn sql_placeholders(&self) -> String {
-		self.0.iter().map(|_| "?").collect::<Vec<_>>().join(", ")
+		let mut buf: Vec<&str> = Vec::new();
+		for field in self.0.iter() {
+			if let Some(meta) = field.meta
+				&& let Some(write_placeholder) = meta.write_placeholder
+			{
+				buf.push(write_placeholder)
+			} else {
+				buf.push("?")
+			}
+		}
+		buf.join(", ")
 	}
 
 	/// Will return `"id" = ?, "name" = ?, "content" = ?`
+	/// TODO: Need to support the rel.col
 	pub fn sql_setters(&self) -> String {
-		self.0
-			.iter()
-			.map(|f| format!("\"{}\" = ?", f.iden))
-			.collect::<Vec<_>>()
-			.join(", ")
+		let mut buf: Vec<String> = Vec::new();
+		for field in self.0.iter() {
+			let placeholder = if let Some(meta) = field.meta
+				&& let Some(write_placeholder) = meta.write_placeholder
+			{
+				write_placeholder
+			} else {
+				"?"
+			};
+			buf.push(format!("\"{}\" = {placeholder}", field.iden))
+		}
+		buf.join(", ")
 	}
 
 	pub fn into_values(self) -> Vec<Value> {

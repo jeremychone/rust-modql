@@ -1,7 +1,7 @@
 [package]
 name = "modql"
 version = "0.5.0-alpha.3-WIP"
-edition = "2021"
+edition = "2024"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
 description = "Rust implementation for Model Query Language support"

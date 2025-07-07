@@ -12,6 +12,7 @@ pub struct ModqlFieldProp<'a> {
 	pub name: String,              // resolved name attr_name or prop name;
 	pub rel: Option<String>,
 	pub cast_as: Option<String>,
+	pub write_placeholder: Option<String>,
 	pub is_option: bool,
 	pub ident: &'a Option<Ident>,
 }
@@ -61,6 +62,9 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 		// -- cast_as
 		let cast_as = mfield_attr.cast_as;
 
+		// -- write_placeholder
+		let write_placeholder = mfield_attr.write_placeholder;
+
 		// -- Add to array.
 		modql_fields.push(ModqlFieldProp {
 			rel: mfield_attr.rel,
@@ -69,6 +73,7 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 			attr_name,
 			ident,
 			cast_as,
+			write_placeholder,
 			is_option,
 		})
 	}
@@ -88,10 +93,12 @@ struct ModqlFieldPropAttr {
 	pub name: Option<String>,
 	pub skip: bool,
 	pub cast_as: Option<String>,
+	pub write_placeholder: Option<String>,
 }
 
 // #[field(skip)]
 // #[field(name = "new_name")]
+// #[field(write_placeholder = "jsonb(?)")]
 fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error> {
 	let attribute = get_field_attribute(field, "field");
 
@@ -99,6 +106,7 @@ fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error>
 	let mut rel: Option<String> = None;
 	let mut column: Option<String> = None;
 	let mut cast_as: Option<String> = None;
+	let mut write_placeholder: Option<String> = None;
 
 	if let Some(attribute) = attribute {
 		let nested = attribute.parse_args_with(Punctuated::<Meta, Token![,]>::parse_terminated)?;
@@ -118,6 +126,8 @@ fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error>
 						column = get_meta_value_string(nv);
 					} else if nv.path.is_ident("cast_as") {
 						cast_as = get_meta_value_string(nv);
+					} else if nv.path.is_ident("write_placeholder") {
+						write_placeholder = get_meta_value_string(nv);
 					}
 				}
 
@@ -129,7 +139,7 @@ fn get_mfield_prop_attr(field: &Field) -> Result<ModqlFieldPropAttr, syn::Error>
 Unrecognized #[field...] attribute. Accepted attribute
 #[field(skip)]
 or
-#[field(rel="table_name}, name="some_col_name", cast_as="sea query cast as type")]
+#[field(rel="table_name}, name="some_col_name", cast_as="sea query cast as type", write_placeholder="jsonb(?)")]
 "#,
 					));
 				}
@@ -142,6 +152,7 @@ or
 		rel,
 		name: column,
 		cast_as,
+		write_placeholder,
 	})
 }
 

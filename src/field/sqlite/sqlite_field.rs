@@ -1,6 +1,7 @@
 use crate::field::{Error, FieldMeta, Result};
 use rusqlite::types::{FromSql, ToSql, Value, ValueRef};
 
+/// NOTE: Probably can deprecate now that we have meta (will need DynFieldMeta)
 #[derive(Debug, Clone)]
 pub struct SqliteColumnRef {
 	pub rel: Option<&'static str>,

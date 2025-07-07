@@ -115,6 +115,10 @@ fn impl_has_fields(
 			Some(cast_as) => quote! { Some(#cast_as)},
 			None => quote! { None },
 		};
+		let write_placeholder = match &field_prop.write_placeholder {
+			Some(write_placeholder) => quote! { Some(#write_placeholder)},
+			None => quote! { None },
+		};
 		let is_option = field_prop.is_option;
 
 		quote! {
@@ -124,6 +128,7 @@ fn impl_has_fields(
 				prop_name: #prop_name,
 				attr_name: #attr_name,
 				cast_as: #cast_as,
+				write_placeholder: #write_placeholder,
 				is_option: #is_option,
 			}
 		}
@@ -174,10 +179,21 @@ fn impl_has_sea_fields(
 		.collect();
 
 	fn field_options_quote(mfield_prop: &ModqlFieldProp) -> proc_macro2::TokenStream {
-		if let Some(cast_as) = &mfield_prop.cast_as {
-			quote! { modql::field::SeaFieldOptions { cast_as: Some(#cast_as.to_string()) } }
-		} else {
-			quote! { modql::field::SeaFieldOptions { cast_as: None } }
+		let cast_as = match &mfield_prop.cast_as {
+			Some(cast_as) => quote! { Some(#cast_as.to_string()) },
+			None => quote! { None },
+		};
+
+		let write_placeholder = match &mfield_prop.write_placeholder {
+			Some(write_placeholder) => quote! { Some(#write_placeholder.to_string()) },
+			None => quote! { None },
+		};
+
+		quote! {
+			modql::field::SeaFieldOptions {
+				cast_as: #cast_as,
+				write_placeholder: #write_placeholder
+			}
 		}
 	}
 
