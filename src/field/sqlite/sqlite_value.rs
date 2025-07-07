@@ -1,11 +1,21 @@
 use rusqlite::Result as RusqliteResult;
 use rusqlite::types::{ToSql, ToSqlOutput, Value as RusqliteValue};
+use serde::Serialize;
 use serde_json::Value as JsonValue;
 
 #[derive(Debug, Clone)]
 pub enum SqliteValue {
 	RusqliteValue(RusqliteValue),
 	SerdeValue(JsonValue),
+}
+
+impl SqliteValue {
+	/// NOTE: This will set the value to Null if fail to serialize
+	/// TODO: Need to error!() trace when fail to serialize happen.
+	pub fn from_serializable<T: Serialize>(value: T) -> Self {
+		let value = serde_json::to_value(value).unwrap_or(JsonValue::Null);
+		SqliteValue::SerdeValue(value)
+	}
 }
 
 // region:    --- ToSql Implementation
