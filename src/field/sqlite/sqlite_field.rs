@@ -1,8 +1,5 @@
-use crate::field::{Error, Result};
-use rusqlite::types::FromSql;
-use rusqlite::types::ToSql;
-use rusqlite::types::Value;
-use rusqlite::types::ValueRef;
+use crate::field::{Error, FieldMeta, Result};
+use rusqlite::types::{FromSql, ToSql, Value, ValueRef};
 
 #[derive(Debug, Clone)]
 pub struct SqliteColumnRef {
@@ -16,6 +13,9 @@ pub struct SqliteField {
 	pub column_ref: SqliteColumnRef,
 	pub value: Value,
 	pub options: SqliteFieldOptions,
+
+	/// Pointer to the compile-time `FieldMeta` corresponding to this field.
+	pub meta: Option<&'static FieldMeta>,
 }
 
 impl SqliteField {
@@ -24,7 +24,7 @@ impl SqliteField {
 		&self.value
 	}
 
-	/// Extract and transofrm the Rusqlite Value into the specified type
+	/// Extract and transform the Rusqlite Value into the specified type
 	pub fn into_sqlite_value<T>(self) -> Result<T>
 	where
 		T: FromSql,
@@ -45,46 +45,48 @@ pub struct SqliteFieldOptions {
 	pub cast_as: Option<String>,
 }
 
+// region:    --- Constructors
+
 impl SqliteField {
-	/// TODO: Need to take a FromSql probably for Value
 	pub fn new(iden: &'static str, value: Value) -> Self {
-		Self::new_concrete(iden, value)
-	}
-
-	/// The concrete version of the new.
-	pub fn new_concrete(iden: &'static str, value: Value) -> Self {
-		let mut parts = iden.splitn(2, '.');
-		let column_ref = match (parts.next(), parts.next()) {
-			(Some(col), None) => SqliteColumnRef { rel: None, col },
-			(rel, Some(col)) => SqliteColumnRef { rel, col },
-			// this should not happen (but do no break)
-			(None, Some(col)) => SqliteColumnRef { rel: None, col },
-			// for now, we make the colum empty
-			(None, None) => SqliteColumnRef { rel: None, col: "" },
-		};
-
+		let column_ref = column_ref_from_iden(iden);
 		SqliteField {
 			iden,
 			column_ref,
 			value,
 			options: SqliteFieldOptions::default(),
+			meta: None,
 		}
 	}
 
-	pub fn new_with_options(iden: &'static str, value: Value, options: SqliteFieldOptions) -> Self {
-		/// TODO: need to refactor that to make it more idiomatic
-		let mut field = Self::new_concrete(iden, value);
-		field.options = options;
-		field
+	/// Preferred constructor when the `FieldMeta` is known.
+	pub fn new_with_options_meta(
+		iden: &'static str,
+		value: Value,
+		options: SqliteFieldOptions,
+		meta: &'static FieldMeta,
+	) -> Self {
+		let column_ref = column_ref_from_iden(iden);
+
+		SqliteField {
+			iden,
+			column_ref,
+			value,
+			options,
+			meta: Some(meta),
+		}
 	}
 }
 
-// region:    --- Froms
-
-impl From<(&'static str, Value)> for SqliteField {
-	fn from(val: (&'static str, Value)) -> Self {
-		SqliteField::new(val.0, val.1)
+/// NOTE SHould be part of field meta
+fn column_ref_from_iden(iden: &'static str) -> SqliteColumnRef {
+	let mut parts = iden.splitn(2, '.');
+	match (parts.next(), parts.next()) {
+		(Some(col), None) => SqliteColumnRef { rel: None, col },
+		(rel, Some(col)) => SqliteColumnRef { rel, col },
+		(None, Some(col)) => SqliteColumnRef { rel: None, col },
+		(None, None) => SqliteColumnRef { rel: None, col: "" },
 	}
 }
 
-// endregion: --- Froms
+// endregion: --- Constructors

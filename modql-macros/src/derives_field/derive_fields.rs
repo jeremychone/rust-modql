@@ -4,7 +4,7 @@ use crate::utils::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
-use syn::{parse_macro_input, DeriveInput};
+use syn::{parse_macro_input, DeriveInput, Index};
 
 pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let ast = parse_macro_input!(input as DeriveInput);
@@ -17,12 +17,9 @@ pub(crate) fn derive_fields_inner(input: TokenStream) -> TokenStream {
 	let field_props = modql_field::get_modql_field_props(fields);
 	let struct_modql_prop = get_struct_modql_props(&ast).unwrap();
 
-	// Will be "" if none (this if for the struct #[modql(table = ...)])
-
 	let impl_has_fields = impl_has_fields(struct_name, &struct_modql_prop, &field_props);
 
 	let impl_names_as_consts = if let Some(names_as_consts) = struct_modql_prop.names_as_consts.as_deref() {
-		//
 		impl_names_as_consts(struct_name, &field_props, names_as_consts)
 	} else {
 		quote! {}
@@ -60,7 +57,6 @@ fn impl_names_as_consts(
 	field_props: &[ModqlFieldProp<'_>],
 	prop_name_prefix: &str,
 ) -> proc_macro2::TokenStream {
-	// If prefix not empty, amek sure it ends with `_`
 	let prop_name_prefix = if !prop_name_prefix.is_empty() && !prop_name_prefix.ends_with('_') {
 		format!("{prop_name_prefix}_")
 	} else {
@@ -94,11 +90,7 @@ fn impl_has_fields(
 
 	let struct_rel = struct_modql_prop.rel.as_ref();
 
-	// -- Build the FieldMeta quotes
 	let props_field_metas = field_props.iter().map(|field_prop| {
-		// This below is resolved in the FieldMeta implemntation (same logic)
-		// let name = field_prop.name.to_string();
-
 		let prop_name = field_prop.prop_name.to_string();
 
 		let attr_name = match field_prop.attr_name.as_ref() {
@@ -125,7 +117,8 @@ fn impl_has_fields(
 		};
 		let is_option = field_prop.is_option;
 
-		quote! {&modql::field::FieldMeta{
+		quote! {
+			&modql::field::FieldMeta{
 				rel: #rel,
 				is_struct_rel: #is_struct_rel,
 				prop_name: #prop_name,
@@ -136,31 +129,31 @@ fn impl_has_fields(
 		}
 	});
 
-	let output = quote! {
-
-		impl modql::field::HasFields for #struct_name {
-
-			fn field_names() -> &'static [&'static str] {
-				&[#(
-				#props_all_names,
-				)*]
-			}
-
-
-			fn field_metas() -> &'static modql::field::FieldMetas {
-				static METAS: &[&modql::field::FieldMeta] = &[#(
-				#props_field_metas,
-				)*];
-
-				static METAS_HOLDER: modql::field::FieldMetas = modql::field::FieldMetas::new(METAS);
-
-				&METAS_HOLDER
-			}
-
+	let const_field_metas = quote! {
+		impl #struct_name {
+			pub const __MODQL_FIELD_METAS: &'static [&'static modql::field::FieldMeta] = &[
+				#(#props_field_metas,)*];
 		}
 	};
 
-	output
+	let has_fields_impl = quote! {
+		impl modql::field::HasFields for #struct_name {
+			fn field_names() -> &'static [&'static str] {
+				&[#(#props_all_names,)*]
+			}
+
+			fn field_metas() -> &'static modql::field::FieldMetas {
+				static METAS_HOLDER: modql::field::FieldMetas =
+					modql::field::FieldMetas::new(#struct_name::__MODQL_FIELD_METAS);
+				&METAS_HOLDER
+			}
+		}
+	};
+
+	quote! {
+		#const_field_metas
+		#has_fields_impl
+	}
 }
 
 fn impl_has_sea_fields(
@@ -170,7 +163,6 @@ fn impl_has_sea_fields(
 ) -> proc_macro2::TokenStream {
 	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
-	// this will repeat the struct table name for all fields.
 	let prop_all_rels: Vec<String> = field_props
 		.iter()
 		.map(|p| {
@@ -210,26 +202,24 @@ fn impl_has_sea_fields(
 
 		if p.is_option {
 			quote! {
-					if let Some(val) = self.#ident {
-						ff.push(
-							modql::field::SeaField::new_with_options(modql::SIden(#name), val.into(), #field_options_q)
-						);
-					}
+				if let Some(val) = self.#ident {
+					ff.push(
+						modql::field::SeaField::new_with_options(modql::SIden(#name), val.into(), #field_options_q)
+					);
+				}
 			}
 		} else {
 			quote! {
-					ff.push(
-						modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options_q)
-					);
+				ff.push(
+					modql::field::SeaField::new_with_options(modql::SIden(#name), self.#ident.into(), #field_options_q)
+				);
 			}
 		}
 	});
 
 	// -- Compose the final code
 	let output = quote! {
-
 		impl modql::field::HasSeaFields for #struct_name {
-
 			fn not_none_sea_fields(self) -> modql::field::SeaFields {
 				let mut ff: Vec<modql::field::SeaField> = Vec::new();
 				#(#not_none_fields_quotes)*
@@ -243,14 +233,11 @@ fn impl_has_sea_fields(
 			}
 
 			fn sea_idens() -> Vec<sea_query::SeaRc<dyn sea_query::Iden>> {
-				vec![#(
-				sea_query::IntoIden::into_iden(modql::SIden(#prop_all_names)),
-				)*]
+				vec![#( sea_query::IntoIden::into_iden(modql::SIden(#prop_all_names)), )*]
 			}
 
 			fn sea_column_refs() -> Vec<sea_query::ColumnRef> {
-				use sea_query::IntoIden;
-				use sea_query::ColumnRef;
+				use sea_query::{ColumnRef, IntoIden};
 				use modql::SIden;
 
 				let mut v = Vec::new();
@@ -270,12 +257,10 @@ fn impl_has_sea_fields(
 			}
 
 			fn sea_column_refs_with_rel(rel_iden: impl sea_query::IntoIden) -> Vec<sea_query::ColumnRef> {
-				use sea_query::IntoIden;
-				use sea_query::ColumnRef;
+				use sea_query::{ColumnRef, IntoIden};
 				use modql::SIden;
 
 				let rel_iden = rel_iden.into_iden();
-
 				let mut v = Vec::new();
 
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
@@ -284,7 +269,6 @@ fn impl_has_sea_fields(
 						ColumnRef::TableColumn(
 							rel_iden.clone(),
 							SIden(#prop_all_names).into_iden());
-
 					v.push(col_ref);
 				)*
 				v
@@ -310,19 +294,26 @@ fn impl_has_sqlite_fields(
 		}
 	}
 
-	let all_fields_quotes = field_props.iter().map(|p| {
+	let all_fields_quotes = field_props.iter().enumerate().map(|(idx, p)| {
+		let idx_lit = Index::from(idx);
 		let name = &p.name;
 		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
 
 		quote! {
 			ff.push(
-				modql::field::SqliteField::new_with_options(#name, self.#ident.into(), #field_options_q)
+				modql::field::SqliteField::new_with_options_meta(
+					#name,
+					self.#ident.into(),
+					#field_options_q,
+					Self::__MODQL_FIELD_METAS[#idx_lit]
+				)
 			);
 		}
 	});
 
-	let not_none_fields_quotes = field_props.iter().map(|p| {
+	let not_none_fields_quotes = field_props.iter().enumerate().map(|(idx, p)| {
+		let idx_lit = Index::from(idx);
 		let name = &p.name;
 		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
@@ -331,21 +322,30 @@ fn impl_has_sqlite_fields(
 			quote! {
 				if let Some(val) = self.#ident {
 					ff.push(
-						modql::field::SqliteField::new_with_options(#name, val.into(), #field_options_q)
+						modql::field::SqliteField::new_with_options_meta(
+							#name,
+							val.into(),
+							#field_options_q,
+							Self::__MODQL_FIELD_METAS[#idx_lit]
+						)
 					);
 				}
 			}
 		} else {
 			quote! {
 				ff.push(
-					modql::field::SqliteField::new_with_options(#name, self.#ident.into(), #field_options_q)
+					modql::field::SqliteField::new_with_options_meta(
+						#name,
+						self.#ident.into(),
+						#field_options_q,
+						Self::__MODQL_FIELD_METAS[#idx_lit]
+					)
 				);
 			}
 		}
 	});
 
 	let output = quote! {
-
 		impl modql::field::HasSqliteFields for #struct_name {
 			fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
 				let mut ff: Vec<modql::field::SqliteField> = Vec::new();
@@ -361,9 +361,7 @@ fn impl_has_sqlite_fields(
 
 			fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
 				vec![
-					#(
-						modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names },
-					)*
+					#( modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names }, )*
 				]
 			}
 		}

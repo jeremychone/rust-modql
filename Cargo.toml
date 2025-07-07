@@ -30,8 +30,8 @@ members = [".", "modql-macros"]
 
 [features]
 # default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
-# default = ["modql-macros",  "with-rusqlite"] # for dev
-default = ["modql-macros"]
+default = ["modql-macros",  "with-rusqlite"] # for dev
+# default = ["modql-macros"]
 with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
 with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
 with-ilike = ["sea-query/backend-postgres"]
