@@ -286,18 +286,9 @@ fn impl_has_sqlite_fields(
 ) -> proc_macro2::TokenStream {
 	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
-	fn field_options_quote(mfield_prop: &ModqlFieldProp) -> proc_macro2::TokenStream {
-		if let Some(cast_as) = &mfield_prop.cast_as {
-			quote! { modql::field::SqliteFieldOptions { cast_as: Some(#cast_as.to_string()) } }
-		} else {
-			quote! { modql::field::SqliteFieldOptions { cast_as: None } }
-		}
-	}
-
 	let all_fields_quotes = field_props.iter().enumerate().map(|(idx, p)| {
 		let idx_lit = Index::from(idx);
 		let name = &p.name;
-		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
 
 		quote! {
@@ -305,7 +296,6 @@ fn impl_has_sqlite_fields(
 				modql::field::SqliteField::new_with_options_meta(
 					#name,
 					self.#ident.into(),
-					#field_options_q,
 					Self::__MODQL_FIELD_METAS[#idx_lit]
 				)
 			);
@@ -315,7 +305,6 @@ fn impl_has_sqlite_fields(
 	let not_none_fields_quotes = field_props.iter().enumerate().map(|(idx, p)| {
 		let idx_lit = Index::from(idx);
 		let name = &p.name;
-		let field_options_q = field_options_quote(p);
 		let ident = p.ident;
 
 		if p.is_option {
@@ -325,7 +314,6 @@ fn impl_has_sqlite_fields(
 						modql::field::SqliteField::new_with_options_meta(
 							#name,
 							val.into(),
-							#field_options_q,
 							Self::__MODQL_FIELD_METAS[#idx_lit]
 						)
 					);
@@ -337,7 +325,6 @@ fn impl_has_sqlite_fields(
 					modql::field::SqliteField::new_with_options_meta(
 						#name,
 						self.#ident.into(),
-						#field_options_q,
 						Self::__MODQL_FIELD_METAS[#idx_lit]
 					)
 				);

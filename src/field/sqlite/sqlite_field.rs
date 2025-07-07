@@ -12,8 +12,6 @@ pub struct SqliteField {
 	pub iden: &'static str,
 	pub column_ref: SqliteColumnRef,
 	pub value: Value,
-	pub options: SqliteFieldOptions,
-
 	/// Pointer to the compile-time `FieldMeta` corresponding to this field.
 	pub meta: Option<&'static FieldMeta>,
 }
@@ -39,12 +37,6 @@ impl SqliteField {
 	}
 }
 
-/// TODO: Might ant to have a common option (rather than SeaFieldOptions, ...)
-#[derive(Debug, Default, Clone)]
-pub struct SqliteFieldOptions {
-	pub cast_as: Option<String>,
-}
-
 // region:    --- Constructors
 
 impl SqliteField {
@@ -54,25 +46,18 @@ impl SqliteField {
 			iden,
 			column_ref,
 			value,
-			options: SqliteFieldOptions::default(),
 			meta: None,
 		}
 	}
 
 	/// Preferred constructor when the `FieldMeta` is known.
-	pub fn new_with_options_meta(
-		iden: &'static str,
-		value: Value,
-		options: SqliteFieldOptions,
-		meta: &'static FieldMeta,
-	) -> Self {
+	pub fn new_with_options_meta(iden: &'static str, value: Value, meta: &'static FieldMeta) -> Self {
 		let column_ref = column_ref_from_iden(iden);
 
 		SqliteField {
 			iden,
 			column_ref,
 			value,
-			options,
 			meta: Some(meta),
 		}
 	}
