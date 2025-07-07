@@ -1,10 +1,10 @@
 use rusqlite::Result as RusqliteResult;
-use rusqlite::types::{ToSql, ToSqlOutput, Value};
+use rusqlite::types::{ToSql, ToSqlOutput, Value as RusqliteValue};
 use serde_json::Value as JsonValue;
 
 #[derive(Debug, Clone)]
 pub enum SqliteValue {
-	RusqliteValue(Value),
+	RusqliteValue(RusqliteValue),
 	SerdeValue(JsonValue),
 }
 
@@ -25,10 +25,10 @@ impl ToSql for SqliteValue {
 
 // endregion: --- ToSql Implementation
 
-// region:    --- From Implementations
+// region:    --- Froms for SqliteValue
 
-impl From<Value> for SqliteValue {
-	fn from(value: Value) -> Self {
+impl From<RusqliteValue> for SqliteValue {
+	fn from(value: RusqliteValue) -> Self {
 		SqliteValue::RusqliteValue(value)
 	}
 }
@@ -39,16 +39,29 @@ impl From<JsonValue> for SqliteValue {
 	}
 }
 
-// endregion: --- From Implementations
+// endregion: --- Froms for SqliteValue
+
+// region:    --- Froms for Rusqlite Value
+
+impl From<SqliteValue> for RusqliteValue {
+	fn from(value: SqliteValue) -> Self {
+		match value {
+			SqliteValue::RusqliteValue(value) => value,
+			SqliteValue::SerdeValue(value) => json_value_to_rusqlite_value(&value),
+		}
+	}
+}
+
+// endregion: --- Froms for Rusqlite Value
 
 // region:    --- Support
 
-fn json_value_to_rusqlite_value(json_value: &JsonValue) -> Value {
+fn json_value_to_rusqlite_value(json_value: &JsonValue) -> RusqliteValue {
 	let json_str = serde_json::to_string(json_value).unwrap_or_default();
 	if json_str.is_empty() {
-		Value::Null
+		RusqliteValue::Null
 	} else {
-		Value::Text(json_str)
+		RusqliteValue::Text(json_str)
 	}
 }
 

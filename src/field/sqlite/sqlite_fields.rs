@@ -1,6 +1,6 @@
-use crate::field::SqliteField;
+use crate::field::{SqliteField, SqliteValue};
 use rusqlite::ToSql;
-use rusqlite::types::Value;
+use rusqlite::types::Value as RusqliteValue;
 
 #[derive(Debug, Clone, Default)]
 pub struct SqliteFields(Vec<SqliteField>);
@@ -34,12 +34,12 @@ impl SqliteFields {
 	}
 
 	/// Alias to self.unzip()
-	pub fn for_insert(self) -> (Vec<&'static str>, Vec<Value>) {
+	pub fn for_insert(self) -> (Vec<&'static str>, Vec<SqliteValue>) {
 		self.0.into_iter().map(|f| (f.iden, f.value)).unzip()
 	}
 
 	/// Alias to self.zip()
-	pub fn for_update(self) -> Vec<(&'static str, Value)> {
+	pub fn for_update(self) -> Vec<(&'static str, SqliteValue)> {
 		self.0.into_iter().map(|f| (f.iden, f.value)).collect()
 	}
 }
@@ -84,7 +84,7 @@ impl SqliteFields {
 		buf.join(", ")
 	}
 
-	pub fn into_values(self) -> Vec<Value> {
+	pub fn into_values(self) -> Vec<SqliteValue> {
 		self.0.into_iter().map(|f| f.value).collect()
 	}
 

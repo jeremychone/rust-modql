@@ -1,4 +1,4 @@
-use crate::field::{Error, FieldMeta, Result};
+use crate::field::{Error, FieldMeta, Result, SqliteValue};
 use rusqlite::types::{FromSql, ToSql, Value, ValueRef};
 
 /// NOTE: Probably can deprecate now that we have meta (will need DynFieldMeta)
@@ -12,23 +12,25 @@ pub struct SqliteColumnRef {
 pub struct SqliteField {
 	pub iden: &'static str,
 	pub column_ref: SqliteColumnRef,
-	pub value: Value,
+	pub value: SqliteValue,
 	/// Pointer to the compile-time `FieldMeta` corresponding to this field.
 	pub meta: Option<&'static FieldMeta>,
 }
 
 impl SqliteField {
 	/// Return the eventual Rusqlite Value hold in this struct
-	pub fn sqlite_value(&self) -> &Value {
+	pub fn sqlite_value(&self) -> &SqliteValue {
 		&self.value
 	}
 
 	/// Extract and transform the Rusqlite Value into the specified type
+	/// NOTE: Should be into_sqlite_value
 	pub fn into_sqlite_value<T>(self) -> Result<T>
 	where
 		T: FromSql,
 	{
-		let value_ref = ValueRef::from(&self.value);
+		let rusqlite_value: Value = self.value.into();
+		let value_ref = ValueRef::from(&rusqlite_value);
 
 		let res = T::column_result(value_ref).map_err(|_| Error::FieldValueIntoTypeError {
 			field_name: self.iden.to_string(),
@@ -41,7 +43,8 @@ impl SqliteField {
 // region:    --- Constructors
 
 impl SqliteField {
-	pub fn new(iden: &'static str, value: Value) -> Self {
+	pub fn new(iden: &'static str, value: impl Into<SqliteValue>) -> Self {
+		let value = value.into();
 		let column_ref = column_ref_from_iden(iden);
 		SqliteField {
 			iden,
@@ -52,7 +55,8 @@ impl SqliteField {
 	}
 
 	/// Preferred constructor when the `FieldMeta` is known.
-	pub fn new_with_options_meta(iden: &'static str, value: Value, meta: &'static FieldMeta) -> Self {
+	pub fn new_with_options_meta(iden: &'static str, value: impl Into<SqliteValue>, meta: &'static FieldMeta) -> Self {
+		let value = value.into();
 		let column_ref = column_ref_from_iden(iden);
 
 		SqliteField {
