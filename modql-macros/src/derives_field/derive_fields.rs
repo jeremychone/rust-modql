@@ -302,15 +302,34 @@ fn impl_has_sqlite_fields(
 ) -> proc_macro2::TokenStream {
 	let prop_all_names: Vec<&String> = field_props.iter().map(|p| &p.name).collect();
 
+	let is_json_fn = |p: &ModqlFieldProp<'_>| {
+		let is_json = p.write_placeholder.as_deref().is_some_and(|ph| ph.starts_with("json"));
+		let is_json = is_json || p.cast_as.as_deref().is_some_and(|ph| ph.starts_with("json"));
+		is_json
+	};
+
 	let all_fields_quotes = field_props.iter().enumerate().map(|(idx, p)| {
 		let idx_lit = Index::from(idx);
 		let name = &p.name;
 		let ident = p.ident;
 
+		let is_json = is_json_fn(p);
+
 		if p.is_option {
+			let some_val_quote = if is_json {
+				let is_value_type = p.type_name.contains("Value") || p.type_name.contains("JsonValue");
+				if is_value_type {
+					quote! { modql::field::SqliteValue::from(val) }
+				} else {
+					quote! { modql::field::SqliteValue::from_serializable(val) }
+				}
+			} else {
+				quote! { modql::field::SqliteValue::from(rusqlite::types::Value::from(val)) }
+			};
+
 			quote! {
 				let value = match self.#ident {
-					Some(val) => modql::field::SqliteValue::from(rusqlite::types::Value::from(val)),
+					Some(val) => #some_val_quote,
 					None => modql::field::SqliteValue::from(rusqlite::types::Value::Null),
 				};
 				ff.push(
@@ -322,11 +341,22 @@ fn impl_has_sqlite_fields(
 				);
 			}
 		} else {
+			let value_quote = if is_json {
+				let is_value_type = p.type_name.contains("Value") || p.type_name.contains("JsonValue");
+				if is_value_type {
+					quote! { modql::field::SqliteValue::from(self.#ident) }
+				} else {
+					quote! { modql::field::SqliteValue::from_serializable(self.#ident) }
+				}
+			} else {
+				quote! { modql::field::SqliteValue::from(rusqlite::types::Value::from(self.#ident)) }
+			};
+
 			quote! {
 				ff.push(
 					modql::field::SqliteField::new_with_meta(
 						#name,
-						modql::field::SqliteValue::from(rusqlite::types::Value::from(self.#ident)),
+						#value_quote,
 						Self::__MODQL_FIELD_METAS[#idx_lit]
 					)
 				);
@@ -339,24 +369,48 @@ fn impl_has_sqlite_fields(
 		let name = &p.name;
 		let ident = p.ident;
 
+		let is_json = is_json_fn(p);
+
 		if p.is_option {
+			let some_val_quote = if is_json {
+				let is_value_type = p.type_name.contains("Value") || p.type_name.contains("JsonValue");
+				if is_value_type {
+					quote! { modql::field::SqliteValue::from(val) }
+				} else {
+					quote! { modql::field::SqliteValue::from_serializable(val) }
+				}
+			} else {
+				quote! { modql::field::SqliteValue::from(rusqlite::types::Value::from(val)) }
+			};
+
 			quote! {
 				if let Some(val) = self.#ident {
 					ff.push(
 						modql::field::SqliteField::new_with_meta(
 							#name,
-							modql::field::SqliteValue::from(rusqlite::types::Value::from(val)),
+							#some_val_quote,
 							Self::__MODQL_FIELD_METAS[#idx_lit]
 						)
 					);
 				}
 			}
 		} else {
+			let value_quote = if is_json {
+				let is_value_type = p.type_name.contains("Value") || p.type_name.contains("JsonValue");
+				if is_value_type {
+					quote! { modql::field::SqliteValue::from(self.#ident) }
+				} else {
+					quote! { modql::field::SqliteValue::from_serializable(self.#ident) }
+				}
+			} else {
+				quote! { modql::field::SqliteValue::from(rusqlite::types::Value::from(self.#ident)) }
+			};
+
 			quote! {
 				ff.push(
 					modql::field::SqliteField::new_with_meta(
 						#name,
-						modql::field::SqliteValue::from(rusqlite::types::Value::from(self.#ident)),
+						#value_quote,
 						Self::__MODQL_FIELD_METAS[#idx_lit]
 					)
 				);
@@ -365,30 +419,34 @@ fn impl_has_sqlite_fields(
 	});
 
 	let output = quote! {
-			impl modql::field::HasSqliteFields for #struct_name {
-				fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
-					let mut ff: Vec<modql::field::SqliteField> = Vec::new();
-					#(#not_none_fields_quotes)*
-					modql::field::SqliteFields::new(ff)
-				}
+				impl modql::field::HasSqliteFields for #struct_name {
+					fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
+						let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+						#(#not_none_fields_quotes)*
+						modql::field::SqliteFields::new(ff)
+					}
 
-				fn sqlite_all_fields(self) -> modql::field::SqliteFields {
-					let mut ff: Vec<modql::field::SqliteField> = Vec::new();
-					#(#all_fields_quotes)*
-					modql::field::SqliteFields::new(ff)
-				}
+					fn sqlite_all_fields(self) -> modql::field::SqliteFields {
+						let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+						#(#all_fields_quotes)*
+						modql::field::SqliteFields::new(ff)
+					}
 
-				fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
-					vec
+					fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
+						vec
+
+
 
 	![
-						#( modql::field::SqliteColumnRef{ rel: Some(rel)
+							#( modql::field::SqliteColumnRef{ rel: Some(rel)
 
-	, col: #prop_all_names }, )*
-					]
+
+
+		, col: #prop_all_names }, )*
+						]
+					}
 				}
-			}
-		};
+			};
 
 	output
 }

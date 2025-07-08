@@ -1,4 +1,4 @@
-use crate::field::{HasFields, SqliteColumnRef, SqliteFields};
+use crate::field::{HasFields, SqliteColumnRef, SqliteField, SqliteFields};
 
 pub trait HasSqliteFields: HasFields {
 	/// Returns the `Fields` containing the `Field` items that have non-`None` values.
@@ -6,6 +6,17 @@ pub trait HasSqliteFields: HasFields {
 
 	/// Returns the `Fields` containing all of the `Field`.
 	fn sqlite_all_fields(self) -> SqliteFields;
+
+	fn sqlite_columns_for_select() -> String {
+		Self::field_metas()
+			.iter()
+			.map(|&meta| {
+				let col = meta.sql_col_ref();
+				SqliteField::sql_column_for_select_inner(col, meta.prop_name, Some(meta))
+			})
+			.collect::<Vec<_>>()
+			.join(", ")
+	}
 
 	// /// Returns the list of column refs (takes the eventual #[field(rel = "table_name")])
 	// /// WARNING: This won't have the aliases if there need to be some.

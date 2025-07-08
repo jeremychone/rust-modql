@@ -6,6 +6,7 @@ pub trait HasFields {
 
 	fn field_metas() -> &'static FieldMetas;
 
+	// TODO: needs to use the Meta to get the eventual rel.name
 	fn sql_columns() -> String {
 		Self::field_names()
 			.iter()

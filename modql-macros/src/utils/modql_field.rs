@@ -13,6 +13,7 @@ pub struct ModqlFieldProp<'a> {
 	pub rel: Option<String>,
 	pub cast_as: Option<String>,
 	pub write_placeholder: Option<String>,
+	pub type_name: String,
 	pub is_option: bool,
 	pub ident: &'a Option<Ident>,
 }
@@ -74,6 +75,7 @@ pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSk
 			ident,
 			cast_as,
 			write_placeholder,
+			type_name,
 			is_option,
 		})
 	}

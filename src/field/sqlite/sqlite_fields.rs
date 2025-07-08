@@ -49,20 +49,18 @@ impl SqliteFields {
 	/// will return a string like `"id", "name", "content"` for each member of the field
 	pub fn sql_columns(&self) -> String {
 		/// TODO: needs to handle when rel.col (should use col ref)
-		self.0.iter().map(|f| format!("\"{}\"", f.iden)).collect::<Vec<_>>().join(", ")
+		self.0.iter().map(|f| f.sql_column()).collect::<Vec<_>>().join(", ")
+	}
+
+	pub fn sql_columns_for_select(&self) -> String {
+		self.0.iter().map(|f| f.sql_column_for_select()).collect::<Vec<_>>().join(", ")
 	}
 
 	/// Will return a string like `?, ?, ?` for each member of the field
 	pub fn sql_placeholders(&self) -> String {
 		let mut buf: Vec<&str> = Vec::new();
 		for field in self.0.iter() {
-			if let Some(meta) = field.meta
-				&& let Some(write_placeholder) = meta.write_placeholder
-			{
-				buf.push(write_placeholder)
-			} else {
-				buf.push("?")
-			}
+			buf.push(field.sql_placehoder_for_write())
 		}
 		buf.join(", ")
 	}
@@ -72,13 +70,7 @@ impl SqliteFields {
 	pub fn sql_setters(&self) -> String {
 		let mut buf: Vec<String> = Vec::new();
 		for field in self.0.iter() {
-			let placeholder = if let Some(meta) = field.meta
-				&& let Some(write_placeholder) = meta.write_placeholder
-			{
-				write_placeholder
-			} else {
-				"?"
-			};
+			let placeholder = field.sql_placehoder_for_write();
 			buf.push(format!("\"{}\" = {placeholder}", field.iden))
 		}
 		buf.join(", ")
