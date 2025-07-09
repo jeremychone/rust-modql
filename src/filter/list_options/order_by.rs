@@ -59,6 +59,18 @@ impl OrderBys {
 	}
 }
 
+/// Builders with_
+impl OrderBys {
+	pub fn push(&mut self, order_by: impl Into<OrderBy>) {
+		self.0.push(order_by.into());
+	}
+
+	pub fn append(mut self, order_by: impl Into<OrderBy>) -> Self {
+		self.0.push(order_by.into());
+		self
+	}
+}
+
 // This will allow us to iterate over &OrderBys
 impl<'a> IntoIterator for &'a OrderBys {
 	type Item = &'a OrderBy;

@@ -10,8 +10,7 @@ pub struct ListOptions {
 	pub order_bys: Option<OrderBys>,
 }
 
-// region:    --- Constructors
-
+/// Constructors
 impl ListOptions {
 	pub fn from_limit(limit: i64) -> Self {
 		Self {
@@ -36,7 +35,33 @@ impl ListOptions {
 	}
 }
 
-// endregion: --- Constructors
+/// Builders with_
+impl ListOptions {
+	pub fn with_limit(mut self, limit: i64) -> Self {
+		self.limit = Some(limit);
+		self
+	}
+
+	pub fn with_offset(mut self, offset: i64) -> Self {
+		self.offset = Some(offset);
+		self
+	}
+
+	pub fn with_order_bys(mut self, order_bys: impl Into<OrderBys>) -> Self {
+		self.order_bys = Some(order_bys.into());
+		self
+	}
+
+	pub fn append_order_by(mut self, order_by: impl Into<OrderBy>) -> Self {
+		let order_by = order_by.into();
+		if let Some(order_bys) = &mut self.order_bys {
+			order_bys.push(order_by);
+		} else {
+			self.order_bys = Some(OrderBys::from(order_by));
+		}
+		self
+	}
+}
 
 // region:    --- Froms
 
@@ -87,11 +112,7 @@ mod with_sea_query {
 	impl ListOptions {
 		pub fn apply_to_sea_query(self, select_query: &mut SelectStatement) {
 			fn as_positive_u64(num: i64) -> u64 {
-				if num < 0 {
-					0
-				} else {
-					num as u64
-				}
+				if num < 0 { 0 } else { num as u64 }
 			}
 			if let Some(limit) = self.limit {
 				select_query.limit(as_positive_u64(limit)); // Note: Negative == 0
