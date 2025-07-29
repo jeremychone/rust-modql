@@ -9,16 +9,14 @@ impl core::fmt::Display for OrderBy {
 	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::fmt::Result {
 		match self {
 			OrderBy::Asc(val) => {
-				fmt.write_str("\"")?;
-				fmt.write_str(val)?;
-				fmt.write_str("\"")?;
+				let content = quote_first_part(val);
+				fmt.write_str(&content)?;
 				fmt.write_str(" ")?;
 				fmt.write_str("ASC")?;
 			}
 			OrderBy::Desc(val) => {
-				fmt.write_str("\"")?;
-				fmt.write_str(val)?;
-				fmt.write_str("\"")?;
+				let content = quote_first_part(val);
+				fmt.write_str(&content)?;
 				fmt.write_str(" ")?;
 				fmt.write_str("DESC")?;
 			}
@@ -27,6 +25,29 @@ impl core::fmt::Display for OrderBy {
 		Ok(())
 	}
 }
+
+// region:    --- Formatter
+// NOTE: Probably need to be generalized for other construct of this crate
+fn quote_first_part(s: &str) -> String {
+	if let Some((first, rest)) = s.split_once(' ') {
+		format!("{} {}", quote_piece(first), rest)
+	} else {
+		quote_piece(s)
+	}
+}
+
+fn quote_piece(piece: &str) -> String {
+	if piece.contains('.') {
+		piece
+			.split('.')
+			.map(|part| format!("\"{part}\"",))
+			.collect::<Vec<_>>()
+			.join(".")
+	} else {
+		format!("\"{piece}\"",)
+	}
+}
+// endregion: --- Formatter
 
 impl<T: AsRef<str>> From<T> for OrderBy {
 	fn from(val: T) -> Self {
