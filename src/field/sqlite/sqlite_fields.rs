@@ -25,6 +25,13 @@ impl SqliteFields {
 		self
 	}
 
+	/// Consuming extend
+	pub fn extended(self, fields: impl Into<SqliteFields>) -> Self {
+		let mut new_fields = self.0;
+		new_fields.extend(fields.into());
+		SqliteFields(new_fields)
+	}
+
 	pub fn into_fields(self) -> Vec<SqliteField> {
 		self.0
 	}
