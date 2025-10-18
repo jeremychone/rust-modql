@@ -18,7 +18,7 @@ pub struct ModqlFieldProp<'a> {
 	pub ident: &'a Option<Ident>,
 }
 
-pub fn get_modql_field_props(fields: &FieldsNamed) -> Vec<ModqlFieldProp> {
+pub fn get_modql_field_props(fields: &'_ FieldsNamed) -> Vec<ModqlFieldProp<'_>> {
 	let modql_fields_and_skips = get_modql_field_props_and_skips(fields);
 	modql_fields_and_skips.modql_fields
 }
@@ -29,7 +29,7 @@ pub struct ModqlFieldsAndSkips<'a> {
 	pub skipped_fields: Vec<&'a Field>,
 }
 
-pub fn get_modql_field_props_and_skips(fields: &FieldsNamed) -> ModqlFieldsAndSkips {
+pub fn get_modql_field_props_and_skips(fields: &'_ FieldsNamed) -> ModqlFieldsAndSkips<'_> {
 	let mut modql_fields = Vec::new();
 	let mut skipped_fields = Vec::new();
 
