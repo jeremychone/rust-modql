@@ -1,9 +1,9 @@
 mod support;
 
-use crate::support::rusqlite_utils::{create_schema, seed_data};
 use crate::support::Result;
-use modql::field::HasFields;
+use crate::support::rusqlite_utils::{create_schema, seed_data};
 use modql::RusqliteBinder;
+use modql::field::HasFields;
 use modql::{SIden, SqliteFromRow};
 use modql_macros::Fields;
 use pretty_sqlite::pretty_table;

@@ -4,7 +4,7 @@
 use modql::filter::{
 	FilterNode, FilterNodeOptions, IntoSeaError, OpValInt32, OpValValue, SeaResult, ToSeaConditionFnHolder,
 };
-use sea_query::{ColumnRef, ConditionExpression};
+use sea_query::{ColumnRef, Condition};
 use std::sync::Arc;
 
 #[test]
@@ -20,6 +20,6 @@ fn test_filter_node_with_sea_condition() {
 	};
 }
 
-pub fn special_to_sea_condition(col: &ColumnRef, op_val: OpValValue) -> SeaResult<ConditionExpression> {
+pub fn special_to_sea_condition(col: &ColumnRef, op_val: OpValValue) -> SeaResult<Condition> {
 	todo!()
 }
