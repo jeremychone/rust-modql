@@ -219,7 +219,7 @@ mod with_sea_query {
 			let pg_binary_fn = |op: PgBinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::Expr(SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr))
+				SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr).into()
 			};
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {

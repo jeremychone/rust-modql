@@ -55,7 +55,16 @@ impl ToSql for RusqliteValue {
 		macro_rules! box_to_sql {
 			( $v: expr ) => {
 				match $v {
-					Some(v) => v.as_ref().to_sql(),
+					Some(v) => (&**v).to_sql(),
+					None => Null.to_sql(),
+				}
+			};
+		}
+
+		macro_rules! opt_to_sql {
+			( $v: expr ) => {
+				match $v {
+					Some(v) => v.to_sql(),
 					None => Null.to_sql(),
 				}
 			};
@@ -71,21 +80,24 @@ impl ToSql for RusqliteValue {
 		}
 
 		match &self.0 {
-			Value::Bool(v) => v.to_sql(),
-			Value::TinyInt(v) => v.to_sql(),
-			Value::SmallInt(v) => v.to_sql(),
-			Value::Int(v) => v.to_sql(),
-			Value::BigInt(v) => v.to_sql(),
-			Value::TinyUnsigned(v) => v.to_sql(),
-			Value::SmallUnsigned(v) => v.to_sql(),
-			Value::Unsigned(v) => v.to_sql(),
-			Value::Float(v) => v.to_sql(),
-			Value::Double(v) => v.to_sql(),
+			Value::Bool(v) => opt_to_sql!(v),
+			Value::TinyInt(v) => opt_to_sql!(v),
+			Value::SmallInt(v) => opt_to_sql!(v),
+			Value::Int(v) => opt_to_sql!(v),
+			Value::BigInt(v) => opt_to_sql!(v),
+			Value::TinyUnsigned(v) => opt_to_sql!(v),
+			Value::SmallUnsigned(v) => opt_to_sql!(v),
+			Value::Unsigned(v) => opt_to_sql!(v),
+			Value::Float(v) => opt_to_sql!(v),
+			Value::Double(v) => opt_to_sql!(v),
 			Value::String(v) => box_to_sql!(v),
 			Value::Char(v) => opt_string_to_sql!(v.map(|v| v.to_string())),
 			Value::Bytes(v) => box_to_sql!(v),
 			//--
-			Value::BigUnsigned(v) => v.to_sql(),
+			Value::BigUnsigned(v) => match (v.map(|v| v as i64)) {
+				Some(v) => Ok(ToSqlOutput::from(v)),
+				None => Null.to_sql(),
+			},
 			Value::Enum(_) => todo!(),
 		}
 	}
