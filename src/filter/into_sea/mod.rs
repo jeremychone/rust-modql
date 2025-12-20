@@ -5,7 +5,7 @@ mod error;
 pub use self::error::{IntoSeaError, SeaResult};
 
 use crate::filter::OpValValue;
-use sea_query::{ColumnRef, ConditionExpression};
+use sea_query::{ColumnRef, Condition};
 
 // endregion: --- Modules
 
@@ -47,7 +47,7 @@ impl ToSeaValueFnHolder {
 // endregion: --- ToSeaValueFn
 
 // region:    --- ToSeaConditionFn
-pub type ToSeaConditionFn = fn(col: &ColumnRef, op_value: OpValValue) -> SeaResult<ConditionExpression>;
+pub type ToSeaConditionFn = fn(col: &ColumnRef, op_value: OpValValue) -> SeaResult<Condition>;
 
 #[derive(Clone, Debug)]
 pub struct ToSeaConditionFnHolder {
@@ -59,7 +59,7 @@ impl ToSeaConditionFnHolder {
 		ToSeaConditionFnHolder { fun }
 	}
 
-	pub fn call(&self, col: &ColumnRef, op_value: OpValValue) -> SeaResult<ConditionExpression> {
+	pub fn call(&self, col: &ColumnRef, op_value: OpValValue) -> SeaResult<Condition> {
 		(self.fun)(col, op_value)
 	}
 }

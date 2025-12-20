@@ -33,8 +33,8 @@ impl From<OpValValue> for OpVal {
 // endregion: --- OpValValue to OpVal::Value
 
 mod json {
-	use crate::filter::json::OpValueToOpValType;
 	use crate::filter::OpValValue;
+	use crate::filter::json::OpValueToOpValType;
 	use crate::{Error, Result};
 	use serde_json::Value;
 
@@ -76,7 +76,7 @@ mod json {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
 						value: v,
-					})
+					});
 				}
 			};
 			Ok(ov)
@@ -88,9 +88,9 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult, ToSeaValueFnHolder};
+	use crate::filter::{FilterNodeOptions, SeaResult, ToSeaValueFnHolder, sea_is_col_value_null};
 	use crate::{into_node_column_expr, into_node_value_expr};
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, ExprTrait, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, Condition, ExprTrait, SimpleExpr};
 
 	impl OpValValue {
 		pub fn into_sea_cond_expr_with_json_to_sea(
@@ -98,18 +98,18 @@ mod with_sea_query {
 			col: &ColumnRef,
 			node_options: &FilterNodeOptions,
 			to_sea_value: &ToSeaValueFnHolder,
-		) -> SeaResult<ConditionExpression> {
+		) -> SeaResult<Condition> {
 			// -- CondExpr builder for single value
-			let binary_fn = |op: BinOper, json_value: serde_json::Value| -> SeaResult<ConditionExpression> {
+			let binary_fn = |op: BinOper, json_value: serde_json::Value| -> SeaResult<Condition> {
 				let sea_value = to_sea_value.call(json_value)?;
 
 				let vxpr = into_node_value_expr(sea_value, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				Ok(ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr)))
+				Ok(SimpleExpr::binary(column, op, vxpr).into())
 			};
 
 			// -- CondExpr builder for single value
-			let binaries_fn = |op: BinOper, json_values: Vec<serde_json::Value>| -> SeaResult<ConditionExpression> {
+			let binaries_fn = |op: BinOper, json_values: Vec<serde_json::Value>| -> SeaResult<Condition> {
 				// -- Build the list of sea_query::Value
 				let sea_values: Vec<sea_query::Value> = json_values
 					.into_iter()
@@ -123,7 +123,7 @@ mod with_sea_query {
 
 				// -- Return the condition expression
 				let column = into_node_column_expr(col.clone(), node_options);
-				Ok(ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr)))
+				Ok(SimpleExpr::binary(column, op, vxpr).into())
 			};
 
 			let cond = match self {

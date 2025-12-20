@@ -3,11 +3,11 @@
 //! https://github.com/SeaQL/sea-query/blob/master/sea-query-rusqlite/src/lib.rs
 
 use rusqlite::{
-	types::{Null, ToSqlOutput},
 	Result, ToSql,
+	types::{Null, ToSqlOutput},
 };
 use sea_query::Value;
-use sea_query::{query::*, QueryBuilder};
+use sea_query::{QueryBuilder, query::*};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct RusqliteValue(pub sea_query::Value);
@@ -79,12 +79,14 @@ impl ToSql for RusqliteValue {
 			Value::TinyUnsigned(v) => v.to_sql(),
 			Value::SmallUnsigned(v) => v.to_sql(),
 			Value::Unsigned(v) => v.to_sql(),
-			Value::BigUnsigned(v) => v.to_sql(),
 			Value::Float(v) => v.to_sql(),
 			Value::Double(v) => v.to_sql(),
 			Value::String(v) => box_to_sql!(v),
 			Value::Char(v) => opt_string_to_sql!(v.map(|v| v.to_string())),
 			Value::Bytes(v) => box_to_sql!(v),
+			//--
+			Value::BigUnsigned(v) => v.to_sql(),
+			Value::Enum(_) => todo!(),
 		}
 	}
 }

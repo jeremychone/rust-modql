@@ -105,8 +105,8 @@ impl From<&str> for OpVal {
 // endregion: --- Primitive to OpVal::String(StringOpVal::Eq)
 
 mod json {
-	use crate::filter::json::OpValueToOpValType;
 	use crate::filter::OpValString;
+	use crate::filter::json::OpValueToOpValType;
 	use crate::{Error, Result};
 	use serde_json::Value;
 
@@ -188,7 +188,7 @@ mod json {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
 						value: v,
-					})
+					});
 				}
 			};
 			Ok(ov)
@@ -200,23 +200,19 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
+	use crate::filter::{FilterNodeOptions, SeaResult, sea_is_col_value_null};
 	use crate::{into_node_column_expr, into_node_value_expr};
-	use sea_query::{BinOper, ColumnRef, Condition, ConditionExpression, Expr, ExprTrait as _, Func, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, Condition, Expr, ExprTrait as _, Func, SimpleExpr};
 
 	#[cfg(feature = "with-ilike")]
 	use sea_query::extension::postgres::PgBinOper;
 
 	impl OpValString {
-		pub fn into_sea_cond_expr(
-			self,
-			col: &ColumnRef,
-			node_options: &FilterNodeOptions,
-		) -> SeaResult<ConditionExpression> {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef, node_options: &FilterNodeOptions) -> SeaResult<Condition> {
 			let binary_fn = |op: BinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr))
+				SimpleExpr::binary(column, op, vxpr).into()
 			};
 
 			#[cfg(feature = "with-ilike")]
@@ -230,7 +226,7 @@ mod with_sea_query {
 				let vxpr_list: Vec<SimpleExpr> = v.into_iter().map(|v| into_node_value_expr(v, node_options)).collect();
 				let vxpr = SimpleExpr::Tuple(vxpr_list);
 				let column = into_node_column_expr(col.clone(), node_options);
-				ConditionExpression::Expr(SimpleExpr::binary(column, op, vxpr))
+				SimpleExpr::binary(column, op, vxpr).into()
 			};
 
 			let cond_any_of_fn = |op: BinOper, values: Vec<String>, val_prefix: &str, val_suffix: &str| {
@@ -241,14 +237,14 @@ mod with_sea_query {
 					cond = cond.add(expr);
 				}
 
-				ConditionExpression::Condition(cond)
+				cond
 			};
 
 			let case_insensitive_fn = |op: BinOper, v: String| {
 				let vxpr = SimpleExpr::Value(v.into());
 				let col_expr = SimpleExpr::FunctionCall(Func::lower(Expr::col(col.clone())));
 				let value_expr = SimpleExpr::FunctionCall(Func::lower(vxpr));
-				ConditionExpression::Expr(SimpleExpr::binary(col_expr, op, value_expr))
+				SimpleExpr::binary(col_expr, op, value_expr).into()
 			};
 
 			let cond = match self {
@@ -273,7 +269,7 @@ mod with_sea_query {
 						cond = cond.add(expr);
 					}
 
-					ConditionExpression::Condition(cond)
+					cond
 				}
 
 				OpValString::ContainsAny(values) => cond_any_of_fn(BinOper::Like, values, "%", "%"),

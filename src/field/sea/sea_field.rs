@@ -1,7 +1,7 @@
+use crate::SIden;
 use crate::field::{Error, Result};
 use crate::sea_utils::StringIden;
-use crate::SIden;
-use sea_query::{ColumnRef, DynIden, ExprTrait as _, SimpleExpr, Value};
+use sea_query::{ColumnName, ColumnRef, DynIden, ExprTrait as _, IntoColumnRef, SimpleExpr, Value};
 use sea_query::{IntoIden, ValueType};
 
 #[derive(Debug, Clone)]
@@ -47,7 +47,7 @@ impl SeaField {
 
 	/// The concrete version of the new.
 	pub fn new_concrete(iden: DynIden, value: SimpleExpr) -> Self {
-		let column_ref = ColumnRef::Column(iden.clone());
+		let column_ref = ColumnRef::Column(ColumnName(None, iden.clone().into()));
 		SeaField {
 			iden,
 			column_ref,
@@ -58,7 +58,7 @@ impl SeaField {
 	/// Create a new SeaField for a static column name and a `Into<SimpleExpr>` for the value
 	pub fn siden(iden: &'static str, value: impl Into<SimpleExpr>) -> Self {
 		let iden = SIden(iden).into_iden();
-		let column_ref = ColumnRef::Column(iden.clone());
+		let column_ref = iden.clone().into_column_ref();
 		SeaField {
 			iden,
 			column_ref,
@@ -68,7 +68,7 @@ impl SeaField {
 
 	pub fn new_with_options(iden: impl IntoIden, value: SimpleExpr, options: SeaFieldOptions) -> Self {
 		let iden = iden.into_iden();
-		let column_ref = ColumnRef::Column(iden.clone());
+		let column_ref = iden.clone().into();
 		let mut value = value;
 		if let Some(cast_as) = options.cast_as {
 			value = value.cast_as(StringIden(cast_as))

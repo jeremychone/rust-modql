@@ -80,7 +80,7 @@ mod json {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
 						value,
-					})
+					});
 				}
 			};
 
@@ -94,19 +94,16 @@ mod json {
 #[cfg(feature = "with-sea-query")]
 mod with_sea_query {
 	use super::*;
-	use crate::filter::{sea_is_col_value_null, FilterNodeOptions, SeaResult};
+	use crate::filter::{FilterNodeOptions, SeaResult, sea_is_col_value_null};
 	use crate::into_node_value_expr;
-	use sea_query::{BinOper, ColumnRef, ConditionExpression, ExprTrait, SimpleExpr};
+	use sea_query::{BinOper, ColumnRef, Condition, ExprTrait, SimpleExpr};
 
 	impl OpValBool {
-		pub fn into_sea_cond_expr(
-			self,
-			col: &ColumnRef,
-			node_options: &FilterNodeOptions,
-		) -> SeaResult<ConditionExpression> {
+		pub fn into_sea_cond_expr(self, col: &ColumnRef, node_options: &FilterNodeOptions) -> SeaResult<Condition> {
 			let binary_fn = |op: BinOper, val: bool| {
 				let vxpr = into_node_value_expr(val, node_options);
-				ConditionExpression::Expr(SimpleExpr::binary(col.clone().into(), op, vxpr))
+				let xpr = SimpleExpr::binary(col.clone().into(), op, vxpr);
+				Condition::from(xpr)
 			};
 
 			let cond = match self {

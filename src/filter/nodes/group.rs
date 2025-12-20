@@ -114,13 +114,13 @@ where
 mod with_sea_query {
 	use super::*;
 	use crate::filter::{IntoSeaError, SeaResult};
-	use sea_query::{Condition, ConditionExpression};
+	use sea_query::Condition;
 
 	impl TryFrom<FilterGroup> for Condition {
 		type Error = IntoSeaError;
 		fn try_from(val: FilterGroup) -> SeaResult<Self> {
 			// Note: this will fail on first, error found
-			let exprs: SeaResult<Vec<Vec<ConditionExpression>>> =
+			let exprs: SeaResult<Vec<Vec<Condition>>> =
 				val.into_iter().map(|node| node.into_sea_cond_expr_list()).collect();
 			// We flattlen the Vec<Vec<ConditionExpression>> to a Vec<ConditionExpression>
 			let exprs_flat = exprs?.into_iter().flatten();

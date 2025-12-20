@@ -60,13 +60,16 @@ impl FieldMeta {
 mod with_sea_query {
 	use super::*;
 	use crate::SIden;
-	use sea_query::{Alias, ColumnRef, IntoIden, SelectStatement};
+	use sea_query::{Alias, ColumnName, ColumnRef, IntoIden, SelectStatement};
 
 	impl FieldMeta {
 		pub fn sea_column_ref(&self) -> ColumnRef {
 			match self.rel {
-				Some(rel) => ColumnRef::TableColumn(SIden(rel).into_iden(), SIden(self.name()).into_iden()),
-				None => ColumnRef::Column(SIden(self.name()).into_iden()),
+				Some(rel) => {
+					let column_name = ColumnName(Some(SIden(rel).into()), SIden(self.name()).into_iden());
+					ColumnRef::Column(column_name)
+				}
+				None => ColumnRef::Column(ColumnName(None, SIden(self.name()).into_iden())),
 			}
 		}
 
