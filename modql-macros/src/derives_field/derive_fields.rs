@@ -247,7 +247,7 @@ fn impl_has_sea_fields(
 			}
 
 			fn sea_column_refs() -> Vec<sea_query::ColumnRef> {
-				use sea_query::{ColumnRef, ColumnName, IntoIden};
+				use sea_query::{ColumnRef, IntoColumnRef, IntoIden};
 				use modql::SIden;
 
 				let mut v = Vec::new();
@@ -255,11 +255,9 @@ fn impl_has_sea_fields(
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
 				#(
 					let col_ref = if #prop_all_rels == "" {
-						ColumnRef::Column(ColumnName(None, SIden(#prop_all_names).into_iden()))
+						SIden(#prop_all_names).into_column_ref()
 					} else {
-						ColumnRef::Column(ColumnName(
-							Some(SIden(#prop_all_rels).into_iden()),
-							SIden(#prop_all_names).into_iden()))
+						(SIden(#prop_all_rels), SIden(#prop_all_names)).into_column_ref()
 					};
 					v.push(col_ref);
 				)*
@@ -267,7 +265,7 @@ fn impl_has_sea_fields(
 			}
 
 			fn sea_column_refs_with_rel(rel_iden: impl sea_query::IntoIden) -> Vec<sea_query::ColumnRef> {
-				use sea_query::{ColumnRef, ColumnName, IntoIden};
+				use sea_query::{ColumnRef, IntoColumnRef, IntoIden};
 				use modql::SIden;
 
 				let rel_iden = rel_iden.into_iden();
@@ -275,10 +273,7 @@ fn impl_has_sea_fields(
 
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
 				#(
-					let col_ref =
-						ColumnRef::Column(ColumnName(
-							Some(rel_iden.clone()),
-							SIden(#prop_all_names).into_iden()));
+					let col_ref = (rel_iden.clone(), SIden(#prop_all_names)).into_column_ref();
 					v.push(col_ref);
 				)*
 				v
