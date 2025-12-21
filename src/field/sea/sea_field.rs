@@ -37,6 +37,8 @@ impl SeaField {
 #[derive(Default, Debug)]
 pub struct SeaFieldOptions {
 	pub cast_as: Option<String>,
+	// NOTE: write_placeholder was removed in sea-query 1.0.0-rc.23
+	//       If needed, handle at the SqliteField level instead.
 }
 
 impl SeaField {

@@ -184,15 +184,9 @@ fn impl_has_sea_fields(
 			None => quote! { None },
 		};
 
-		let write_placeholder = match &mfield_prop.write_placeholder {
-			Some(write_placeholder) => quote! { Some(#write_placeholder.to_string()) },
-			None => quote! { None },
-		};
-
 		quote! {
 			modql::field::SeaFieldOptions {
 				cast_as: #cast_as,
-				write_placeholder: #write_placeholder
 			}
 		}
 	}
@@ -248,12 +242,12 @@ fn impl_has_sea_fields(
 				modql::field::SeaFields::new(ff)
 			}
 
-			fn sea_idens() -> Vec<sea_query::SeaRc<dyn sea_query::Iden>> {
+			fn sea_idens() -> Vec<sea_query::DynIden> {
 				vec![#( sea_query::IntoIden::into_iden(modql::SIden(#prop_all_names)), )*]
 			}
 
 			fn sea_column_refs() -> Vec<sea_query::ColumnRef> {
-				use sea_query::{ColumnRef, IntoIden};
+				use sea_query::{ColumnRef, ColumnName, IntoIden};
 				use modql::SIden;
 
 				let mut v = Vec::new();
@@ -261,11 +255,11 @@ fn impl_has_sea_fields(
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
 				#(
 					let col_ref = if #prop_all_rels == "" {
-						ColumnRef::Column(SIden(#prop_all_names).into_iden())
+						ColumnRef::Column(ColumnName(None, SIden(#prop_all_names).into_iden()))
 					} else {
-						ColumnRef::TableColumn(
-							SIden(#prop_all_rels).into_iden(),
-							SIden(#prop_all_names).into_iden())
+						ColumnRef::Column(ColumnName(
+							Some(SIden(#prop_all_rels).into_iden()),
+							SIden(#prop_all_names).into_iden()))
 					};
 					v.push(col_ref);
 				)*
@@ -273,7 +267,7 @@ fn impl_has_sea_fields(
 			}
 
 			fn sea_column_refs_with_rel(rel_iden: impl sea_query::IntoIden) -> Vec<sea_query::ColumnRef> {
-				use sea_query::{ColumnRef, IntoIden};
+				use sea_query::{ColumnRef, ColumnName, IntoIden};
 				use modql::SIden;
 
 				let rel_iden = rel_iden.into_iden();
@@ -282,9 +276,9 @@ fn impl_has_sea_fields(
 				// NOTE: There's likely a more elegant solution, but this approach is semantically correct.
 				#(
 					let col_ref =
-						ColumnRef::TableColumn(
-							rel_iden.clone(),
-							SIden(#prop_all_names).into_iden());
+						ColumnRef::Column(ColumnName(
+							Some(rel_iden.clone()),
+							SIden(#prop_all_names).into_iden()));
 					v.push(col_ref);
 				)*
 				v
