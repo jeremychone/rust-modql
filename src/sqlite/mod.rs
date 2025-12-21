@@ -2,8 +2,11 @@
 //! and provides a very basic `sqlite::FromRow` based on the `Fields` derivation.
 //!
 
+#[cfg(feature = "modql-macros")]
 pub use modql_macros::SqliteFromRow;
+#[cfg(feature = "modql-macros")]
 pub use modql_macros::SqliteFromValue;
+#[cfg(feature = "modql-macros")]
 pub use modql_macros::SqliteToValue;
 
 // -- deprecated

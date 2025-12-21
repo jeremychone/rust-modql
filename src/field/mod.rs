@@ -13,9 +13,11 @@ pub use self::error::{Error, Result};
 pub use field_meta::*;
 pub use field_metas::*;
 pub use has_fields::*;
+
+#[cfg(feature = "modql-macros")]
 pub use modql_macros::Fields;
 
-#[cfg(feature = "with-sea-query")]
+#[cfg(all(feature = "modql-macros", feature = "with-sea-query"))]
 pub use modql_macros::SeaFieldValue;
 
 #[cfg(feature = "with-sea-query")]

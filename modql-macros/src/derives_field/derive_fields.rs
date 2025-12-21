@@ -422,16 +422,8 @@ fn impl_has_sqlite_fields(
 					}
 
 					fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
-						vec
-
-
-
-	![
-							#( modql::field::SqliteColumnRef{ rel: Some(rel)
-
-
-
-		, col: #prop_all_names }, )*
+						vec![
+							#( modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names }, )*
 						]
 					}
 				}

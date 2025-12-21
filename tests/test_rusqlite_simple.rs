@@ -9,8 +9,8 @@ pub type Error = Box<dyn std::error::Error>; // For early dev.
 use crate::support::sqlite::{seed_agent, seed_module};
 use modql::field::{Fields, HasFields};
 use modql::{SqliteFromRow, SqliteFromValue, SqliteToValue};
-use rusqlite::types::Value;
 use rusqlite::Connection;
+use rusqlite::types::Value;
 use std::result;
 
 #[derive(Debug, Clone, SqliteFromValue, SqliteToValue)]

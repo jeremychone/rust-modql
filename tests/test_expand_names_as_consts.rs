@@ -1,3 +1,5 @@
+#![cfg(feature = "with-rusqlite")]
+
 pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
 use modql::field::Fields;

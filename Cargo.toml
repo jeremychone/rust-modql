@@ -30,15 +30,15 @@ unused = { level = "allow", priority = -1 } # For test files (dev)
 members = [".", "modql-macros"]
 
 [features]
-default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
+# default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
 # default = ["modql-macros",  "with-rusqlite"] # for dev
-# default = ["modql-macros"]
-with-sea-query = ["sea-query", "modql-macros/with-sea-query"]
-with-rusqlite = ["rusqlite", "modql-macros/with-rusqlite"]
+default = ["modql-macros"]
+with-sea-query = ["modql-macros", "sea-query", "modql-macros/with-sea-query"]
+with-rusqlite = ["modql-macros", "rusqlite", "modql-macros/with-rusqlite"]
 with-ilike = ["sea-query/backend-postgres"]
 
 [dependencies]
-modql-macros = { version="=0.5.0-alpha.4", path = "modql-macros", optional=true}
+modql-macros = { version="=0.5.0-alpha.7-WIP", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
