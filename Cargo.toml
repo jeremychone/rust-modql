@@ -47,14 +47,14 @@ sea-query = { workspace = true, optional = true }
 rusqlite = { workspace = true, optional = true }
 
 [workspace.dependencies]
-sea-query = { version = "=1.0.0-rc.23", features = ["thread-safe"] }
-rusqlite = { version = "0.38", features = ["serde_json"] }
+sea-query = { version = "=1.0.0-rc.32", features = ["thread-safe"] }
+rusqlite = { version = "0.39", features = ["serde_json"] }
 
 [dev-dependencies]
 serde_with = "3"
 tokio = { version = "1", features = ["full"]}
-pretty-sqlite = "0.4.0"
-rusqlite = {version = "0.38", features = ["bundled", "serde_json"]}
+pretty-sqlite = "0.5.0"
+rusqlite = {version = "0.39", features = ["bundled", "serde_json"]}
 
 # NOTE: for now, the sea-query-rusqlite is inlined in modql
 # sea-query-rusqlite = {version = "0.7"}
