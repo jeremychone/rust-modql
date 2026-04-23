@@ -77,8 +77,7 @@ let entities = sqlx::query_as_with::<_, E, _>(&sql, values)
 
 This crate is instrumental for JSON-RPC or other types of model APIs (e.g., the [joql pattern](https://joql.org)).
 
-**IMPORTANT** v0.3.x represents the new version of modql, featuring the `with-sea-query` feature set. It is utilized in the [rust10x web-app production code blueprint Episode 02](https://rust10x.com/web-app).
-This version is somewhat incompatible with v0.2.x, mainly due to module reorganization. If you are using the rust10x/awesomeapp desktop app, please stick with v0.2.x for the time being. I plan to upgrade the codebase to v0.3.x soon.
+**IMPORTANT** v0.4.x is the current stable version of modql, featuring the `with-sea-query` feature set and decoupled `HasFields`. v0.5.x is currently in alpha and is being used to refine the metadata system.
 
 [changelog](CHANGELOG.md)
 
@@ -186,13 +185,13 @@ On the Rust side, this can be expressed like this:
 ```rs
 pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
-use modql::filter::{FilterGroups, FilterNode, OpValtring};
+use modql::filter::{FilterGroups, FilterNode, OpValString};
 
 fn main() -> Result<()> {
     let filter_nodes: Vec<FilterNode> = vec![
         (
             "title",
-            OpValtring::ContainsAny(vec!["Hello".to_string(), "welcome".to_string()]),
+            OpValString::ContainsAny(vec!["Hello".to_string(), "welcome".to_string()]),
         )
             .into(),
         ("done", true).into(),
