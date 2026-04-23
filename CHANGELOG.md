@@ -1,6 +1,12 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2026-04-23 - `0.5.0-alpha`
+
+- `!` `HasFields::sql_columns()` now uses `FieldMeta` metadata (handles table relations and aliases)
+- `^` Update documentation and migration guide for `FieldMeta`
+- `.` update version to 0.5.0-alpha
+
 ## 2024-11-15 - `0.4.1`
 
 - `^` Update `sea-query` and `rustsqlite` to version `0.32`
