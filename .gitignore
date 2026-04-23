@@ -3,16 +3,14 @@
 # Except .gitgnore
 !.gitignore
 
-
-# For now, disallow vscode 
-# !.vscode
-.vscode/
+_*
+!src/**/_*
 
 # Rust ignore
 target/
 Cargo.lock
 
-# nodejs 
+# nodejs
 !.mocharc.yaml
 
 # nodejs - Ignore node build files
