@@ -1,6 +1,6 @@
 [package]
 name = "modql"
-version = "0.5.0-alpha.9-WIP"
+version = "0.5.0"
 edition = "2024"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
@@ -38,7 +38,7 @@ with-rusqlite = ["modql-macros", "rusqlite", "modql-macros/with-rusqlite"]
 with-ilike = ["sea-query/backend-postgres"]
 
 [dependencies]
-modql-macros = { version="=0.5.0-alpha.8", path = "modql-macros", optional=true}
+modql-macros = { version="0.5.0", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
@@ -47,14 +47,14 @@ sea-query = { workspace = true, optional = true }
 rusqlite = { workspace = true, optional = true }
 
 [workspace.dependencies]
-sea-query = { version = "=1.0.0-rc.33", features = ["thread-safe"] }
-rusqlite = { version = "0.39", features = ["serde_json"] }
+sea-query = { version = "=1.0.0-rc.34", features = ["thread-safe"] }
+rusqlite = { version = "0.40", features = ["serde_json"] }
 
 [dev-dependencies]
 serde_with = "3"
 tokio = { version = "1", features = ["full"]}
-pretty-sqlite = "0.5.0"
-rusqlite = {version = "0.39", features = ["bundled", "serde_json"]}
+pretty-sqlite = "0.6.0"
+rusqlite = {version = "0.40", features = ["bundled", "serde_json"]}
 
 # NOTE: for now, the sea-query-rusqlite is inlined in modql
 # sea-query-rusqlite = {version = "0.7"}
