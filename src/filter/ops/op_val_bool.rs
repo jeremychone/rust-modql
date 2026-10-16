@@ -75,7 +75,7 @@ mod json {
 			let ov = match (op, value) {
 				("$eq", Value::Bool(v)) => OpValBool::Eq(v),
 				("$not", Value::Bool(v)) => OpValBool::Not(v),
-				("$null", Value::Bool(v)) => OpValBool::Not(v),
+				("$null", Value::Bool(v)) => OpValBool::Null(v),
 				(_, value) => {
 					return Err(Error::JsonOpValNotSupported {
 						operator: op.to_string(),
