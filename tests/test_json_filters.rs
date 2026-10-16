@@ -3,13 +3,13 @@
 
 pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
-use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsBool, OpValsInt64, OpValsString};
 use modql::SIden;
+use modql::filter::{FilterGroups, FilterNode, IntoFilterNodes, OpValsBool, OpValsInt64, OpValsString};
 use modql_macros::FilterNodes;
 use sea_query::{Condition, PostgresQueryBuilder, Query};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_value, json};
-use serde_with::{serde_as, OneOrMany};
+use serde_with::{OneOrMany, serde_as};
 
 #[derive(FilterNodes, Deserialize, Default, Debug)]
 pub struct TaskFilter {

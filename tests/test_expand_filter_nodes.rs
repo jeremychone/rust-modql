@@ -3,8 +3,8 @@
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
-use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 use modql::SIden;
+use modql::filter::{FilterNodes, OpValsInt64, OpValsString};
 use sea_query::{Query, SqliteQueryBuilder};
 
 #[derive(Clone, FilterNodes, Default)]

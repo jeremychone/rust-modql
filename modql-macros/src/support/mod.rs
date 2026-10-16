@@ -21,7 +21,7 @@ pub(crate) fn get_struct_fields(ast: &DeriveInput) -> &FieldsNamed {
 
 /// Returns the type_name of a field
 pub(crate) fn get_type_name(field: &Field) -> String {
-	format!("{}", &field.ty.to_token_stream())
+	format!("{}", field.ty.to_token_stream())
 }
 
 pub fn get_field_attribute<'a>(field: &'a Field, name: &str) -> Option<&'a Attribute> {

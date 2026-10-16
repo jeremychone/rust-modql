@@ -7,8 +7,8 @@ pub type Result<T> = core::result::Result<T, Error>;
 pub type Error = Box<dyn std::error::Error>; // For early dev.
 
 use crate::support::sqlite::{exec_select, insert_with_returnning_id, seed_agent, seed_module};
-use modql::field::{Fields, HasFields, HasSeaFields};
 use modql::RusqliteBinder;
+use modql::field::{Fields, HasFields, HasSeaFields};
 use modql::{SIden, SqliteFromRow};
 use rusqlite::Connection;
 use sea_query::{Query, SqliteQueryBuilder};

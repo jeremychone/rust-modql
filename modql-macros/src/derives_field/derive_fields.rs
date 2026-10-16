@@ -1,6 +1,6 @@
-use crate::utils::modql_field::ModqlFieldProp;
-use crate::utils::struct_modql_attr::{get_struct_modql_props, StructModqlFieldProps};
-use crate::utils::{get_struct_fields, modql_field};
+use crate::support::modql_field::ModqlFieldProp;
+use crate::support::struct_modql_attr::{get_struct_modql_props, StructModqlFieldProps};
+use crate::support::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use proc_macro2::{Ident, Span};
 use quote::quote;
@@ -408,26 +408,26 @@ fn impl_has_sqlite_fields(
 	});
 
 	let output = quote! {
-				impl modql::field::HasSqliteFields for #struct_name {
-					fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
-						let mut ff: Vec<modql::field::SqliteField> = Vec::new();
-						#(#not_none_fields_quotes)*
-						modql::field::SqliteFields::new(ff)
-					}
+		impl modql::field::HasSqliteFields for #struct_name {
+			fn sqlite_not_none_fields(self) -> modql::field::SqliteFields {
+				let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+				#(#not_none_fields_quotes)*
+				modql::field::SqliteFields::new(ff)
+			}
 
-					fn sqlite_all_fields(self) -> modql::field::SqliteFields {
-						let mut ff: Vec<modql::field::SqliteField> = Vec::new();
-						#(#all_fields_quotes)*
-						modql::field::SqliteFields::new(ff)
-					}
+			fn sqlite_all_fields(self) -> modql::field::SqliteFields {
+				let mut ff: Vec<modql::field::SqliteField> = Vec::new();
+				#(#all_fields_quotes)*
+				modql::field::SqliteFields::new(ff)
+			}
 
-					fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
-						vec![
-							#( modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names }, )*
-						]
-					}
-				}
-			};
+			fn sqlite_column_refs_with_rel(rel: &'static str) -> Vec<modql::field::SqliteColumnRef> {
+				vec![
+					#( modql::field::SqliteColumnRef{ rel: Some(rel), col: #prop_all_names }, )*
+				]
+			}
+		}
+	};
 
 	output
 }

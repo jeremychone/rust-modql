@@ -1,8 +1,8 @@
 mod utils;
 
 use crate::derives_filter::utils::get_filter_field_attr;
-use crate::utils::struct_modql_attr::get_struct_modql_props;
-use crate::utils::{get_struct_fields, get_type_name};
+use crate::support::struct_modql_attr::get_struct_modql_props;
+use crate::support::{get_struct_fields, get_type_name};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Ident};
@@ -56,11 +56,12 @@ pub fn derive_filter_nodes_inner(input: TokenStream) -> TokenStream {
 					quote! { None }
 				};
 
-				let quote_filter_node_options_cast_column_as = if let Some(cast_column_as) = modql_field_attr.cast_column_as {
-					quote! { Some(#cast_column_as.to_string()) }
-				} else {
-					quote! { None }
-				};
+				let quote_filter_node_options_cast_column_as =
+					if let Some(cast_column_as) = modql_field_attr.cast_column_as {
+						quote! { Some(#cast_column_as.to_string()) }
+					} else {
+						quote! { None }
+					};
 				props_filter_node_options.push(quote! {
 					modql::filter::FilterNodeOptions {
 						cast_as: #quote_filter_node_options_cast_as,

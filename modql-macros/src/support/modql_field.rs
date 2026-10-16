@@ -1,4 +1,4 @@
-use crate::utils::{get_field_attribute, get_meta_value_string};
+use crate::support::{get_field_attribute, get_meta_value_string};
 use proc_macro2::Ident;
 use quote::ToTokens;
 use syn::punctuated::Punctuated;
@@ -51,7 +51,7 @@ pub fn get_modql_field_props_and_skips(fields: &'_ FieldsNamed) -> ModqlFieldsAn
 		// NOTE: By macro limitation, we can do only type name match and it would not support type alias
 		//       For now, assume Option is used as is or type name contains it.
 		//       We can add other variants of Option if proven needed.
-		let type_name = format!("{}", &field.ty.to_token_stream());
+		let type_name = format!("{}", field.ty.to_token_stream());
 		let is_option = type_name.contains("Option ");
 
 		// -- name

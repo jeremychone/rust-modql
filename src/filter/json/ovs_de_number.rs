@@ -1,6 +1,6 @@
 use super::ovs_json::OpValueToOpValType;
 use crate::filter::{OpValFloat64, OpValInt32, OpValInt64, OpValsFloat64, OpValsInt32, OpValsInt64};
-use serde::{de::MapAccess, de::Visitor, Deserialize, Deserializer};
+use serde::{Deserialize, Deserializer, de::MapAccess, de::Visitor};
 use serde_json::Value;
 use std::fmt;
 

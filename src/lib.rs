@@ -1,4 +1,3 @@
-// #![allow(unused)]
 // --- Sub-Modules
 mod error;
 #[cfg(feature = "with-rusqlite")]

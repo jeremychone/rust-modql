@@ -1,4 +1,4 @@
-use crate::utils::{get_dinput_attribute, get_meta_value_string};
+use crate::support::{get_dinput_attribute, get_meta_value_string};
 use syn::punctuated::Punctuated;
 use syn::{DeriveInput, Meta, Token};
 
