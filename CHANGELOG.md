@@ -1,6 +1,15 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2026-10-16 - `0.6.0`
+
+- `^` Update dependencies to `sea-query` `1.0.2` and `rusqlite` `0.40`
+- `.` Update examples and add rusqlite-only examples (`c01-rusqlite-query-select`, `c01-rusqlite-join`)
+- `-` Fix `OpValBool` null to not-null bug (#12)
+- `-` Fix `test_rusqlite_simple` when `with-sea-query` is enabled
+- `.` README cleanup and typo fixes
+- `.` Update migration guide to `FieldMeta`
+
 ## 2026-04-23 - `0.5.0-alpha`
 
 - `!` `HasFields::sql_columns()` now uses `FieldMeta` metadata (handles table relations and aliases)
