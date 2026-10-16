@@ -16,6 +16,13 @@ use std::result;
 #[derive(Debug, Clone, SqliteFromValue, SqliteToValue)]
 pub struct Id(i64);
 
+#[cfg(feature = "with-sea-query")]
+impl From<Id> for sea_query::Value {
+	fn from(val: Id) -> Self {
+		val.0.into()
+	}
+}
+
 impl Id {
 	pub fn as_i64(&self) -> i64 {
 		self.0
