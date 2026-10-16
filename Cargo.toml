@@ -62,6 +62,16 @@ rusqlite = {version = "0.40", features = ["bundled", "serde_json"]}
 # sea-query-binder = {version = "0.8.0-rc.1", features = ["sqlx-sqlite", "sqlite-unbundled"]}
 
 [[example]]
+name = "c01-rusqlite-query-select"
+path = "examples/c01-rusqlite-query-select.rs"
+required-features = ["with-rusqlite"]
+
+[[example]]
+name = "c01-rusqlite-join"
+path = "examples/c01-rusqlite-join.rs"
+required-features = ["with-rusqlite"]
+
+[[example]]
 name = "c02-rusqlite-sea-query-select"
 path = "examples/c02-rusqlite-sea-query-select.rs"
 required-features = ["with-rusqlite", "with-sea-query"]

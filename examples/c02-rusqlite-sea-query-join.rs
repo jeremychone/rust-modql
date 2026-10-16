@@ -10,7 +10,7 @@ use pretty_sqlite::pretty_table;
 use rusqlite::Connection;
 use sea_query::{Expr, ExprTrait, IntoColumnRef, JoinType, Query, SqliteQueryBuilder};
 
-// cargo run --example c02-rusqlite-sea-query-join --all-features
+// cargo run --example c02-rusqlite-sea-query-join --features with-rusqlite,with-sea-query
 
 fn main() -> Result<()> {
 	let conn = Connection::open_in_memory()?; // for file: Connection::open(path)?
