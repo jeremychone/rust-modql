@@ -1,5 +1,5 @@
-use crate::utils::modql_field::{ModqlFieldProp, ModqlFieldsAndSkips};
-use crate::utils::{get_struct_fields, modql_field};
+use crate::support::modql_field::{ModqlFieldProp, ModqlFieldsAndSkips};
+use crate::support::{get_struct_fields, modql_field};
 use proc_macro::TokenStream;
 use quote::quote;
 use syn::{parse_macro_input, DeriveInput, Field};

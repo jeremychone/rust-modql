@@ -8,15 +8,6 @@ In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has
 >
 > For more information, see [CHANGELOG.md](CHANGELOG.md) and [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
 
-## Thanks
-
-- [Chetan Bhasin](https://github.com/ChetanBhasin) for [PR #8 Use sea-query 0.32](https://github.com/jeremychone/rust-modql/pull/8)
-- [Andrii Yermakov](https://github.com/andriy-yermakov) for [PR #2 Fix an errata in null operator for numbers](https://github.com/jeremychone/rust-modql/pull/2)
-- [Marc Cámara](https://github.com/mcamara) for [PR #9 Add Column Casting Support to Filter Nodes](https://github.com/jeremychone/rust-modql/pull/9)
-- [Marc Cámara](https://github.com/mcamara) for adding the Case Insensitive support and the `with-ilike` support for Postgresql. [PR #3](https://github.com/jeremychone/rust-modql/pull/3)
-- [Andrii Yermakov](https://github.com/andriy-yermakov) for fixing a "null operator for numbers" [PR #2](https://github.com/jeremychone/rust-modql/pull/2)
-
-
 ## Quick Overview
 
 ```rs
@@ -81,7 +72,6 @@ This crate is instrumental for JSON-RPC or other types of model APIs (e.g., the 
 
 [changelog](CHANGELOG.md)
 
-
 ## `OpVal[Type]` Conditional Operators
 
 `OpVal[Type]` is a filter unit that allows the expression of an operator on a given value for a specified type.
@@ -103,7 +93,7 @@ The following tables show the list of possible operators for each type.
 ### `OpValString` Operators
 
 | Operator            | Meaning                                                                                                | Example                                                  |
-|---------------------|--------------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| ------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
 | `$eq`               | Exact match with one value                                                                             | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
 | `$in`               | Exact match with within a list of values (or)                                                          | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
 | `$not`              | Exclude any exact match                                                                                | `{name: {"$not": "Jon Doe"}}`                            |
@@ -118,7 +108,7 @@ The following tables show the list of possible operators for each type.
 | `$notStartsWith`    | Does not start with                                                                                    | `{name: {"$notStartsWith": "Jon"}}`                      |
 | `$notStartsWithAny` | Does not start with any of the items                                                                   | `{name: {"$notStartsWithAny": ["Jon", "Al"]}}`           |
 | `$endsWith`         | For string, does and end with                                                                          | `{name: {"$endsWithAny": "Doe"}}`                        |
-| `$endsWithAny`      | For string, does a contains  (or)                                                                      | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
+| `$endsWithAny`      | For string, does a contains (or)                                                                       | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
 | `$notEndsWith`      | Does not end with                                                                                      | `{name: {"$notEndsWithAny": "Doe"}}`                     |
 | `$notEndsWithAny`   | Does not end with any of the items                                                                     | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
 | `$lt`               | Lesser Than                                                                                            | `{name: {"$lt": "C"}}`                                   |
@@ -126,18 +116,18 @@ The following tables show the list of possible operators for each type.
 | `$gt`               | Greater Than                                                                                           | `{name: {"$gt": "J"}}`                                   |
 | `$gte`              | Greater Than or =                                                                                      | `{name: {"$gte": "J"}}`                                  |
 | `$null`             | If the value is null                                                                                   | `{name: {"$null": true}}`                                |
-| `$containsCi`		  | For string, does a contains in a case-insensitive way	                                               | `{name: {"$containsCi": "doe"}}`                         |
-| `$notContainsCi`	  | Does not contain in a case-insensitive way	                                                           | `{name: {"$notContainsCi": "doe"}}`                      |
-| `$startsWithCi`	  | For string, does a startsWith in a case-insensitive way	                                               | `{name: {"$startsWithCi": "jon"}}`                       |
-| `$notStartsWithCi`  | Does not start with in a case-insensitive way 	                                                       | `{name: {"$notStartsWithCi": "jon"}}`                    |
-| `$endsWithCi`	      | For string, does an endsWith in a case-insensitive way	                                               | `{name: {"$endsWithCi": "doe"}}`                         |
-| `$notEndsWithCi`	  | Does not end with in a case-insensitive way	                                                           | `{name: {"$notEndsWithCi": "doe"}}`                      |
+| `$containsCi`       | For string, does a contains in a case-insensitive way                                                  | `{name: {"$containsCi": "doe"}}`                         |
+| `$notContainsCi`    | Does not contain in a case-insensitive way                                                             | `{name: {"$notContainsCi": "doe"}}`                      |
+| `$startsWithCi`     | For string, does a startsWith in a case-insensitive way                                                | `{name: {"$startsWithCi": "jon"}}`                       |
+| `$notStartsWithCi`  | Does not start with in a case-insensitive way                                                          | `{name: {"$notStartsWithCi": "jon"}}`                    |
+| `$endsWithCi`       | For string, does an endsWith in a case-insensitive way                                                 | `{name: {"$endsWithCi": "doe"}}`                         |
+| `$notEndsWithCi`    | Does not end with in a case-insensitive way                                                            | `{name: {"$notEndsWithCi": "doe"}}`                      |
 | `$ilike`            | For string, does a contains in a case-insensitive way. Needs `with-ilike` flag enabled in `Cargo.toml` | `{name: {"$ilike": "DoE"}}`                              |
 
-### `OpValInt32, OpValInt64, OpValFloat64`  Operators
+### `OpValInt32, OpValInt64, OpValFloat64` Operators
 
 | Operator | Meaning                                       | Example                                  |
-|----------|-----------------------------------------------|------------------------------------------|
+| -------- | --------------------------------------------- | ---------------------------------------- |
 | `$eq`    | Exact match with one value                    | `{age: {"$eq": 24}}` same as `{age: 24}` |
 | `$in`    | Exact match with within a list of values (or) | `{age: {"$in": [23, 24]}}`               |
 | `$not`   | Exclude any exact match                       | `{age: {"$not": 24}}`                    |
@@ -151,11 +141,10 @@ The following tables show the list of possible operators for each type.
 ### `OpValBool` Operators
 
 | Operator | Meaning                    | Example                                      |
-|----------|----------------------------|----------------------------------------------|
+| -------- | -------------------------- | -------------------------------------------- |
 | `$eq`    | Exact match with one value | `{dev: {"$eq": true}}` same as `{dev: true}` |
 | `$not`   | Exclude any exact match    | `{dev: {"$not": false}}`                     |
 | `$null`  | If the value is null       | `{name: {"$null": true}}`                    |
-
 
 ## More Info
 
@@ -203,7 +192,6 @@ fn main() -> Result<()> {
     Ok(())
 }
 ```
-
 
 A Model or Store layer can take the `filter_groups` and serialize them into their DSL (e.g., SQL for databases).
 

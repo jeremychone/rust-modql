@@ -30,7 +30,7 @@ unused = { level = "allow", priority = -1 } # For test files (dev)
 members = [".", "modql-macros"]
 
 [features]
-# default = ["modql-macros", "with-sea-query", "with-rusqlite"] # for dev
+# default = ["modql-macros", "with-sea-query", "with-rusqlite", "with-ilike"] # for dev
 # default = ["modql-macros",  "with-rusqlite"] # for dev
 default = ["modql-macros"]
 with-sea-query = ["modql-macros", "sea-query", "modql-macros/with-sea-query"]
@@ -38,7 +38,7 @@ with-rusqlite = ["modql-macros", "rusqlite", "modql-macros/with-rusqlite"]
 with-ilike = ["sea-query/backend-postgres"]
 
 [dependencies]
-modql-macros = { version="0.5.0", path = "modql-macros", optional=true}
+modql-macros = { version="0.6.0", path = "modql-macros", optional=true}
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
@@ -56,9 +56,8 @@ tokio = { version = "1", features = ["full"]}
 pretty-sqlite = "0.6.0"
 rusqlite = {version = "0.40", features = ["bundled", "serde_json"]}
 
-# NOTE: for now, the sea-query-rusqlite is inlined in modql
-# sea-query-rusqlite = {version = "0.7"}
 # NOTE: Disable sqlx for now (not compatible lib sqlite with rusqlite 0.36)
+#       For now, sqlx is out of scope of modql (Might focus on tokio-postgres
 # sqlx = {version = "0.8", default-features = false, features = ["macros", "runtime-tokio", "sqlite-unbundled"]}
 # sea-query-binder = {version = "0.8.0-rc.1", features = ["sqlx-sqlite", "sqlite-unbundled"]}
 
