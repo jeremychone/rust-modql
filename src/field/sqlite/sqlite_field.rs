@@ -141,10 +141,10 @@ impl SqliteField {
 		prop_name: &'static str,
 		meta: Option<&'static FieldMeta>,
 	) -> String {
-		if let Some(cast_as) = meta.and_then(|m| m.cast_as) {
-			if cast_as.starts_with("json") {
-				return format!("json({col}) as {prop_name}",);
-			}
+		if let Some(cast_as) = meta.and_then(|m| m.cast_as)
+			&& cast_as.starts_with("json")
+		{
+			return format!("json({col}) as {prop_name}",);
 		}
 		col
 	}

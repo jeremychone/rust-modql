@@ -49,7 +49,7 @@ impl SeaField {
 
 	/// The concrete version of the new.
 	pub fn new_concrete(iden: DynIden, value: SimpleExpr) -> Self {
-		let column_ref = ColumnRef::Column(ColumnName(None, iden.clone().into()));
+		let column_ref = ColumnRef::Column(ColumnName(None, iden.clone()));
 		SeaField {
 			iden,
 			column_ref,

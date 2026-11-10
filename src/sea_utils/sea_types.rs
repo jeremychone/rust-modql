@@ -27,7 +27,7 @@ pub struct SIden(pub &'static str);
 
 impl Iden for SIden {
 	fn unquoted(&self) -> &str {
-		&self.0
+		self.0
 	}
 }
 

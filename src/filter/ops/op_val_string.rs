@@ -219,7 +219,7 @@ mod with_sea_query {
 			let pg_binary_fn = |op: PgBinOper, v: String| {
 				let vxpr = into_node_value_expr(v, node_options);
 				let column = into_node_column_expr(col.clone(), node_options);
-				SimpleExpr::binary(column.into(), BinOper::PgOperator(op), vxpr).into()
+				SimpleExpr::binary(column, BinOper::PgOperator(op), vxpr).into()
 			};
 
 			let binaries_fn = |op: BinOper, v: Vec<String>| {
@@ -293,7 +293,6 @@ mod with_sea_query {
 					Condition::any()
 						.add(sea_is_col_value_null(col.clone(), empty))
 						.add(binary_fn(op, "".to_string()))
-						.into()
 				}
 
 				OpValString::ContainsCi(s) => case_insensitive_fn(BinOper::Like, format!("%{s}%")),
