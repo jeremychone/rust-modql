@@ -1,6 +1,10 @@
 
 `.` minor | `+` Addition | `^` improvement | `!` Change | `*` Refactor
 
+## 2026-11-10 - `0.7.0`
+
+- `.` `rusqlite` `v0.41`
+
 ## 2026-10-16 - `0.6.0`
 
 - `^` Update dependencies to `sea-query` `1.0.2` and `rusqlite` `0.40`
