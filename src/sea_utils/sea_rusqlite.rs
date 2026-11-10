@@ -6,7 +6,7 @@ use rusqlite::{
 	Result, ToSql,
 	types::{Null, ToSqlOutput},
 };
-use sea_query::Value;
+use sea_query::{OptionEnum, Value};
 use sea_query::{QueryBuilder, query::*};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -52,24 +52,6 @@ impl_rusqlite_binder!(WithQuery);
 
 impl ToSql for RusqliteValue {
 	fn to_sql(&self) -> Result<ToSqlOutput<'_>> {
-		macro_rules! box_to_sql {
-			( $v: expr ) => {
-				match $v {
-					Some(v) => (&**v).to_sql(),
-					None => Null.to_sql(),
-				}
-			};
-		}
-
-		macro_rules! opt_to_sql {
-			( $v: expr ) => {
-				match $v {
-					Some(v) => v.to_sql(),
-					None => Null.to_sql(),
-				}
-			};
-		}
-
 		macro_rules! opt_string_to_sql {
 			( $v: expr ) => {
 				match $v {
@@ -80,25 +62,39 @@ impl ToSql for RusqliteValue {
 		}
 
 		match &self.0 {
-			Value::Bool(v) => opt_to_sql!(v),
-			Value::TinyInt(v) => opt_to_sql!(v),
-			Value::SmallInt(v) => opt_to_sql!(v),
-			Value::Int(v) => opt_to_sql!(v),
-			Value::BigInt(v) => opt_to_sql!(v),
-			Value::TinyUnsigned(v) => opt_to_sql!(v),
-			Value::SmallUnsigned(v) => opt_to_sql!(v),
-			Value::Unsigned(v) => opt_to_sql!(v),
-			Value::Float(v) => opt_to_sql!(v),
-			Value::Double(v) => opt_to_sql!(v),
-			Value::String(v) => box_to_sql!(v),
-			Value::Char(v) => opt_string_to_sql!(v.map(|v| v.to_string())),
-			Value::Bytes(v) => box_to_sql!(v),
-			//--
-			Value::BigUnsigned(v) => match (v.map(|v| v as i64)) {
-				Some(v) => Ok(ToSqlOutput::from(v)),
+			Value::Bool(v) => v.to_sql(),
+			Value::TinyInt(v) => v.to_sql(),
+			Value::SmallInt(v) => v.to_sql(),
+			Value::Int(v) => v.to_sql(),
+			Value::BigInt(v) => v.to_sql(),
+			Value::TinyUnsigned(v) => v.to_sql(),
+			Value::SmallUnsigned(v) => v.to_sql(),
+			Value::Unsigned(v) => v.to_sql(),
+			//-- JC-2026-11-09: Make an approximation for now, to i64
+			//                  This is not a perfect options, but panic should not either
+			Value::BigUnsigned(v) => match v {
+				Some(v) => {
+					// Safely converts to i64, fallback to i64::MAX if it overflows u64
+					let clamped_val = i64::try_from(*v).unwrap_or(i64::MAX);
+					Ok(ToSqlOutput::from(clamped_val))
+				}
 				None => Null.to_sql(),
 			},
-			Value::Enum(_) => todo!(),
+			Value::Float(v) => v.to_sql(),
+			Value::Double(v) => v.to_sql(),
+			Value::String(v) => match v {
+				Some(v) => v.as_str().to_sql(),
+				None => Null.to_sql(),
+			},
+			Value::Enum(v) => match v {
+				OptionEnum::Some(v) => v.value.as_ref().to_sql(),
+				OptionEnum::None(_) => Null.to_sql(),
+			},
+			Value::Char(v) => opt_string_to_sql!(v.map(|v| v.to_string())),
+			Value::Bytes(v) => match v {
+				Some(v) => v.as_slice().to_sql(),
+				None => Null.to_sql(),
+			},
 		}
 	}
 }
