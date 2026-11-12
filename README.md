@@ -4,7 +4,9 @@
 
 In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has built-in support for [sea-query](https://crates.io/crates/sea-query), and can be expressed either in JSON or Rust types.
 
-**IMPORTANT** Use `rusqlite = { version = "0.42.0"}` with the latest modql v0.7.2 and above
+**IMPORTANT** Use the same `rusqlite` "top" version from the [Cargo.toml](Cargo.toml) of this crate. 
+
+[Overview](#quick-overview) · [Conditional Operators](#conditional-operators) · [Running Examples](#running-examples) · [More Info](#more-info) · [Changelog](CHANGELOG.md)
 
 ## Quick Overview
 
@@ -70,7 +72,7 @@ This crate is instrumental for JSON-RPC or other types of model APIs (e.g., the 
 
 [changelog](CHANGELOG.md)
 
-## `OpVal[Type]` Conditional Operators
+## Conditional Operators
 
 `OpVal[Type]` is a filter unit that allows the expression of an operator on a given value for a specified type.
 
@@ -88,26 +90,26 @@ This expresses the conditions that both "startsWith" and "contains" must be met.
 
 The following tables show the list of possible operators for each type.
 
-### `OpValString` Operators
+### String Operators
 
 | Operator            | Meaning                                                                                                | Example                                                  |
 | ------------------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------------------- |
 | `$eq`               | Exact match with one value                                                                             | `{name: {"$eq": "Jon Doe"}}` same as `{name: "Jon Doe"}` |
-| `$in`               | Exact match with within a list of values (or)                                                          | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
+| `$in`               | Exact match within a list of values (or)                                                               | `{name: {"$in": ["Alice", "Jon Doe"]}}`                  |
 | `$not`              | Exclude any exact match                                                                                | `{name: {"$not": "Jon Doe"}}`                            |
-| `$notIn`            | Exclude any exact withing a list                                                                       | `{name: {"$notIn": ["Jon Doe"]}}`                        |
+| `$notIn`            | Exclude any exact within a list                                                                        | `{name: {"$notIn": ["Jon Doe"]}}`                        |
 | `$contains`         | For string, does a contains                                                                            | `{name: {"$contains": "Doe"}}`                           |
-| `$containsAny`      | For string, match if contained in any of items                                                         | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
+| `$containsAny`      | For string, match if contained in any of the items                                                     | `{name: {"$containsAny": ["Doe", "Ali"]}}`               |
 | `$containsAll`      | For string, match if all items are in the src                                                          | `{name: {"$containsAll": ["Hello", "World"]}}`           |
 | `$notContains`      | Does not contain                                                                                       | `{name: {"$notContains": "Doe"}}`                        |
-| `$notContainsAny`   | Does not call any of (none is contained)                                                               | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
+| `$notContainsAny`   | Does not contain any of the items (none is contained)                                                  | `{name: {"$notContainsAny": ["Doe", "Ali"]}}`            |
 | `$startsWith`       | For string, does a startsWith                                                                          | `{name: {"$startsWith": "Jon"}}`                         |
 | `$startsWithAny`    | For string, match if startsWith in any of items                                                        | `{name: {"$startsWithAny": ["Jon", "Al"]}}`              |
 | `$notStartsWith`    | Does not start with                                                                                    | `{name: {"$notStartsWith": "Jon"}}`                      |
 | `$notStartsWithAny` | Does not start with any of the items                                                                   | `{name: {"$notStartsWithAny": ["Jon", "Al"]}}`           |
-| `$endsWith`         | For string, does and end with                                                                          | `{name: {"$endsWithAny": "Doe"}}`                        |
-| `$endsWithAny`      | For string, does a contains (or)                                                                       | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
-| `$notEndsWith`      | Does not end with                                                                                      | `{name: {"$notEndsWithAny": "Doe"}}`                     |
+| `$endsWith`         | For string, does an endsWith                                                                           | `{name: {"$endsWith": "Doe"}}`                           |
+| `$endsWithAny`      | For string, does an endsWith (or)                                                                      | `{name: {"$endsWithAny": ["Doe", "ice"]}}`               |
+| `$notEndsWith`      | Does not end with                                                                                      | `{name: {"$notEndsWith": "Doe"}}`                        |
 | `$notEndsWithAny`   | Does not end with any of the items                                                                     | `{name: {"$notEndsWithAny": ["Doe", "ice"]}}`            |
 | `$lt`               | Lesser Than                                                                                            | `{name: {"$lt": "C"}}`                                   |
 | `$lte`              | Lesser Than or =                                                                                       | `{name: {"$lte": "C"}}`                                  |
@@ -122,34 +124,63 @@ The following tables show the list of possible operators for each type.
 | `$notEndsWithCi`    | Does not end with in a case-insensitive way                                                            | `{name: {"$notEndsWithCi": "doe"}}`                      |
 | `$ilike`            | For string, does a contains in a case-insensitive way. Needs `with-ilike` flag enabled in `Cargo.toml` | `{name: {"$ilike": "DoE"}}`                              |
 
-### `OpValInt32, OpValInt64, OpValFloat64` Operators
+### Number Operators
+
+`OpValInt32`, `OpValInt64`, `OpValFloat64`
 
 | Operator | Meaning                                       | Example                                  |
 | -------- | --------------------------------------------- | ---------------------------------------- |
 | `$eq`    | Exact match with one value                    | `{age: {"$eq": 24}}` same as `{age: 24}` |
-| `$in`    | Exact match with within a list of values (or) | `{age: {"$in": [23, 24]}}`               |
+| `$in`    | Exact match within a list of values (or)      | `{age: {"$in": [23, 24]}}`               |
 | `$not`   | Exclude any exact match                       | `{age: {"$not": 24}}`                    |
-| `$notIn` | Exclude any exact withing a list              | `{age: {"$notIn": [24]}}`                |
+| `$notIn` | Exclude any exact within a list               | `{age: {"$notIn": [24]}}`                |
 | `$lt`    | Lesser Than                                   | `{age: {"$lt": 30}}`                     |
 | `$lte`   | Lesser Than or =                              | `{age: {"$lte": 30}}`                    |
 | `$gt`    | Greater Than                                  | `{age: {"$gt": 30}}`                     |
 | `$gte`   | Greater Than or =                             | `{age: {"$gte": 30}}`                    |
 | `$null`  | If the value is null                          | `{name: {"$null": true}}`                |
 
-### `OpValBool` Operators
+### Bool Operators
+
+`OpValBool`
 
 | Operator | Meaning                    | Example                                      |
 | -------- | -------------------------- | -------------------------------------------- |
 | `$eq`    | Exact match with one value | `{dev: {"$eq": true}}` same as `{dev: true}` |
 | `$not`   | Exclude any exact match    | `{dev: {"$not": false}}`                     |
-| `$null`  | If the value is null       | `{name: {"$null": true}}`                    |
+| `$null`  | If the value is null       | `{dev: {"$null": true}}`                     |
+
+## Running Examples
+
+The `examples/` folder contains runnable examples that go from plain `rusqlite` usage to `rusqlite` + `sea-query`. Each example declares the features it needs through the `[[example]] required-features` entries in [Cargo.toml](Cargo.toml), so the matching `--features` flag below is required.
+
+| Example | What it shows | Features |
+| --- | --- | --- |
+| `c01-rusqlite-query-select` | Raw `SELECT` built from `Task::field_metas().sql_col_refs()` | `with-rusqlite` |
+| `c01-rusqlite-join` | Raw SQL `LEFT JOIN`, with a column mapped via `#[field(rel = "..")]` | `with-rusqlite` |
+| `c02-rusqlite-sea-query-select` | Select built with `sea-query` and bound with `build_rusqlite` | `with-rusqlite,with-sea-query` |
+| `c02-rusqlite-sea-query-join` | Join built with `sea-query` and bound with `build_rusqlite` | `with-rusqlite,with-sea-query` |
+
+```sh
+# From the repository root
+
+# c01 - plain rusqlite
+cargo run --example c01-rusqlite-query-select --features with-rusqlite
+cargo run --example c01-rusqlite-join --features with-rusqlite
+
+# c02 - rusqlite + sea-query
+cargo run --example c02-rusqlite-sea-query-select --features with-rusqlite,with-sea-query
+cargo run --example c02-rusqlite-sea-query-join --features with-rusqlite,with-sea-query
+```
+
+The examples run against an in-memory SQLite database (`Connection::open_in_memory()`), created and seeded at startup, so there is nothing to prepare beforehand. The `c03-sqlx-sea-query-join` example is currently disabled (`.off` file extension), since `sqlx` is out of scope for now.
 
 ## More Info
 
 - `modql::filter` - Delivers a declarative structure that can be deserialized from JSON.
 - `modql::field` - Provides a method get field information on a struct. The `with-sea-query` feature add `sea-query` compatible data structure from standard structs and derive.
 
-## `#[derive(modql::field::Fields)` provide the following
+## `#[derive(modql::field::Fields)]` provides the following
 
 - `Task::field_names()` returns the property names of the struct. It can be overridden with the `#[field(name="another_name")]` property attribute.
 - `Task::field_refs()` returns `FieldRef { name: &'static str, rel: Option<&'static str>}` for the properties. `rel` acts like the table name. It can be set as `#[modql(rel="some_table_name")]` at the struct level, or `#[field(rel="special_rel_name")]` at the field level.
@@ -200,6 +231,6 @@ The Filter structure is as follows:
 - `FilterNode` contains a `rel` (not used yet), `name` which represents the property name from where the value originates, and a `Vec<OpVal>`, representing the Operator Value.
 - `OpVal` is an enum for type-specific `OpVal[Type]` entities, such as `OpValString` that holds the specific operation for that type along with the associated pattern value.
 
-<br />
+---
 
 [GitHub Repo](https://github.com/jeremychone/rust-modql)
