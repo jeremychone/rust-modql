@@ -4,9 +4,7 @@
 
 In essence, it offers a MongoDB-like filter syntax that is storage-agnostic, has built-in support for [sea-query](https://crates.io/crates/sea-query), and can be expressed either in JSON or Rust types.
 
-> **IMPORTANT**: **v0.4.0 is RELEASED**: This release includes significant refactoring (retaining the same functionality but with cleaner naming and decoupled from sea-query) to allow `derive(Fields)` to provide `field_names` and `field_refs` without requiring the `with-sea-query` feature.
->
-> For more information, see [CHANGELOG.md](CHANGELOG.md) and [MIGRATION-v03x-v04x.md](MIGRATION-v03x-v04x.md).
+**IMPORTANT** Use `rusqlite = { version = "0.42.0"}` with the latest modql v0.7.2 and above
 
 ## Quick Overview
 
