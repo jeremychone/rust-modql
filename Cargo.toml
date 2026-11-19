@@ -1,9 +1,9 @@
 [workspace.package]
-publish = true # RELEASE, set to true to release
+publish = false # WIP, set to true to release
 
 [package]
 name = "modql"
-version = "0.9.0" # RELEASE (See publish above)
+version = "0.9.1" # WIP (See publish above)
 edition = "2024"
 authors = ["Jeremy Chone <jeremy.chone@gmail.com>"]
 license = "MIT OR Apache-2.0"
