@@ -1,13 +1,12 @@
 [package]
 name = "modql-macros"
-version = "0.8.0"
+version = "0.9.0"
 publish.workspace = true
 authors = ["jeremy.chone@gmail.com"]
 edition = "2021"
 description = "Macros for modql. Not intended to be used directly."
 license = "MIT OR Apache-2.0"
 categories = ["data-structures"]
-homepage = "https://github.com/modql/rust-modql"
 repository = "https://github.com/modql/rust-modql"
 
 [lints]
